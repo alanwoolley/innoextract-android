@@ -1,0 +1,9 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    
+    <item
+        android:id="@+id/action_log"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_log"/>
+
+</menu>
+<!-- From: file:/C:/Users/Alan/workspace/innoextract/res/menu/main.xml -->

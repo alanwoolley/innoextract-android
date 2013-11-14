@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- From: file:/C:/Users/Alan/workspace/innoextract/res/values/dimens.xml -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <!-- From: file:/C:/Users/Alan/workspace/innoextract/res/values/strings.xml -->
+    <string name="action_log">Log</string>
+    <string name="app_name">innoextract</string>
+    <!-- From: file:/C:/Users/Alan/workspace/innoextract/res/values/styles.xml -->
+    <style name="AppBaseTheme" parent="android:Theme.Light">
+        <!--
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+        -->
+    </style>
+
+    <style name="AppTheme" parent="AppBaseTheme">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    </style>
+
+    <style name="card">
+        <item name="android:layout_margin">10dp</item>
+        <item name="android:padding">30dp</item>
+        <item name="android:textColor">#707070</item>
+        <item name="android:minWidth">300dp</item>
+        <item name="android:background">@drawable/search_bg_shadow</item>
+    </style>
+
+</resources>
