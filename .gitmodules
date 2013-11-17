@@ -1,0 +1,3 @@
+[submodule "external/Android-DirectoryChooser"]
+	path = external/Android-DirectoryChooser
+	url = git@github.com:passy/Android-DirectoryChooser.git
