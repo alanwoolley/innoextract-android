@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8" standalone="no"?>
-<resources>
-    <string name="app_name">InnoExtract</string>
-    <string name="dialog_name">Extract Inno Setup File</string>
-    <string name="action_log">Log</string>
-    <string name="title_activity_log">Extract Log</string>
-</resources>

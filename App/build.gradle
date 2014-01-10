@@ -1,0 +1,72 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.7.+'
+    }
+}
+apply plugin: 'android'
+apply plugin: 'maven'
+
+repositories {
+    mavenCentral()
+
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots"
+    }
+
+}
+
+dependencies {
+    compile 'com.android.support:support-v4:18.0.+'
+    compile 'net.rdrei.android.dirchooser:library:1.1-SNAPSHOT@aar'
+}
+
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion '19.0.0'
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 19
+    }
+
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src']
+            resources.srcDirs = ['src']
+            aidl.srcDirs = ['src']
+            renderscript.srcDirs = ['src']
+            res.srcDirs = ['res']
+            assets.srcDirs = ['assets']
+        }
+    }
+    buildTypes {
+        release {
+            runProguard false
+            proguardFile getDefaultProguardFile('proguard-android-optimize.txt')
+        }
+    }
+    productFlavors {
+        defaultFlavor {
+            proguardFile 'proguard-rules.txt'
+        }
+    }
+}
+
+
+// NDK Stuff
+tasks.withType(com.android.build.gradle.tasks.PackageApplication) {
+    pkgTask -> pkgTask.jniFolders = new HashSet<File>()
+        pkgTask.jniFolders.add(new File(projectDir, 'libs'))
+}
+
+task ndkBuild(type: Exec) {
+    commandLine 'ndk-build.cmd', '-j'
+}
+tasks.withType(Compile) {
+    compileTask -> compileTask.dependsOn ndkBuild
+}
