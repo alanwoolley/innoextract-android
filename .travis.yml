@@ -33,4 +33,4 @@ before_install:
   - cat local.properties
   # list packages for debug purpose
   - android list sdk -a -e -u
-  - echo yes | android update sdk -t tools,platform-tools,extra-android-support,extra-android-m2repository,android-19,build-tools-19.0.0 --force --no-ui  
+  - echo yes | android update sdk -a -t tools,platform-tools,extra-android-support,extra-android-m2repository,android-19,build-tools-19.0.0 --force --no-ui  
