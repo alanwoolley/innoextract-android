@@ -1,2 +1,2 @@
 APP_STL := gnustl_static
-APP_PLATFORM := android-11
+APP_PLATFORM := android-14
