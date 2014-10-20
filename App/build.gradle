@@ -3,37 +3,33 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.7.+'
+        classpath 'com.android.tools.build:gradle:0.13.2'
     }
 }
-apply plugin: 'android'
+apply plugin: 'com.android.application'
 apply plugin: 'maven'
 
 
-import org.apache.tools.ant.taskdefs.condition.Os
+//import org.apache.tools.ant.taskdefs.condition.Os
 
 repositories {
     mavenCentral()
-
-    maven {
-        url "https://oss.sonatype.org/content/repositories/snapshots"
-    }
-
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:18.0.+'
-    compile 'net.rdrei.android.dirchooser:library:1.1-SNAPSHOT@aar'
+    compile 'com.android.support:support-v4:21.0.0'
+    compile 'com.android.support:appcompat-v7:21.0.0'
+    compile 'net.rdrei.android.dirchooser:library:2.1@aar'
 }
 
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion '19.0.0'
+    compileSdkVersion 21
+    buildToolsVersion '19.1.0'
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 19
+        targetSdkVersion 21
     }
 
     sourceSets {
@@ -67,7 +63,7 @@ tasks.withType(com.android.build.gradle.tasks.PackageApplication) {
         pkgTask.jniFolders.add(new File(projectDir, 'libs'))
 }
 
-
+/*
 task ndkBuild(type: Exec) {
     if (Os.isFamily(Os.FAMILY_WINDOWS)) { 
       commandLine 'ndk-build.cmd', '-j'
@@ -78,3 +74,4 @@ task ndkBuild(type: Exec) {
 tasks.withType(Compile) {
     compileTask -> compileTask.dependsOn ndkBuild
 }
+*/
