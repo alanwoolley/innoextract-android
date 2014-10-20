@@ -107,6 +107,8 @@ struct options {
 	bool test; // The --test action has been explicit specified
 	bool extract; // The --extract action has been specified or automatically enabled
 
+	bool check;
+
 	bool preserve_file_times;
 	bool local_timestamps;
 
@@ -224,6 +226,10 @@ static void process_file(const fs::path & file, const options & o) {
 	ifs.seekg(offsets.header_offset);
 	setup::info info;
 	info.load(ifs, entries);
+
+    if (o.check) {
+        return;
+    }
 
 	if (!o.quiet) {
 		const std::string & name =
@@ -464,7 +470,7 @@ int main(int argc, char * argv[]) {
 	action.add_options()("test,t",
 			"Only verify checksums, don't write anything")("extract,e",
 			"Extract files (default action)")("list,l",
-			"Only list files, don't write anything");
+			"Only list files, don't write anything")("check,k", "validate file");
 
 	po::options_description filter("Modifiers");
 	filter.add_options()("dump", "Dump contents without converting filenames")(
@@ -554,7 +560,8 @@ int main(int argc, char * argv[]) {
 	o.list = (options.count("list") != 0);
 	o.extract = (options.count("extract") != 0);
 	o.test = (options.count("test") != 0);
-	bool explicit_action = o.list || o.test || o.extract;
+	o.check = (options.count("check") != 0);
+	bool explicit_action = o.list || o.test || o.extract || o.check;
 	if (!explicit_action) {
 		o.extract = true;
 	}

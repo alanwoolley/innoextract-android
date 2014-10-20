@@ -88,6 +88,33 @@ extern "C" int Java_uk_co_armedpineapple_innoextract_ExtractService_nativeDoTest
 	return out;
 }
 
+extern "C" int Java_uk_co_armedpineapple_innoextract_ExtractActivity_nativeCheckInno(
+		JNIEnv* env, jclass cls, jstring toExtractObj) {
+
+		// Get parameters
+
+        const char *toExtract = env->GetStringUTFChars(toExtractObj, NULL);
+
+        if (toExtract == NULL) {
+            LOGI("Extract file path is null");
+            return -1;
+        }
+
+        char* args[3];
+        args[0] = (char*) "Extractor";
+        args[1] = (char*) "-ks";
+        args[2] = (char*) toExtract;
+
+        int out = main(3, (char**) args);
+        fflush (stdout);
+        fflush (stderr);
+
+        // Release strings
+        env->ReleaseStringUTFChars(toExtractObj, toExtract);
+
+        return out;
+}
+
 void *readchar(void* data) {
 
 	JNIEnv* env;

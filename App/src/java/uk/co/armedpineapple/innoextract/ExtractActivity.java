@@ -30,6 +30,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.app.Activity;
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -46,10 +47,37 @@ public class ExtractActivity extends Activity {
 
 	String fileToExtract;
 
+    public native int nativeCheckInno(String sourceFile);
+
+    static {
+        System.loadLibrary("innoextract");
+    }
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.dialog_layout);
+
+        Intent intent = getIntent();
+        Uri uri = intent.getData();
+
+        fileToExtract = uri.getPath();
+        int fileState = nativeCheckInno(uri.getPath());
+
+        if (fileState > 0) {
+            // Error
+            setContentView(R.layout.dialog_error);
+            Button closeButton = (Button) findViewById(R.id.closeBtn);
+            closeButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                  finish();
+                }
+            });
+
+            return;
+        }
+
+        setContentView(R.layout.dialog_layout);
 
 		extractToEditText = (EditText) findViewById(R.id.extract_to);
 		extractButton = (Button) findViewById(R.id.extract);
@@ -93,12 +121,6 @@ public class ExtractActivity extends Activity {
 			}
 
 		});
-
-		Intent intent = getIntent();
-		Uri uri = intent.getData();
-
-		fileToExtract = uri.getPath();
-
 	}
 
 	private void doExtract() {

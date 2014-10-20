@@ -73,7 +73,6 @@ public class ExtractService extends Service {
 
 	// Native methods
 	public native void nativeInit();
-
 	public native int nativeDoTest(String sourceFile, String extractDir);
 
 	@Override
@@ -190,7 +189,15 @@ public class ExtractService extends Service {
 	public void onDestroy() {
 		super.onDestroy();
 	}
+/*
+    public int performCheck(final String toCheck) throws ServiceBusyException {
+        if (isBusy)
+            throw new ServiceBusyException();
 
+        Log.d(LOG_TAG, "Checking " + toCheck);
+        return nativeCheckInno(toCheck);
+    }
+*/
 	public void performExtract(final String toExtract, final String extractDir,
 			final ExtractCallback callback) throws ServiceBusyException {
 
