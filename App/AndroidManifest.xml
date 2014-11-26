@@ -4,10 +4,6 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
-    <uses-sdk
-        android:minSdkVersion="14"
-        android:targetSdkVersion="19" />
-
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
@@ -25,7 +21,8 @@
 
         <activity
             android:name="net.rdrei.android.dirchooser.DirectoryChooserActivity"
-            android:label="Choose Directory" />
+            android:label="Choose Directory"
+            android:theme="@android:style/Theme.DeviceDefault.Light"/>
             
         <activity
             android:name=".ExtractActivity"
@@ -46,6 +43,21 @@
                 <data android:scheme="file" />
                 <data android:host="*" />
                 <data android:mimeType="*/*" />
+                <data android:pathPattern=".*\\.exe" />
+                <data android:pathPattern=".*\\..*\\.exe" />
+                <data android:pathPattern=".*\\..*\\..*\\.exe" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.exe" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.exe" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.exe" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.exe" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="file" />
+                <data android:host="*" />
                 <data android:pathPattern=".*\\.exe" />
                 <data android:pathPattern=".*\\..*\\.exe" />
                 <data android:pathPattern=".*\\..*\\..*\\.exe" />
