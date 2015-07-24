@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.13.2'
+        classpath 'com.android.tools.build:gradle:1.2.3'
     }
 }
 apply plugin: 'com.android.application'
@@ -17,19 +17,19 @@ repositories {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:21.0.0'
-    compile 'com.android.support:appcompat-v7:21.0.0'
+    compile 'com.android.support:support-v4:22.2.1'
+    compile 'com.android.support:appcompat-v7:22.2.1'
     compile 'net.rdrei.android.dirchooser:library:2.1@aar'
 }
 
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion '19.1.0'
+    compileSdkVersion 22
+    buildToolsVersion '22.0.1'
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 21
+        targetSdkVersion 22
     }
 
     sourceSets {
@@ -45,13 +45,12 @@ android {
     }
     buildTypes {
         release {
-            runProguard false
-            proguardFile getDefaultProguardFile('proguard-android-optimize.txt')
+
         }
     }
     productFlavors {
         defaultFlavor {
-            proguardFile 'proguard-rules.txt'
+
         }
     }
 }

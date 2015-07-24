@@ -1,31 +1,33 @@
-language: java
-jdk: oraclejdk7
+language: android
+sudo: false
+
+addons:
+  apt:
+    packages:
+      - libgd2-xpm
+      - ia32-libs
+      - ia32-libs-multiarch
+
+
+android:
+  components:
+    - platform-tools
+    - tools
+    - build-tools-22.0.1
+    - android-22
+    - extra-google-m2repository
+    - extra-android-m2repository
+
 
 before_install:
-  # required libs for android build tools
-  - if [ `uname -m` = x86_64 ]; then sudo apt-get update; fi
-  - if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch; fi
-  # for gradle output style
-  - export TERM=dumb
-  # newer version of gradle
-  - wget http://services.gradle.org/distributions/gradle-2.1-bin.zip
-  - unzip -qq gradle-2.1-bin.zip
-  - export GRADLE_HOME=$PWD/gradle-2.1
-  - export PATH=$GRADLE_HOME/bin:$PATH
-  - chmod +x gradlew
-  # newest android SDK 23.0.2
-  - wget http://dl.google.com/android/android-sdk_r23.0.2-linux.tgz
-  - tar -zxf android-sdk_r23.0.2-linux.tgz
-  - export ANDROID_HOME=`pwd`/android-sdk-linux
-  - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
   # newest Android NDK
-  - if [ `uname -m` = x86_64]; then wget http://dl.google.com/android/ndk/android-ndk-r10c-linux-x86_64.bin -O ndk.bin; else wget http://dl.google.com/android/ndk/android-ndk-r10c-linux-x86.bin -O ndk.bin; fi
+  - if [ `uname -m` = x86_64]; then wget http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin -O ndk.bin; else wget http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86.bin -O ndk.bin; fi
   - chmod +x ndk.bin
   - ./ndk.bin > /dev/null
-  - export ANDROID_NDK_HOME=`pwd`/android-ndk-r10c
+  - export ANDROID_NDK_HOME=`pwd`/android-ndk-r10e
   - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:${ANDROID_NDK_HOME}
   # manually set sdk.dir variable, according to local paths
-  - echo "sdk.dir=$ANDROID_HOME" > local.properties
-  - echo yes | android update sdk -a -t tools,platform-tools,extra-android-support,extra-android-m2repository,android-21,build-tools-19.1.0 --force --no-ui
+  #- echo "sdk.dir=$ANDROID_HOME" > local.properties
+  #- echo yes | android update sdk -a -t tools,platform-tools,extra-android-support,extra-android-m2repository,android-21,build-tools-19.1.0 --force --no-ui
   - cd ${TRAVIS_BUILD_DIR}/App
   - ndk-build -j
