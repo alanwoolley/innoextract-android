@@ -24,19 +24,24 @@ package uk.co.armedpineapple.innoextract;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.webkit.WebView;
 import android.widget.TextView;
 
-public class LogActivity extends Activity {
-
-	private static final String LOG_TAG = "LENGTH";
+public class LogActivity extends ActionBarActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_log);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+        }
+
 		Intent intent = getIntent();
 		CharSequence log = intent.getCharSequenceExtra("log");
 
@@ -44,13 +49,4 @@ public class LogActivity extends Activity {
 
 		logView.loadUrl("file://" + log);
 	}
-
-	@Override
-	protected void onNewIntent(Intent intent) {
-
-		super.onNewIntent(intent);
-		Log.d(LOG_TAG, "NEW INTENT!");
-		Log.d(LOG_TAG, "Extras: " + intent.getExtras().size());
-	}
-
 }
