@@ -15,14 +15,12 @@ android:
     - android-26
     - extra-google-m2repository
     - extra-android-m2repository
-    - ndk-bundle
 
 
 before_install:
   # newest Android NDK
-  #- wget https://dl.google.com/android/repository/android-ndk-r15c-linux-x86_64.zip -O ndk.zip
-  #- unzip -q ndk.zip
-  #- export ANDROID_NDK_HOME=`pwd`/android-ndk-r15c
-  #- export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:${ANDROID_NDK_HOME}
-  #- cd ${TRAVIS_BUILD_DIR}/App
-  #- ndk-build -j
+  - wget https://dl.google.com/android/repository/android-ndk-r15c-linux-x86_64.zip -O ndk.zip
+  - unzip -q ndk.zip
+  - export ANDROID_NDK_HOME=`pwd`/android-ndk-r15c
+  - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:${ANDROID_NDK_HOME}
+
