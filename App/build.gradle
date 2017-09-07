@@ -36,6 +36,13 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 26
+
+
+
+        ndk {
+            abiFilters "armeabi"
+        }
+
     }
 
     sourceSets {
@@ -60,9 +67,11 @@ android {
 
         }
     }
+
     externalNativeBuild {
         ndkBuild {
             path 'jni/Android.mk'
         }
     }
+
 }
