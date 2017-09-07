@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.2.3'
+        classpath 'com.android.tools.build:gradle:2.3.3'
     }
 }
 apply plugin: 'com.android.application'
@@ -13,24 +13,29 @@ apply plugin: 'maven'
 //import org.apache.tools.ant.taskdefs.condition.Os
 
 repositories {
-    mavenCentral()
+    jcenter()
+    maven {
+        url "https://maven.google.com"
+    }
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:22.2.1'
-    compile 'com.android.support:appcompat-v7:22.2.1'
+    compile 'com.android.support:support-v4:26.0.2'
+    compile 'com.android.support:appcompat-v7:26.0.2'
+    compile 'com.android.support:support-core-utils:26.0.2'
+    compile 'com.android.support:support-core-ui:26.0.2'
     compile 'net.rdrei.android.dirchooser:library:2.1@aar'
 }
 
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion '22.0.1'
+    compileSdkVersion 26
+    buildToolsVersion '26.0.1'
 
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 22
+        targetSdkVersion 26
     }
 
     sourceSets {
@@ -56,23 +61,3 @@ android {
         }
     }
 }
-
-
-// NDK Stuff
-tasks.withType(com.android.build.gradle.tasks.PackageApplication) {
-    pkgTask -> pkgTask.jniFolders = new HashSet<File>()
-        pkgTask.jniFolders.add(new File(projectDir, 'libs'))
-}
-
-/*
-task ndkBuild(type: Exec) {
-    if (Os.isFamily(Os.FAMILY_WINDOWS)) { 
-      commandLine 'ndk-build.cmd', '-j'
-    } else {
-      commandLine 'ndk-build', '-j'
-    }
-}
-tasks.withType(Compile) {
-    compileTask -> compileTask.dependsOn ndkBuild
-}
-*/

@@ -5,29 +5,24 @@ addons:
   apt:
     packages:
       - libgd2-xpm
-      - ia32-libs
-      - ia32-libs-multiarch
+      - lib32z1
 
 
 android:
   components:
     - platform-tools
     - tools
-    - build-tools-22.0.1
-    - android-22
+    - build-tools-26.0.2
+    - android-26
     - extra-google-m2repository
     - extra-android-m2repository
 
 
 before_install:
   # newest Android NDK
-  - if [ `uname -m` = x86_64]; then wget http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin -O ndk.bin; else wget http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86.bin -O ndk.bin; fi
-  - chmod +x ndk.bin
-  - ./ndk.bin > /dev/null
-  - export ANDROID_NDK_HOME=`pwd`/android-ndk-r10e
+  - wget https://dl.google.com/android/repository/android-ndk-r15c-linux-x86_64.zip -O ndk.zip
+  - unzip ndk.zip
+  - export ANDROID_NDK_HOME=`pwd`/android-ndk-r15c
   - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:${ANDROID_NDK_HOME}
-  # manually set sdk.dir variable, according to local paths
-  - echo "sdk.dir=$ANDROID_HOME" > local.properties
-  - echo yes | android update sdk -a -t tools,platform-tools,extra-android-support,extra-android-m2repository,android-21,build-tools-21.1.1 --force --no-ui
   - cd ${TRAVIS_BUILD_DIR}/App
   - ndk-build -j
