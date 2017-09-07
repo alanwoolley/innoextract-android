@@ -24,14 +24,14 @@ package uk.co.armedpineapple.innoextract;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.webkit.WebView;
 import android.widget.TextView;
 
-public class LogActivity extends ActionBarActivity {
+public class LogActivity extends AppCompatActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

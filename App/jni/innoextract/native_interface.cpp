@@ -23,6 +23,7 @@
 #include <jni.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <cstdlib>
 #include <android/log.h>
 #include "native_interface.hpp"
 #include <pthread.h>
