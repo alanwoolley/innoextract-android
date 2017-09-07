@@ -1,23 +1,10 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
-    }
-}
 apply plugin: 'com.android.application'
 apply plugin: 'maven'
 
 
 //import org.apache.tools.ant.taskdefs.condition.Os
 
-repositories {
-    jcenter()
-    maven {
-        url "https://maven.google.com"
-    }
-}
+
 
 dependencies {
     compile 'com.android.support:support-v4:26.0.2'
