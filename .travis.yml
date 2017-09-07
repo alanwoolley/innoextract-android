@@ -4,7 +4,6 @@ sudo: false
 addons:
   apt:
     packages:
-      - libgd2-xpm
       - lib32z1
 
 
