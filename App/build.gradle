@@ -1,19 +1,15 @@
 apply plugin: 'com.android.application'
 apply plugin: 'maven'
 
-
-//import org.apache.tools.ant.taskdefs.condition.Os
-
-
-
 dependencies {
+    compile 'net.rdrei.android.dirchooser:library:3.2@aar'
+    compile 'com.adityak:browsemyfiles:1.5.1'
     compile 'com.android.support:support-v4:26.0.2'
+    compile 'com.android.support:design:26.0.2'
     compile 'com.android.support:appcompat-v7:26.0.2'
     compile 'com.android.support:support-core-utils:26.0.2'
     compile 'com.android.support:support-core-ui:26.0.2'
-    compile 'net.rdrei.android.dirchooser:library:2.1@aar'
 }
-
 
 android {
     compileSdkVersion 26
@@ -21,7 +17,7 @@ android {
 
 
     defaultConfig {
-        minSdkVersion 14
+        minSdkVersion 15
         targetSdkVersion 26
 
 
