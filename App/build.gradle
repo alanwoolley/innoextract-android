@@ -9,6 +9,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:26.0.2'
     compile 'com.android.support:support-core-utils:26.0.2'
     compile 'com.android.support:support-core-ui:26.0.2'
+    compile 'com.karumi:dexter:4.1.0'
 }
 
 android {
