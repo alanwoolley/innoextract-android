@@ -142,8 +142,8 @@ public class ExtractActivity extends Activity {
 
         // Optional: Allow users to create a new directory with a fixed
         // name.
-        chooserIntent.putExtra(DirectoryChooserActivity.EXTRA_NEW_DIR_NAME,
-                "extracted");
+        //chooserIntent.putExtra(DirectoryChooserActivity.EXTRA,
+         //       "extracted");
 
         // REQUEST_DIRECTORY is a constant integer to identify the
         // request, e.g. 0

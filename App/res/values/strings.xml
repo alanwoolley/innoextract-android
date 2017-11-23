@@ -4,4 +4,7 @@
     <string name="dialog_name">Extract Inno Setup File</string>
     <string name="action_log">Log</string>
     <string name="title_activity_log">Extract Log</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
