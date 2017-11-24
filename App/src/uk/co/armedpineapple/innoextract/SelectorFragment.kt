@@ -15,9 +15,18 @@ import kotlinx.android.synthetic.main.fragment_selector.*
 import net.rdrei.android.dirchooser.DirectoryChooserActivity
 import net.rdrei.android.dirchooser.DirectoryChooserConfig
 import java.io.File
+import kotlin.properties.Delegates
 
 
 class SelectorFragment : Fragment() {
+
+    var file by Delegates.observable<File?>(null) {
+        _,_,_ -> refreshButtons()
+    }
+
+    var target by Delegates.observable<File?>(null) {
+        _,_,_ -> refreshButtons()
+    }
 
     private var mListener: OnFragmentInteractionListener? = null
 
@@ -32,7 +41,17 @@ class SelectorFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_selector, container, false)
     }
 
+    private fun refreshButtons() {
+        val isValidFile = file != null &&  file!!.exists() && file!!.isFile && file!!.canRead()
+        val isValidTarget = target != null && target!!.exists() && target!!.isDirectory && target!!.canWrite()
 
+        if (isValidFile && isValidTarget) {
+            fabExecute.show()
+        } else {
+            fabExecute.hide()
+        }
+
+    }
 
     private fun onClickDirBrowser() {
         val chooserIntent = Intent(context!!.applicationContext, DirectoryChooserActivity::class.java)
@@ -67,6 +86,7 @@ class SelectorFragment : Fragment() {
                 if (resultCode == RESULT_OK) {
                     val file : Uri? = data?.data
                     if (file != null) {
+                        this.file = File(file.path)
                         fileTextView.text = file.lastPathSegment
                     }
                 }
@@ -76,6 +96,7 @@ class SelectorFragment : Fragment() {
                 if (resultCode == DirectoryChooserActivity.RESULT_CODE_DIR_SELECTED) {
                     val dir : String? = data?.getStringExtra(DirectoryChooserActivity.RESULT_SELECTED_DIR)
                     if (dir != null) {
+                        this.target = File(dir)
                         targetTextView.text = dir
                     }
                 }
