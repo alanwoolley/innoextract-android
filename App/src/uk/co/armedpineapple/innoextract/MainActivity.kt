@@ -2,19 +2,10 @@ package uk.co.armedpineapple.innoextract
 
 import android.Manifest
 import android.net.Uri
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
-
 import com.karumi.dexter.Dexter
-import com.karumi.dexter.MultiplePermissionsReport
-import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.listener.PermissionRequest
-import com.karumi.dexter.listener.multi.CompositeMultiplePermissionsListener
-import com.karumi.dexter.listener.multi.DialogOnAnyDeniedMultiplePermissionsListener
-import com.karumi.dexter.listener.multi.MultiplePermissionsListener
-import com.karumi.dexter.listener.single.DialogOnDeniedPermissionListener
-import com.karumi.dexter.listener.single.PermissionListener
 import uk.co.armedpineapple.innoextract.permissions.PermissionsDialog
 import java.io.File
 

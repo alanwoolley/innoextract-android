@@ -1,22 +1,20 @@
 package uk.co.armedpineapple.innoextract
 
+import android.app.Activity.RESULT_OK
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import java.io.File
-import com.aditya.filebrowser.FileBrowser
-import android.content.Intent
 import com.aditya.filebrowser.Constants
 import com.aditya.filebrowser.FileChooser
 import kotlinx.android.synthetic.main.fragment_selector.*
 import net.rdrei.android.dirchooser.DirectoryChooserActivity
 import net.rdrei.android.dirchooser.DirectoryChooserConfig
-
-
+import java.io.File
 
 
 class SelectorFragment : Fragment() {
@@ -36,7 +34,7 @@ class SelectorFragment : Fragment() {
 
 
 
-    fun onClickDirBrowser() {
+    private fun onClickDirBrowser() {
         val chooserIntent = Intent(context!!.applicationContext, DirectoryChooserActivity::class.java)
 
         val config = DirectoryChooserConfig.builder()
@@ -50,7 +48,7 @@ class SelectorFragment : Fragment() {
         startActivityForResult(chooserIntent, REQUEST_DIRECTORY)
     }
 
-    fun onClickFileSelect() {
+    private fun onClickFileSelect() {
 //        if (mListener != null) {
 //            //mListener!!.onExtractButtonPressed(
 //        }
@@ -60,7 +58,29 @@ class SelectorFragment : Fragment() {
         //fileChooserIntent.putExtra(Constants.ALLOWED_FILE_EXTENSIONS, "exe")
 
 
-        startActivityForResult(fileChooserIntent, PICK_FILE_REQUEST)
+        startActivityForResult(fileChooserIntent, REQUEST_PICK_FILE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        when (requestCode) {
+            REQUEST_PICK_FILE -> {
+                if (resultCode == RESULT_OK) {
+                    val file : Uri? = data?.data
+                    if (file != null) {
+                        fileTextView.text = file.lastPathSegment
+                    }
+                }
+
+            }
+            REQUEST_DIRECTORY -> {
+                if (resultCode == DirectoryChooserActivity.RESULT_CODE_DIR_SELECTED) {
+                    val dir : String? = data?.getStringExtra(DirectoryChooserActivity.RESULT_SELECTED_DIR)
+                    if (dir != null) {
+                        targetTextView.text = dir
+                    }
+                }
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -90,7 +110,7 @@ class SelectorFragment : Fragment() {
     }
 
     companion object {
-        private const val PICK_FILE_REQUEST: Int = 1
+        private const val REQUEST_PICK_FILE: Int = 1
         private const val REQUEST_DIRECTORY: Int = 2
     }
 }

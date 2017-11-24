@@ -31,7 +31,7 @@ class PermissionsDialog(private val context: Context, private val onResult: (suc
         AlertDialog.Builder(context)
                 .setTitle(title)
                 .setMessage(message)
-                .setPositiveButton(positiveButtonText) { dialog, which -> dialog.dismiss() }
+                .setPositiveButton(positiveButtonText) { dialog, _ -> dialog.dismiss() }
                 .setIcon(icon)
                 .setOnDismissListener { onResult(false); }
                 .show()
