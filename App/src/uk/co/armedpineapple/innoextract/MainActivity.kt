@@ -9,17 +9,12 @@ import com.karumi.dexter.Dexter
 import uk.co.armedpineapple.innoextract.permissions.PermissionsDialog
 import java.io.File
 
-class MainActivity : ProgressFragment.OnFragmentInteractionListener, SelectorFragment.OnFragmentInteractionListener, AppCompatActivity() {
+class MainActivity : SelectorFragment.OnFragmentInteractionListener, AppCompatActivity() {
 
 
     override fun onExtractButtonPressed(extractFile: File, extractTo: File) {
 
     }
-
-    override fun onFragmentInteraction(uri: Uri) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

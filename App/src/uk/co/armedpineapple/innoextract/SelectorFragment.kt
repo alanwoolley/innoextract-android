@@ -20,29 +20,23 @@ import kotlin.properties.Delegates
 
 class SelectorFragment : Fragment() {
 
-    var file by Delegates.observable<File?>(null) {
-        _,_,_ -> refreshButtons()
+    var file by Delegates.observable<File?>(null) { _, _, _ ->
+        refreshButtons()
     }
 
-    var target by Delegates.observable<File?>(null) {
-        _,_,_ -> refreshButtons()
+    var target by Delegates.observable<File?>(null) { _, _, _ ->
+        refreshButtons()
     }
 
     private var mListener: OnFragmentInteractionListener? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
+                              savedInstanceState: Bundle?): View? =
 
-        return inflater.inflate(R.layout.fragment_selector, container, false)
-    }
+            inflater.inflate(R.layout.fragment_selector, container, false)
 
     private fun refreshButtons() {
-        val isValidFile = file != null &&  file!!.exists() && file!!.isFile && file!!.canRead()
+        val isValidFile = file != null && file!!.exists() && file!!.isFile && file!!.canRead()
         val isValidTarget = target != null && target!!.exists() && target!!.isDirectory && target!!.canWrite()
 
         if (isValidFile && isValidTarget) {
@@ -51,6 +45,14 @@ class SelectorFragment : Fragment() {
             fabExecute.hide()
         }
 
+    }
+
+    private fun onClickExecute() {
+        if (file == null || target == null) {
+            throw IllegalStateException("File or target is null")
+        }
+
+        mListener?.onExtractButtonPressed(file!!, target!!)
     }
 
     private fun onClickDirBrowser() {
@@ -68,9 +70,6 @@ class SelectorFragment : Fragment() {
     }
 
     private fun onClickFileSelect() {
-//        if (mListener != null) {
-//            //mListener!!.onExtractButtonPressed(
-//        }
 
         val fileChooserIntent = Intent(context!!.applicationContext, FileChooser::class.java)
         fileChooserIntent.putExtra(Constants.SELECTION_MODE, Constants.SELECTION_MODES.SINGLE_SELECTION.ordinal)
@@ -84,7 +83,7 @@ class SelectorFragment : Fragment() {
         when (requestCode) {
             REQUEST_PICK_FILE -> {
                 if (resultCode == RESULT_OK) {
-                    val file : Uri? = data?.data
+                    val file: Uri? = data?.data
                     if (file != null) {
                         this.file = File(file.path)
                         fileTextView.text = file.lastPathSegment
@@ -94,7 +93,7 @@ class SelectorFragment : Fragment() {
             }
             REQUEST_DIRECTORY -> {
                 if (resultCode == DirectoryChooserActivity.RESULT_CODE_DIR_SELECTED) {
-                    val dir : String? = data?.getStringExtra(DirectoryChooserActivity.RESULT_SELECTED_DIR)
+                    val dir: String? = data?.getStringExtra(DirectoryChooserActivity.RESULT_SELECTED_DIR)
                     if (dir != null) {
                         this.target = File(dir)
                         targetTextView.text = dir
@@ -108,7 +107,7 @@ class SelectorFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         fileSelectButton.setOnClickListener({ onClickFileSelect() })
         dirChooseButton.setOnClickListener({ onClickDirBrowser() })
-
+        fabExecute.setOnClickListener({ onClickExecute() })
     }
 
     override fun onAttach(context: Context?) {
@@ -127,7 +126,7 @@ class SelectorFragment : Fragment() {
 
 
     interface OnFragmentInteractionListener {
-        fun onExtractButtonPressed(extractFile: File, extractTo : File)
+        fun onExtractButtonPressed(extractFile: File, extractTo: File)
     }
 
     companion object {
