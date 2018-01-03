@@ -30,9 +30,9 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, AppCompatAc
 
     private fun onResult(success: Boolean) {
         if (success) {
-            Log.d("TEST", "SUCCESS!!");
+            Log.d("TEST", "SUCCESS!!")
         } else {
-            finish();
+            finish()
         }
     }
 
