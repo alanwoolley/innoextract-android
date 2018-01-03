@@ -89,7 +89,7 @@ extern "C" int Java_uk_co_armedpineapple_innoextract_ExtractService_nativeDoTest
 	return out;
 }
 
-extern "C" int Java_uk_co_armedpineapple_innoextract_ExtractActivity_nativeCheckInno(
+extern "C" int Java_uk_co_armedpineapple_innoextract_ExtractService_nativeCheckInno(
 		JNIEnv* env, jclass cls, jstring toExtractObj) {
 
 		// Get parameters
