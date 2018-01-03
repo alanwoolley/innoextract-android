@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.os.IBinder
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.widget.Toast
 import com.karumi.dexter.Dexter
 import uk.co.armedpineapple.innoextract.permissions.PermissionsDialog
 import java.io.File
@@ -23,22 +24,49 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
     var isServiceBound = false
     lateinit private var extractService: IExtractService
 
-    inner class Connection : ServiceConnection{
+    inner class Connection : ServiceConnection {
         override fun onServiceDisconnected(className: ComponentName?) {
-            Log.i(LOG_TAG, "Service disconnected")
+            Log.d(LOG_TAG, "Service disconnected")
             isServiceBound = false
         }
 
         override fun onServiceConnected(className: ComponentName?, binder: IBinder?) {
-            Log.i(LOG_TAG, "Service connected")
+            Log.d(LOG_TAG, "Service connected")
             extractService = (binder as ExtractService.ServiceBinder).service
             isServiceBound = true
         }
 
     }
 
+    override fun onFileSelected(extractFile: File) {
+        if (!isServiceBound) {
+            return
+        }
+
+        fun reportStatus(valid: Boolean) {
+            val selectorFragment = supportFragmentManager.findFragmentById(R.id.selectorFragment) as? SelectorFragment
+            selectorFragment?.isFileValid = valid
+
+            if (!valid) {
+                toast("Selected file is not a valid Inno Setup file", Toast.LENGTH_LONG)
+            }
+        }
+
+        if (extractFile.exists() && extractFile.canRead() && extractFile.isFile) {
+            extractService.check(extractFile, ::reportStatus)
+        } else {
+            reportStatus(false)
+        }
+    }
+
+    override fun onTargetSelected(target: File) {
+        val selectorFragment = supportFragmentManager.findFragmentById(R.id.selectorFragment) as? SelectorFragment
+        val valid = target.exists() && target.isDirectory && target.canWrite()
+        selectorFragment?.isTargetValid = valid
+    }
+
     override fun onExtractButtonPressed(extractFile: File, extractTo: File) {
-        extractService.check(extractFile.absolutePath, { v -> Log.d(LOG_TAG, "Result: " + v)})
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,7 +74,7 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
 
         Dexter.withActivity(this)
                 .withPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
-                .withListener(PermissionsDialog(this, {onResult(it)}))
+                .withListener(PermissionsDialog(this, { onResult(it) }))
                 .check()
 
 

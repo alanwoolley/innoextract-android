@@ -3,9 +3,12 @@ package uk.co.armedpineapple.innoextract
 import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,13 +23,27 @@ import kotlin.properties.Delegates
 
 class SelectorFragment : Fragment() {
 
-    var file by Delegates.observable<File?>(null) { _, _, _ ->
+    var file by Delegates.observable<File?>(null) { _, _, f ->
+
+        if (f != null) {
+            mListener?.onFileSelected(f)
+        }
+
         refreshButtons()
     }
 
-    var target by Delegates.observable<File?>(null) { _, _, _ ->
+    var target by Delegates.observable<File?>(null) { _, _, t ->
+
+        if (t != null) {
+            mListener?.onTargetSelected(t)
+        }
+
         refreshButtons()
     }
+
+    var isFileValid by Delegates.observable(false, { _, _, _ -> refreshButtons()} )
+    var isTargetValid by Delegates.observable(false, { _, _, _ -> refreshButtons()} )
+
 
     private var mListener: OnFragmentInteractionListener? = null
 
@@ -35,11 +52,19 @@ class SelectorFragment : Fragment() {
 
             inflater.inflate(R.layout.fragment_selector, container, false)
 
-    private fun refreshButtons() {
-        val isValidFile = file != null && file!!.exists() && file!!.isFile && file!!.canRead()
-        val isValidTarget = target != null && target!!.exists() && target!!.isDirectory && target!!.canWrite()
 
-        if (isValidFile && isValidTarget) {
+
+    private fun refreshButtons() {
+
+        if (isFileValid && isTargetValid) {
+            fabExecute.setImageDrawable(ContextCompat.getDrawable(context!!, R.drawable.ic_extract))
+            fabExecute.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context!!, R.color.accent))
+        } else {
+            fabExecute.setImageDrawable(ContextCompat.getDrawable(context!!, R.drawable.ic_not_allowed))
+            fabExecute.backgroundTintList = ColorStateList.valueOf(Color.RED)
+        }
+
+        if (file != null && target != null) {
             fabExecute.show()
         } else {
             fabExecute.hide()
@@ -127,6 +152,8 @@ class SelectorFragment : Fragment() {
 
     interface OnFragmentInteractionListener {
         fun onExtractButtonPressed(extractFile: File, extractTo: File)
+        fun onFileSelected(extractFile: File)
+        fun onTargetSelected(extractTo: File)
     }
 
     companion object {
