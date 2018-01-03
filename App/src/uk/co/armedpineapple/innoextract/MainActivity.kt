@@ -10,10 +10,25 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
 import com.karumi.dexter.Dexter
+import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.info
 import uk.co.armedpineapple.innoextract.permissions.PermissionsDialog
 import java.io.File
 
-class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFragment.OnFragmentInteractionListener, AppCompatActivity() {
+class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFragment.OnFragmentInteractionListener, IExtractService.ExtractCallback, AnkoLogger, AppCompatActivity() {
+    override fun onProgress(value: Int, max: Int) {
+     info("Progress: " + value + ", max: " + max)
+
+    }
+
+    override fun onSuccess() {
+      info("Success")
+    }
+
+    override fun onFailure(e: Exception) {
+        info("Failure")
+    }
+
     override fun onFragmentInteraction(uri: Uri) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -65,6 +80,12 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
     }
 
     override fun onExtractButtonPressed(extractFile: File, extractTo: File) {
+        if (!isServiceBound) {
+            return
+        }
+        toast("Extracting", Toast.LENGTH_SHORT)
+        extractService.extract(extractFile, extractTo, this)
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,22 +96,25 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
                 .withListener(PermissionsDialog(this, { onResult(it) }))
                 .check()
 
+        Log.d(LOG_TAG, "Binding service")
+        val i = Intent(this, ExtractService::class.java)
+        var serviceConnected = bindService(i, connection, Context.BIND_ABOVE_CLIENT or Context.BIND_AUTO_CREATE)
+        Log.i(LOG_TAG, "Service connected? : " + serviceConnected)
+
 
         setContentView(R.layout.activity_main)
     }
 
     override fun onStart() {
         super.onStart()
-
-        Log.d(LOG_TAG, "Binding service")
-        val i = Intent(this, ExtractService::class.java)
-        var serviceConnected = bindService(i, connection, Context.BIND_ABOVE_CLIENT or Context.BIND_AUTO_CREATE)
-        Log.i(LOG_TAG, "Service connected? : " + serviceConnected)
-
     }
 
     override fun onStop() {
         super.onStop()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
         unbindService(connection)
         isServiceBound = false
     }
