@@ -24,7 +24,7 @@
     </EditText>
 
     <LinearLayout
-        android:id="@+id/LinearLayout1"
+        android:id="@+id/LinearButtonLayout"
         style="?android:attr/buttonBarStyle"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -65,7 +65,7 @@
         android:id="@+id/View1"
         android:layout_width="fill_parent"
         android:layout_height="1dip"
-        android:layout_above="@+id/LinearLayout1"
+        android:layout_above="@+id/LinearButtonLayout"
         android:layout_alignParentLeft="true"
         android:background="?android:attr/dividerHorizontal" />
 

@@ -2,6 +2,7 @@ package uk.co.armedpineapple.innoextract
 
 import android.app.Activity.RESULT_OK
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -9,9 +10,11 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import com.aditya.filebrowser.Constants
 import com.aditya.filebrowser.FileChooser
 import kotlinx.android.synthetic.main.fragment_selector.*
@@ -77,7 +80,12 @@ class SelectorFragment : Fragment() {
             throw IllegalStateException("File or target is null")
         }
 
-        mListener?.onExtractButtonPressed(file!!, target!!)
+        if (isFileValid && isTargetValid) {
+            mListener?.onExtractButtonPressed(file!!, target!!)
+        } else {
+            showErrorDialog()
+        }
+
     }
 
     private fun onClickDirBrowser() {
@@ -149,11 +157,28 @@ class SelectorFragment : Fragment() {
         mListener = null
     }
 
+    private fun showErrorDialog() {
+        var dialogBuilder = AlertDialog.Builder(this.context!!)
+        val layout = layoutInflater.inflate(R.layout.dialog_error, null)
+        val dialogText = layout.findViewById<TextView>(R.id.dialogText)
+
+        dialogBuilder.setView(layout)
+                .setPositiveButton("Close", { d: DialogInterface, _ -> d.cancel() })
+
+        if (!isFileValid) {
+            dialogBuilder.setTitle("Invalid File")
+        } else {
+            dialogBuilder.setTitle("Invalid Directory")
+        }
+        dialogBuilder.create().show()
+
+    }
+
 
     interface OnFragmentInteractionListener {
         fun onExtractButtonPressed(extractFile: File, extractTo: File)
         fun onFileSelected(extractFile: File)
-        fun onTargetSelected(extractTo: File)
+        fun onTargetSelected(target: File)
     }
 
     companion object {

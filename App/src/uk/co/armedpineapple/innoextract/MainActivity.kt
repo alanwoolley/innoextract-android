@@ -1,13 +1,11 @@
 package uk.co.armedpineapple.innoextract
 
 import android.Manifest
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
+import android.content.*
 import android.net.Uri
 import android.os.Bundle
 import android.os.IBinder
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
@@ -22,6 +20,7 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
 
     private val LOG_TAG = "MainActivity"
     var isServiceBound = false
+    var connection = Connection()
     lateinit private var extractService: IExtractService
 
     inner class Connection : ServiceConnection {
@@ -66,7 +65,6 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
     }
 
     override fun onExtractButtonPressed(extractFile: File, extractTo: File) {
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,13 +84,15 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
 
         Log.d(LOG_TAG, "Binding service")
         val i = Intent(this, ExtractService::class.java)
-        var serviceConnected = bindService(i, Connection(), Context.BIND_ABOVE_CLIENT or Context.BIND_AUTO_CREATE)
+        var serviceConnected = bindService(i, connection, Context.BIND_ABOVE_CLIENT or Context.BIND_AUTO_CREATE)
         Log.i(LOG_TAG, "Service connected? : " + serviceConnected)
 
     }
 
     override fun onStop() {
         super.onStop()
+        unbindService(connection)
+        isServiceBound = false
     }
 
     private fun onResult(success: Boolean) {
@@ -102,6 +102,7 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
             finish()
         }
     }
+
 
 
 }
