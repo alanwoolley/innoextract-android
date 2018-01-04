@@ -7,18 +7,33 @@
         tools:context="uk.co.armedpineapple.innoextract.ProgressFragment"
         android:id="@+id/frameLayout">
 
-    <!-- TODO: Update blank fragment layout -->
 
-    <ImageView
-            android:src="@drawable/ic_logo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:id="@+id/imageView"
-            android:scaleType="centerInside" android:cropToPadding="false"
-            android:adjustViewBounds="true"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true"
-            android:layout_margin="40dp" android:maxWidth="360dp"
-            android:minHeight="360dp"/>
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true">
+        <ImageView
+                android:src="@drawable/ic_logo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/imageView"
+                android:scaleType="centerInside" android:cropToPadding="false"
+                android:adjustViewBounds="true"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+
+                android:layout_margin="40dp" android:maxWidth="360dp"
+                android:minHeight="360dp"/>
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/percentTextView"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textAlignment="center" android:visibility="gone"/>
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/remainingTextView"
+                android:textAlignment="center" android:visibility="gone"/>
+    </LinearLayout>
 </RelativeLayout>
