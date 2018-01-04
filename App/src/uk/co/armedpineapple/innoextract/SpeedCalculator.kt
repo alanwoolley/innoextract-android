@@ -1,13 +1,13 @@
 package uk.co.armedpineapple.innoextract
 
-class SpeedCalculator(max: Long) {
+class SpeedCalculator {
 
-    val MIN_TIME = 2500
-    var lastTime: Long = 0
-    var lastValue: Long = 0
+    private val MIN_TIME = 2500
+    private var lastTime: Long = 0
+    private var lastValue: Long = 0
 
 
-    fun update(progress: Long ): Long {
+    fun update(progress: Long): Long {
         val now = System.currentTimeMillis()
 
         try {
@@ -28,7 +28,5 @@ class SpeedCalculator(max: Long) {
         }
 
     }
-
-
 
 }

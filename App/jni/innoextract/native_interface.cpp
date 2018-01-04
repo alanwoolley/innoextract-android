@@ -49,7 +49,7 @@ typedef struct {
 
 } thread_data;
 
-extern "C" int Java_uk_co_armedpineapple_innoextract_ExtractService_nativeDoTest(
+extern "C" int Java_uk_co_armedpineapple_innoextract_ExtractService_nativeDoExtract(
 		JNIEnv* env, jclass cls, jstring toExtractObj, jstring extractDirObj) {
 
 	// Get parameters

@@ -25,7 +25,6 @@ import android.app.*;
 import android.content.*;
 import android.graphics.*;
 import android.os.*;
-import android.support.annotation.*;
 import android.support.v4.app.*;
 import android.text.*;
 import android.text.style.*;
@@ -63,7 +62,7 @@ public class ExtractService extends Service implements IExtractService {
     // Native methods
     public native void nativeInit();
 
-    public native int nativeDoTest(String sourceFile, String extractDir);
+    public native int nativeDoExtract(String sourceFile, String extractDir);
 
     public native int nativeCheckInno(String sourceFile);
 
@@ -115,7 +114,7 @@ public class ExtractService extends Service implements IExtractService {
 
         final ExtractCallback cb = new ExtractCallback() {
 
-            private SpeedCalculator speedCalculator;
+            private SpeedCalculator speedCalculator = new SpeedCalculator();
             private String writeLogToFile() throws IOException {
                 Log.d(LOG_TAG, "Writing log to file");
                 String path = getCacheDir().getAbsolutePath() + File.separator
@@ -130,9 +129,7 @@ public class ExtractService extends Service implements IExtractService {
 
             @Override public void onProgress(int value, int max, int speedBps, int remainingSeconds ) {
                 mNotificationBuilder.setProgress(max, value, false);
-                if (speedCalculator == null) {
-                    speedCalculator = new SpeedCalculator(max);
-                }
+
                 int bps = (int) Math.max(speedCalculator.update(value),1);
                 int kbps = bps / 1024;
                 int secondsLeft = (int) ((max-value)/bps);
@@ -290,7 +287,7 @@ public class ExtractService extends Service implements IExtractService {
 
         class LoggerHandler extends Handler {
 
-            public LoggerHandler(Looper looper) {
+            LoggerHandler(Looper looper) {
                 super(looper);
 
             }
@@ -305,7 +302,7 @@ public class ExtractService extends Service implements IExtractService {
                 }
             }
 
-            public void parseOut(String line) {
+            void parseOut(String line) {
                 if (line.length() > 0) {
                     if (line.startsWith("T$")) {
                         String[] parts = line.split("\\$");
@@ -315,11 +312,10 @@ public class ExtractService extends Service implements IExtractService {
                         return;
                     }
                     logBuilder.append(line).append("<br/>");
-
                 }
             }
 
-            public void parseErr(String line) {
+            void parseErr(String line) {
                 if (line.length() > 0) {
                     SpannableString newLine = new SpannableString(line);
                     newLine.setSpan(
