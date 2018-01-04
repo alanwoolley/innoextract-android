@@ -52,8 +52,6 @@ public class ExtractService extends Service implements IExtractService {
     private NotificationCompat.Builder mNotificationBuilder;
     private NotificationCompat.Builder mFinalNotificationBuilder;
 
-    private Notification mProgressNotification;
-
     private LoggingThread mLoggingThread;
     private final IBinder serviceBinder = new ServiceBinder();
 
@@ -115,6 +113,7 @@ public class ExtractService extends Service implements IExtractService {
         final ExtractCallback cb = new ExtractCallback() {
 
             private SpeedCalculator speedCalculator = new SpeedCalculator();
+
             private String writeLogToFile() throws IOException {
                 Log.d(LOG_TAG, "Writing log to file");
                 String path = getCacheDir().getAbsolutePath() + File.separator
@@ -132,7 +131,7 @@ public class ExtractService extends Service implements IExtractService {
 
                 int bps = (int) Math.max(speedCalculator.update(value),1);
                 int kbps = bps / 1024;
-                int secondsLeft = (int) ((max-value)/bps);
+                int secondsLeft = (max-value)/bps;
 
                 String remainingText = PeriodFormat
                         .getDefault().print(new Period(secondsLeft * 1000));
@@ -150,6 +149,7 @@ public class ExtractService extends Service implements IExtractService {
             @Override public void onSuccess() {
                 Log.i(LOG_TAG, "SUCCESS! :)");
                 speedCalculator = null;
+
                 mFinalNotificationBuilder.setTicker("Extract Successful")
                         .setSmallIcon(R.drawable.ic_extracting)
                         .setContentTitle("Extracted")
@@ -171,12 +171,13 @@ public class ExtractService extends Service implements IExtractService {
 
                 mNotificationManager.notify(FINAL_NOTIFICATION,
                         mFinalNotificationBuilder.build());
+                stopForeground(true);
                 callback.onSuccess();
                 stopSelf();
             }
 
             @Override public void onFailure(Exception e) {
-                Log.i(LOG_TAG, "FAIL! :(");
+                Log.e(LOG_TAG, "FAIL! :(");
                 mFinalNotificationBuilder.setTicker("Extract Failed")
                         .setSmallIcon(R.drawable.ic_extracting)
                         .setContentTitle("Extract Failed");
@@ -226,15 +227,9 @@ public class ExtractService extends Service implements IExtractService {
                 // Initialise
                 nativeInit();
 
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
                 // Finish
 
-                if (nativeDoTest(toExtract.getAbsolutePath(),
+                if (nativeDoExtract(toExtract.getAbsolutePath(),
                         extractDir.getAbsolutePath()) == 0) {
                     isBusy = false;
                     cb.onSuccess();
@@ -260,7 +255,7 @@ public class ExtractService extends Service implements IExtractService {
         }
     }
 
-    public class ServiceBusyException extends RuntimeException {
+    private class ServiceBusyException extends RuntimeException {
     }
 
     public void gotString(String inString, int streamno) {
