@@ -25,6 +25,7 @@ import android.app.*;
 import android.content.*;
 import android.graphics.*;
 import android.os.*;
+import android.support.annotation.*;
 import android.support.v4.app.*;
 import android.text.*;
 import android.text.style.*;
@@ -32,14 +33,14 @@ import android.util.*;
 import kotlin.*;
 import kotlin.jvm.functions.*;
 import org.jetbrains.annotations.*;
+import org.joda.time.*;
+import org.joda.time.format.*;
 
 import java.io.*;
+import java.util.*;
 
 public class ExtractService extends Service implements IExtractService {
 
-    public static final String EXTRACT_FILE_PATH = "extract_file";
-    public static final String EXTRACT_DIR = "extract_dir";
-    public static final String EXTRACT_FILE_NAME = "extract_file_name";
     private static final int STDERR = 2;
     private static final int STDOUT = 1;
 
@@ -114,6 +115,7 @@ public class ExtractService extends Service implements IExtractService {
 
         final ExtractCallback cb = new ExtractCallback() {
 
+            private SpeedCalculator speedCalculator;
             private String writeLogToFile() throws IOException {
                 Log.d(LOG_TAG, "Writing log to file");
                 String path = getCacheDir().getAbsolutePath() + File.separator
@@ -126,16 +128,31 @@ public class ExtractService extends Service implements IExtractService {
                 return path;
             }
 
-            @Override public void onProgress(int value, int max) {
+            @Override public void onProgress(int value, int max, int speedBps, int remainingSeconds ) {
                 mNotificationBuilder.setProgress(max, value, false);
+                if (speedCalculator == null) {
+                    speedCalculator = new SpeedCalculator(max);
+                }
+                int bps = (int) Math.max(speedCalculator.update(value),1);
+                int kbps = bps / 1024;
+                int secondsLeft = (int) ((max-value)/bps);
+
+                String remainingText = PeriodFormat
+                        .getDefault().print(new Period(secondsLeft * 1000));
+
+
+                String message = String.format(Locale.US, "Extracting: %s\nSpeed: %dKB/s\nTime Remaining:%s", toExtract.getName(), kbps, remainingText);
+
+
+                mNotificationBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(message));
                 startForeground(ONGOING_NOTIFICATION,
                         mNotificationBuilder.build());
-                callback.onProgress(value,max);
+                callback.onProgress(value,max, bps, secondsLeft);
             }
 
             @Override public void onSuccess() {
                 Log.i(LOG_TAG, "SUCCESS! :)");
-
+                speedCalculator = null;
                 mFinalNotificationBuilder.setTicker("Extract Successful")
                         .setSmallIcon(R.drawable.ic_extracting)
                         .setContentTitle("Extracted")
@@ -188,13 +205,15 @@ public class ExtractService extends Service implements IExtractService {
             }
 
         };
-        mFinalNotificationBuilder = new NotificationCompat.Builder(this);
+        mFinalNotificationBuilder = new NotificationCompat.Builder(this, "Progress");
         mNotificationManager = (NotificationManager) getSystemService(
                 NOTIFICATION_SERVICE);
+
         mNotificationBuilder.setContentTitle("Extracting...")
                 .setSmallIcon(R.drawable.ic_extracting)
                 .setTicker("Extracting inno setup file")
                 .setContentText("Extracting inno setup file");
+
         startForeground(ONGOING_NOTIFICATION, mNotificationBuilder.build());
 
         if (mLoggingThread != null && mLoggingThread.isAlive()) {
@@ -259,7 +278,7 @@ public class ExtractService extends Service implements IExtractService {
         Handler lineHandler;
         ExtractCallback callback;
 
-        public LoggingThread(String name, ExtractCallback callback) {
+        LoggingThread(String name, ExtractCallback callback) {
             super(name);
             this.callback = callback;
         }
@@ -292,7 +311,7 @@ public class ExtractService extends Service implements IExtractService {
                         String[] parts = line.split("\\$");
 
                         callback.onProgress(Integer.valueOf(parts[1]),
-                                Integer.valueOf(parts[2]));
+                                Integer.valueOf(parts[2]), 0, 0);
                         return;
                     }
                     logBuilder.append(line).append("<br/>");

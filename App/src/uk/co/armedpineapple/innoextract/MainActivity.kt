@@ -16,9 +16,9 @@ import uk.co.armedpineapple.innoextract.permissions.PermissionsDialog
 import java.io.File
 
 class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFragment.OnFragmentInteractionListener, IExtractService.ExtractCallback, AnkoLogger, AppCompatActivity() {
-    override fun onProgress(value: Int, max: Int) {
-     info("Progress: " + value + ", max: " + max)
 
+    override fun onProgress(value: Int, max: Int, speedBps: Int, remainingSeconds: Int) {
+        //info("Success")
     }
 
     override fun onSuccess() {

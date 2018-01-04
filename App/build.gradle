@@ -15,7 +15,8 @@ dependencies {
     compile 'com.android.support:support-core-ui:27.0.2'
     compile 'com.karumi:dexter:4.2.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-
+    compile 'com.github.debop:koda-time:1.2.1'
+    compile 'joda-time:joda-time:2.9.9'
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
     compile 'io.reactivex.rxjava2:rxjava:2.1.6'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
@@ -65,6 +66,7 @@ android {
 repositories {
     mavenCentral()
     maven { url 'http://guardian.github.com/maven/repo-releases' }
+    jcenter()
 }
 
 apply plugin: 'kotlin-android-extensions'
