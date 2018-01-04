@@ -48,8 +48,6 @@ public class ExtractService extends Service implements IExtractService {
     private static final int FINAL_NOTIFICATION = 2;
 
     private boolean isBusy = false;
-    private Thread mPerformThread;
-    private ExtractCallback mExtractCallback;
     private NotificationManager mNotificationManager;
     private NotificationCompat.Builder mNotificationBuilder;
     private NotificationCompat.Builder mFinalNotificationBuilder;
@@ -60,7 +58,6 @@ public class ExtractService extends Service implements IExtractService {
     private final IBinder serviceBinder = new ServiceBinder();
 
     private StringBuilder logBuilder = new StringBuilder();
-    private String mExtractDir, mExtractFile, mExtractFileName;
 
     // Native methods
     public native void nativeInit();
@@ -74,100 +71,6 @@ public class ExtractService extends Service implements IExtractService {
     }
 
     @Override public int onStartCommand(Intent intent, int flags, int startId) {
-
-        mLoggingThread = new LoggingThread("Logging");
-
-        //        mExtractDir = intent.getStringExtra(EXTRACT_DIR);
-        //        mExtractFile = intent.getStringExtra(EXTRACT_FILE_PATH);
-        //        mExtractFileName = intent.getStringExtra(EXTRACT_FILE_NAME);
-        //
-        //        final Intent logIntent = new Intent(this, LogActivity.class);
-        //
-        //        ExtractCallback cb = new ExtractCallback() {
-        //
-        //            private String writeLogToFile() throws IOException {
-        //                Log.d(LOG_TAG, "Writing log to file");
-        //                String path = getCacheDir().getAbsolutePath() + File.separator
-        //                        + mExtractFileName + ".log.html";
-        //                BufferedWriter bw = new BufferedWriter(
-        //                        new FileWriter(new File(path)));
-        //                bw.write(logBuilder.toString());
-        //                bw.close();
-        //                Log.d(LOG_TAG, "Done writing to file");
-        //                return path;
-        //            }
-        //
-        //            @Override public void onProgress(int value, int max) {
-        //                mNotificationBuilder.setProgress(max, value, false);
-        //                startForeground(ONGOING_NOTIFICATION,
-        //                        mNotificationBuilder.build());
-        //            }
-        //
-        //            @Override public void onSuccess() {
-        //                Log.i(LOG_TAG, "SUCCESS! :)");
-        //
-        //                mFinalNotificationBuilder.setTicker("Extract Successful")
-        //                        .setSmallIcon(R.drawable.ic_extracting)
-        //                        .setContentTitle("Extracted")
-        //                        .setContentText("Extraction Successful");
-        //
-        //                try {
-        //                    logIntent.putExtra("log", writeLogToFile());
-        //
-        //                    PendingIntent logPendingIntent = PendingIntent
-        //                            .getActivity(ExtractService.this, 0, logIntent,
-        //                                    PendingIntent.FLAG_UPDATE_CURRENT);
-        //
-        //                    mFinalNotificationBuilder
-        //                            .addAction(R.drawable.ic_view_log, "View Log",
-        //                                    logPendingIntent);
-        //                } catch (IOException e) {
-        //                    Log.d(LOG_TAG, "couldn't write log");
-        //                }
-        //
-        //                mNotificationManager.notify(FINAL_NOTIFICATION,
-        //                        mFinalNotificationBuilder.build());
-        //                stopSelf();
-        //
-        //            }
-        //
-        //            @Override public void onFailure(Exception e) {
-        //                Log.i(LOG_TAG, "FAIL! :(");
-        //                mFinalNotificationBuilder.setTicker("Extract Failed")
-        //                        .setSmallIcon(R.drawable.ic_extracting)
-        //                        .setContentTitle("Extract Failed");
-        //
-        //                try {
-        //                    logIntent.putExtra("log", writeLogToFile());
-        //
-        //                    PendingIntent logPendingIntent = PendingIntent
-        //                            .getActivity(ExtractService.this, 0, logIntent,
-        //                                    PendingIntent.FLAG_UPDATE_CURRENT);
-        //
-        //                    mFinalNotificationBuilder
-        //                            .addAction(R.drawable.ic_view_log, "View Log",
-        //                                    logPendingIntent);
-        //                } catch (IOException eb) {
-        //                    Log.d(LOG_TAG, "couldn't write log");
-        //                }
-        //
-        //                mNotificationManager.notify(FINAL_NOTIFICATION,
-        //                        mFinalNotificationBuilder.build());
-        //                stopSelf();
-        //
-        //            }
-        //
-        //        };
-        //        mFinalNotificationBuilder = new NotificationCompat.Builder(this);
-        //        mNotificationManager = (NotificationManager) getSystemService(
-        //                NOTIFICATION_SERVICE);
-        //        mNotificationBuilder.setContentTitle("Extracting...")
-        //                .setSmallIcon(R.drawable.ic_extracting)
-        //                .setTicker("Extracting inno setup file")
-        //                .setContentText("Extracting inno setup file");
-        //        startForeground(ONGOING_NOTIFICATION, mNotificationBuilder.build());
-        //
-        //        performExtract(mExtractFile, mExtractDir, cb);
 
         return START_NOT_STICKY;
     }
@@ -207,9 +110,100 @@ public class ExtractService extends Service implements IExtractService {
                 "Performing extract on: " + toExtract.getAbsolutePath() + ", "
                         + extractDir.getAbsolutePath());
 
-        mExtractCallback = callback;
+        final Intent logIntent = new Intent(this, LogActivity.class);
 
-        mPerformThread = new Thread() {
+        final ExtractCallback cb = new ExtractCallback() {
+
+            private String writeLogToFile() throws IOException {
+                Log.d(LOG_TAG, "Writing log to file");
+                String path = getCacheDir().getAbsolutePath() + File.separator
+                        + toExtract.getName() + ".log.html";
+                BufferedWriter bw = new BufferedWriter(
+                        new FileWriter(new File(path)));
+                bw.write(logBuilder.toString());
+                bw.close();
+                Log.d(LOG_TAG, "Done writing to file");
+                return path;
+            }
+
+            @Override public void onProgress(int value, int max) {
+                mNotificationBuilder.setProgress(max, value, false);
+                startForeground(ONGOING_NOTIFICATION,
+                        mNotificationBuilder.build());
+                callback.onProgress(value,max);
+            }
+
+            @Override public void onSuccess() {
+                Log.i(LOG_TAG, "SUCCESS! :)");
+
+                mFinalNotificationBuilder.setTicker("Extract Successful")
+                        .setSmallIcon(R.drawable.ic_extracting)
+                        .setContentTitle("Extracted")
+                        .setContentText("Extraction Successful");
+
+                try {
+                    logIntent.putExtra("log", writeLogToFile());
+
+                    PendingIntent logPendingIntent = PendingIntent
+                            .getActivity(ExtractService.this, 0, logIntent,
+                                    PendingIntent.FLAG_UPDATE_CURRENT);
+
+                    mFinalNotificationBuilder
+                            .addAction(R.drawable.ic_view_log, "View Log",
+                                    logPendingIntent);
+                } catch (IOException e) {
+                    Log.d(LOG_TAG, "couldn't write log");
+                }
+
+                mNotificationManager.notify(FINAL_NOTIFICATION,
+                        mFinalNotificationBuilder.build());
+                callback.onSuccess();
+                stopSelf();
+            }
+
+            @Override public void onFailure(Exception e) {
+                Log.i(LOG_TAG, "FAIL! :(");
+                mFinalNotificationBuilder.setTicker("Extract Failed")
+                        .setSmallIcon(R.drawable.ic_extracting)
+                        .setContentTitle("Extract Failed");
+
+                try {
+                    logIntent.putExtra("log", writeLogToFile());
+
+                    PendingIntent logPendingIntent = PendingIntent
+                            .getActivity(ExtractService.this, 0, logIntent,
+                                    PendingIntent.FLAG_UPDATE_CURRENT);
+
+                    mFinalNotificationBuilder
+                            .addAction(R.drawable.ic_view_log, "View Log",
+                                    logPendingIntent);
+                } catch (IOException eb) {
+                    Log.d(LOG_TAG, "couldn't write log");
+                }
+
+                mNotificationManager.notify(FINAL_NOTIFICATION,
+                        mFinalNotificationBuilder.build());
+                callback.onFailure(e);
+                stopSelf();
+            }
+
+        };
+        mFinalNotificationBuilder = new NotificationCompat.Builder(this);
+        mNotificationManager = (NotificationManager) getSystemService(
+                NOTIFICATION_SERVICE);
+        mNotificationBuilder.setContentTitle("Extracting...")
+                .setSmallIcon(R.drawable.ic_extracting)
+                .setTicker("Extracting inno setup file")
+                .setContentText("Extracting inno setup file");
+        startForeground(ONGOING_NOTIFICATION, mNotificationBuilder.build());
+
+        if (mLoggingThread != null && mLoggingThread.isAlive()) {
+            mLoggingThread.interrupt();
+        }
+
+        mLoggingThread = new LoggingThread("Logging", cb);
+
+        Thread performThread = new Thread() {
 
             @Override public void run() {
                 isBusy = true;
@@ -227,17 +221,16 @@ public class ExtractService extends Service implements IExtractService {
                 if (nativeDoTest(toExtract.getAbsolutePath(),
                         extractDir.getAbsolutePath()) == 0) {
                     isBusy = false;
-                    callback.onSuccess();
+                    cb.onSuccess();
                 } else {
                     isBusy = false;
-                    callback.onFailure(new RuntimeException());
+                    cb.onFailure(new RuntimeException());
                 }
-
             }
-
         };
 
-        mPerformThread.start();
+        mLoggingThread.start();
+        performThread.start();
     }
 
     @Override public IBinder onBind(Intent intent) {
@@ -264,10 +257,15 @@ public class ExtractService extends Service implements IExtractService {
 
     public class LoggingThread extends HandlerThread {
         Handler lineHandler;
+        ExtractCallback callback;
 
-        public LoggingThread(String name) {
+        public LoggingThread(String name, ExtractCallback callback) {
             super(name);
-            start();
+            this.callback = callback;
+        }
+
+        @Override protected void onLooperPrepared() {
+            super.onLooperPrepared();
             lineHandler = new LoggerHandler(getLooper());
         }
 
@@ -293,7 +291,7 @@ public class ExtractService extends Service implements IExtractService {
                     if (line.startsWith("T$")) {
                         String[] parts = line.split("\\$");
 
-                        mExtractCallback.onProgress(Integer.valueOf(parts[1]),
+                        callback.onProgress(Integer.valueOf(parts[1]),
                                 Integer.valueOf(parts[2]));
                         return;
                     }
