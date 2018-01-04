@@ -37,7 +37,7 @@ public class LogActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_log);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
         }
@@ -45,7 +45,7 @@ public class LogActivity extends AppCompatActivity {
 		Intent intent = getIntent();
 		CharSequence log = intent.getCharSequenceExtra("log");
 
-		WebView logView = (WebView) findViewById(R.id.logWebView);
+		WebView logView = findViewById(R.id.logWebView);
 
 		logView.loadUrl("file://" + log);
 	}

@@ -16,5 +16,6 @@
             android:layout_weight="0"
             android:name="uk.co.armedpineapple.innoextract.SelectorFragment"
             tools:layout="@layout/fragment_selector"
-            android:layout_height="240dp" android:id="@+id/selectorFragment"/>
+            android:layout_height="240dp" android:id="@+id/selectorFragment"
+    />
 </LinearLayout>

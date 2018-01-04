@@ -11,7 +11,9 @@ import android.util.Log
 import android.widget.Toast
 import com.karumi.dexter.Dexter
 import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.debug
 import org.jetbrains.anko.info
+import org.jetbrains.anko.warn
 import uk.co.armedpineapple.innoextract.permissions.PermissionsDialog
 import java.io.File
 
@@ -23,29 +25,37 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
 
     override fun onSuccess() {
       info("Success")
+        showSelectorFragment()
     }
 
     override fun onFailure(e: Exception) {
-        info("Failure")
+        warn("Failure")
+        showSelectorFragment()
     }
 
     override fun onFragmentInteraction(uri: Uri) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    private val LOG_TAG = "MainActivity"
     var isServiceBound = false
     var connection = Connection()
     lateinit private var extractService: IExtractService
 
+    private fun hideSelectorFragment() {
+
+        supportFragmentManager.beginTransaction().setCustomAnimations(R.anim.slide_in_bottom, R.anim.slide_out_bottom).hide(supportFragmentManager.findFragmentById(R.id.selectorFragment)).commit()
+    }
+    private fun showSelectorFragment() {
+        supportFragmentManager.beginTransaction().setCustomAnimations(R.anim.slide_in_bottom, R.anim.slide_out_bottom).show(supportFragmentManager.findFragmentById(R.id.selectorFragment)).commit()
+    }
     inner class Connection : ServiceConnection {
         override fun onServiceDisconnected(className: ComponentName?) {
-            Log.d(LOG_TAG, "Service disconnected")
+            debug("Service disconnected")
             isServiceBound = false
         }
 
         override fun onServiceConnected(className: ComponentName?, binder: IBinder?) {
-            Log.d(LOG_TAG, "Service connected")
+            debug("Service connected")
             extractService = (binder as ExtractService.ServiceBinder).service
             isServiceBound = true
         }
@@ -83,6 +93,7 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
         if (!isServiceBound) {
             return
         }
+        hideSelectorFragment()
         toast("Extracting", Toast.LENGTH_SHORT)
         extractService.extract(extractFile, extractTo, this)
 
@@ -96,10 +107,10 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
                 .withListener(PermissionsDialog(this, { onResult(it) }))
                 .check()
 
-        Log.d(LOG_TAG, "Binding service")
+        debug("Binding service")
         val i = Intent(this, ExtractService::class.java)
         var serviceConnected = bindService(i, connection, Context.BIND_ABOVE_CLIENT or Context.BIND_AUTO_CREATE)
-        Log.i(LOG_TAG, "Service connected? : " + serviceConnected)
+        debug( "Service connected? : " + serviceConnected)
 
 
         setContentView(R.layout.activity_main)
@@ -107,6 +118,9 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
 
     override fun onStart() {
         super.onStart()
+        if (isServiceBound && extractService.isExtractInProgress()) {
+            hideSelectorFragment()
+        }
     }
 
     override fun onStop() {

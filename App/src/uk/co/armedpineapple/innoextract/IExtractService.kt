@@ -4,6 +4,8 @@ import java.io.*
 
 internal interface IExtractService {
 
+    fun isExtractInProgress() : Boolean
+
     fun extract(toExtract: File, extractDir: File,
                 callback: ExtractCallback)
 

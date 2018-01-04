@@ -47,7 +47,7 @@ public class ExtractService extends Service implements IExtractService {
     private static final int ONGOING_NOTIFICATION = 1;
     private static final int FINAL_NOTIFICATION = 2;
 
-    private boolean isBusy = false;
+    public boolean isBusy = false;
     private NotificationManager mNotificationManager;
     private NotificationCompat.Builder mNotificationBuilder;
     private NotificationCompat.Builder mFinalNotificationBuilder;
@@ -113,6 +113,7 @@ public class ExtractService extends Service implements IExtractService {
         final ExtractCallback cb = new ExtractCallback() {
 
             private SpeedCalculator speedCalculator = new SpeedCalculator();
+            private boolean done = false;
 
             private String writeLogToFile() throws IOException {
                 Log.d(LOG_TAG, "Writing log to file");
@@ -127,6 +128,7 @@ public class ExtractService extends Service implements IExtractService {
             }
 
             @Override public void onProgress(int value, int max, int speedBps, int remainingSeconds ) {
+                if (done) return;
                 mNotificationBuilder.setProgress(max, value, false);
 
                 int bps = (int) Math.max(speedCalculator.update(value),1);
@@ -148,6 +150,7 @@ public class ExtractService extends Service implements IExtractService {
 
             @Override public void onSuccess() {
                 Log.i(LOG_TAG, "SUCCESS! :)");
+                done = true;
                 speedCalculator = null;
 
                 mFinalNotificationBuilder.setTicker("Extract Successful")
@@ -178,6 +181,7 @@ public class ExtractService extends Service implements IExtractService {
 
             @Override public void onFailure(Exception e) {
                 Log.e(LOG_TAG, "FAIL! :(");
+                done = true;
                 mFinalNotificationBuilder.setTicker("Extract Failed")
                         .setSmallIcon(R.drawable.ic_extracting)
                         .setContentTitle("Extract Failed");
@@ -247,6 +251,10 @@ public class ExtractService extends Service implements IExtractService {
     @Override public IBinder onBind(Intent intent) {
         Log.d(LOG_TAG, "Service Bound");
         return serviceBinder;
+    }
+
+    @Override public boolean isExtractInProgress() {
+        return isBusy;
     }
 
     public class ServiceBinder extends Binder {
