@@ -13,21 +13,24 @@ android:
   - extra-google-m2repository
   - extra-android-m2repository
 before_install:
-  - openssl aes-256-cbc -K $encrypted_b479a42caf02_key -iv $encrypted_b479a42caf02_iv
-    -in innoextract.jks.enc -out innoextract.jks -d
-  - yes | sdkmanager "platforms;android-27"
-  - wget -q https://dl.google.com/android/repository/android-ndk-r15c-linux-x86_64.zip
-    -O ndk.zip
-  - unzip -q ndk.zip
-  - export ANDROID_NDK_HOME=`pwd`/android-ndk-r15c
-  - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:${ANDROID_NDK_HOME}
+- openssl aes-256-cbc -K $encrypted_b479a42caf02_key -iv $encrypted_b479a42caf02_iv
+  -in innoextract.jks.enc -out innoextract.jks -d
+- yes | sdkmanager "platforms;android-27"
+- wget -q https://dl.google.com/android/repository/android-ndk-r15c-linux-x86_64.zip
+  -O ndk.zip
+- unzip -q ndk.zip
+- export ANDROID_NDK_HOME=`pwd`/android-ndk-r15c
+- export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:${ANDROID_NDK_HOME}
 script:
-  - chmod +x gradlew
-  - "./gradlew build"
+- chmod +x gradlew
+- "./gradlew build"
 after_success:
-  - ${ANDROID_HOME}/build-tools/27.0.3/zipalign -v -p 4 App/build/outputs/apk/release/App-release-unsigned.apk App/build/outputs/apk/release/App-release-unsigned-aligned.apk
-  - ${ANDROID_HOME}/build-tools/27.0.3/apksigner sign -ks innoextract.jks --ks-pass env:storepass --key-pass env:keypass --out App/build/outputs/apk/release/innoextract-release.apk App/build/outputs/apk/release/App-release-unsigned-aligned.apk
-  - ${ANDROID_HOME}/build-tools/27.0.3/apksigner verify App/build/outputs/apk/release/innoextract-release.apk
+- "${ANDROID_HOME}/build-tools/27.0.3/zipalign" -v -p 4 App/build/outputs/apk/release/App-release-unsigned.apk
+  App/build/outputs/apk/release/App-release-unsigned-aligned.apk
+- "${ANDROID_HOME}/build-tools/27.0.3/apksigner" sign -ks innoextract.jks --ks-pass
+  env:storepass --key-pass env:keypass --out App/build/outputs/apk/release/innoextract-release.apk
+  App/build/outputs/apk/release/App-release-unsigned-aligned.apk
+- "${ANDROID_HOME}/build-tools/27.0.3/apksigner" verify App/build/outputs/apk/release/innoextract-release.apk
 deploy:
   provider: releases
   skip_cleanup: 'true'
