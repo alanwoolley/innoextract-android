@@ -169,8 +169,10 @@ class SelectorFragment : Fragment() {
 
         if (!isFileValid) {
             dialogBuilder.setTitle("Invalid File")
+            dialogText.setText(R.string.unable_to_extract)
         } else {
             dialogBuilder.setTitle("Invalid Directory")
+            dialogText.setText(R.string.cannot_write_to_directory)
         }
         dialogBuilder.create().show()
 
