@@ -42,6 +42,8 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
 
     var isServiceBound = false
     var connection = Connection()
+    var launchIntent : Intent? = null
+
     lateinit private var extractService: IExtractService
 
     private fun hideSelectorFragment() {
@@ -63,6 +65,15 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
             debug("Service connected")
             extractService = (binder as ExtractService.ServiceBinder).service
             isServiceBound = true
+
+            if (launchIntent != null) {
+                val uri = launchIntent?.data
+                if (uri != null) {
+                    (supportFragmentManager.findFragmentById(R.id.selectorFragment) as? SelectorFragment)?.onNewFile(uri)
+                    onFileSelected(File(uri.path))
+                }
+                launchIntent = null
+            }
         }
 
     }
@@ -114,11 +125,13 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
 
         debug("Binding service")
         val i = Intent(this, ExtractService::class.java)
-        var serviceConnected = bindService(i, connection, Context.BIND_ABOVE_CLIENT or Context.BIND_AUTO_CREATE)
+        val serviceConnected = bindService(i, connection, Context.BIND_ABOVE_CLIENT or Context.BIND_AUTO_CREATE)
         debug("Service connected? : " + serviceConnected)
 
 
         setContentView(R.layout.activity_main)
+
+        launchIntent = intent;
     }
 
     override fun onStart() {

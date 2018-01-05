@@ -103,13 +103,16 @@ class SelectorFragment : Fragment() {
     }
 
     private fun onClickFileSelect() {
-
         val fileChooserIntent = Intent(context!!.applicationContext, FileChooser::class.java)
         fileChooserIntent.putExtra(Constants.SELECTION_MODE, Constants.SELECTION_MODES.SINGLE_SELECTION.ordinal)
-        //fileChooserIntent.putExtra(Constants.ALLOWED_FILE_EXTENSIONS, "exe")
-
+        fileChooserIntent.putExtra(Constants.ALLOWED_FILE_EXTENSIONS, "exe")
 
         startActivityForResult(fileChooserIntent, REQUEST_PICK_FILE)
+    }
+
+    fun onNewFile(file: Uri) {
+        this.file = File(file.path)
+        fileTextView.text = file.lastPathSegment
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -118,8 +121,7 @@ class SelectorFragment : Fragment() {
                 if (resultCode == RESULT_OK) {
                     val file: Uri? = data?.data
                     if (file != null) {
-                        this.file = File(file.path)
-                        fileTextView.text = file.lastPathSegment
+                     onNewFile(file)
                     }
                 }
 

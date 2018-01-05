@@ -47,7 +47,7 @@ public class ExtractService extends Service implements IExtractService {
     private static final int ONGOING_NOTIFICATION = 1;
     private static final int FINAL_NOTIFICATION = 2;
 
-    public boolean isBusy = false;
+    private boolean isBusy = false;
     private NotificationManager mNotificationManager;
     private NotificationCompat.Builder mNotificationBuilder;
     private NotificationCompat.Builder mFinalNotificationBuilder;
