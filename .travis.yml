@@ -25,9 +25,9 @@ script:
   - chmod +x gradlew
   - "./gradlew build"
 after_success:
-  - zipalign -v -p 4 App/build/outputs/apk/release/App-release-unsigned.apk App/build/outputs/apk/release/App-release-unsigned-aligned.apk
-  - apksigner sign -ks innoextract.jks --ks-pass pass:$storepass --key-pass pass:$keypass --out App/build/outputs/apk/release/innoextract-release.apk App/build/outputs/apk/release/App-release-unsigned-aligned.apk
-  - apksigner verify App/build/outputs/apk/release/innoextract-release.apk
+  - ${ANDROID_HOME}/build-tools/27.0.3/zipalign -v -p 4 App/build/outputs/apk/release/App-release-unsigned.apk App/build/outputs/apk/release/App-release-unsigned-aligned.apk
+  - ${ANDROID_HOME}/build-tools/27.0.3/apksigner sign -ks innoextract.jks --ks-pass pass:$storepass --key-pass pass:$keypass --out App/build/outputs/apk/release/innoextract-release.apk App/build/outputs/apk/release/App-release-unsigned-aligned.apk
+  - ${ANDROID_HOME}/build-tools/27.0.3/apksigner verify App/build/outputs/apk/release/innoextract-release.apk
 deploy:
   provider: releases
   skip_cleanup: 'true'
