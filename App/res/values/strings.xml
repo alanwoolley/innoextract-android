@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
-    <string name="app_name">InnoExtract</string>
+    <string name="app_name">Inno Setup Extractor</string>
     <string name="dialog_name">Extract Inno Setup File</string>
     <string name="title_activity_log">Extract Log</string>
     <string name="unable_to_extract">"This application cannot extract this file.
