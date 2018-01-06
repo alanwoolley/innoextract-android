@@ -3,7 +3,7 @@ sudo: false
 addons:
   apt:
     packages:
-      - lib32z1
+    - lib32z1
 android:
   components:
   - tools
@@ -13,25 +13,22 @@ android:
   - extra-google-m2repository
   - extra-android-m2repository
 before_install:
-  - openssl aes-256-cbc -K $encrypted_b479a42caf02_key -iv $encrypted_b479a42caf02_iv
-    -in innoextract.jks.enc -out innoextract.jks -d
-  - yes | sdkmanager "platforms;android-27"
-  - wget -q https://dl.google.com/android/repository/android-ndk-r15c-linux-x86_64.zip
-    -O ndk.zip
-  - unzip -q ndk.zip
-  - export ANDROID_NDK_HOME=`pwd`/android-ndk-r15c
-  - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:${ANDROID_NDK_HOME}
+- openssl aes-256-cbc -K $encrypted_2f2170bdfc25_key -iv $encrypted_2f2170bdfc25_iv
+  -in signing.tar.enc -out signing.tar -d
+- yes | sdkmanager "platforms;android-27"
+- wget -q https://dl.google.com/android/repository/android-ndk-r15c-linux-x86_64.zip
+  -O ndk.zip
+- unzip -q ndk.zip
+- export ANDROID_NDK_HOME=`pwd`/android-ndk-r15c
+- export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:${ANDROID_NDK_HOME}
+- tar xvf signing.tar
 script:
-  - chmod +x gradlew
-  - ./gradlew build
-after_success:
-  - ${ANDROID_HOME}/build-tools/27.0.3/zipalign -v -p 4 App/build/outputs/apk/release/App-release-unsigned.apk  App/build/outputs/apk/release/App-release-unsigned-aligned.apk
-  - ${ANDROID_HOME}/build-tools/27.0.3/apksigner sign -ks innoextract.jks --ks-pass env:storepass --key-pass env:keypass --out App/build/outputs/apk/release/innoextract-release.apk App/build/outputs/apk/release/App-release-unsigned-aligned.apk
-  - ${ANDROID_HOME}/build-tools/27.0.3/apksigner verify App/build/outputs/apk/release/innoextract-release.apk
+- chmod +x gradlew
+- "./gradlew build"
 deploy:
   provider: releases
   skip_cleanup: 'true'
-  file: App/build/outputs/apk/release/innoextract-release.apk
+  file: App/build/outputs/apk/release/App-release.apk
   api_key:
     secure: 
   on:

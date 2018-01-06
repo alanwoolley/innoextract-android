@@ -23,6 +23,14 @@ dependencies {
     compile "org.jetbrains.anko:anko-commons:$anko_version"
 }
 
+def keystorePropertiesFile = rootProject.file("signing.properties")
+
+// Initialize a new Properties() object called keystoreProperties.
+def keystoreProperties = new Properties()
+
+// Load your keystore.properties file into the keystoreProperties object.
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
 android {
     compileSdkVersion 27
     buildToolsVersion '27.0.3'
@@ -42,6 +50,15 @@ android {
         abortOnError false
     }
 
+    signingConfigs {
+        release {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+        }
+    }
+
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
@@ -57,6 +74,7 @@ android {
         release {
             minifyEnabled false
             proguardFile getDefaultProguardFile('proguard-android-optimize.txt')
+            signingConfig signingConfigs.release
         }
     }
 

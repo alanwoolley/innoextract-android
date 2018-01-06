@@ -57,5 +57,7 @@ Thumbs.db
 *.swp
 keys/
 signing.properties
+*.jks
+signing.tar
 
 
