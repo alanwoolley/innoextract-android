@@ -24,18 +24,14 @@ before_install:
 - tar xvf signing.tar
 script:
 - chmod +x gradlew
-- "./gradlew build"
+- ./gradlew build
 deploy:
   provider: releases
   skip_cleanup: 'true'
-  file: App/build/outputs/apk/release/App-release.apk
   api_key:
-    secure: 
+    secure: IQZ419yGt7iGUmBSgGl8ah3ZXJw005uoPlEqlNelFsqAImsUgEXsJFORg+Jo8l/Lyfi3H1hDCn5IM/KTOsUuAIabMctOSP99AyIK8AzNbnLQbU57lvZwfAnxFBn024ir7pYXw/MIoheWnR3RJs+ATiP301HLaWpdxTEhcsDn2n8=
+  file: App/build/output/apk/release/App-release.apk
   on:
     branch: master
-    repo: alanwoolley/innoextract-android
     tags: true
-env:
-  global:
-  - secure: UjGyWubV70EKhuUXUbpLli/H4U+9wXmebFGFwGisII1PiqTqKc9asiLOv0fvcOKycwKaOb7LjQjdj8XerHzQMSQOlpDQoeFvm3Lkb3vVtN/kDQ0XdmzTmnU2Tu2gbOinrPPHQV0xA1XVj0QRz/S2oIw/1FZCt09Va2kpfWX62o8=
-  - secure: POGTRsUmm5DFgkIYVY4PKSvBEOWQSppPaClxGxbaeu2r2BTXJSKWXwtlNORhkq/b27j3UNWWnfUNvQ/pSyH/Y9FEWXmFyYx5Yf/8tRTEanH1lgG/YlUQB77KJWONSGxeuNP+p53EiN0A+EbRl+ABRzICgjY6m4D3HX+T87oPnXU=
+    repo: alanwoolley/innoextract-android
