@@ -37,6 +37,7 @@ import org.joda.time.format.*;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.atomic.*;
 
 public class ExtractService extends Service implements IExtractService {
 
@@ -113,7 +114,7 @@ public class ExtractService extends Service implements IExtractService {
         final ExtractCallback cb = new ExtractCallback() {
 
             private SpeedCalculator speedCalculator = new SpeedCalculator();
-            private boolean done = false;
+            private AtomicBoolean done = new AtomicBoolean(false);
 
             private String writeLogToFile() throws IOException {
                 Log.d(LOG_TAG, "Writing log to file");
@@ -128,7 +129,7 @@ public class ExtractService extends Service implements IExtractService {
             }
 
             @Override public void onProgress(int value, int max, int speedBps, int remainingSeconds ) {
-                if (done) return;
+                if (done.get()) return;
                 mNotificationBuilder.setProgress(max, value, false);
 
                 int bps = (int) Math.max(speedCalculator.update(value),1);
@@ -150,7 +151,7 @@ public class ExtractService extends Service implements IExtractService {
 
             @Override public void onSuccess() {
                 Log.i(LOG_TAG, "SUCCESS! :)");
-                done = true;
+                done.set(true);
                 speedCalculator = null;
 
                 mFinalNotificationBuilder.setTicker("Extract Successful")
@@ -181,7 +182,7 @@ public class ExtractService extends Service implements IExtractService {
 
             @Override public void onFailure(Exception e) {
                 Log.e(LOG_TAG, "FAIL! :(");
-                done = true;
+                done.set(true);
                 mFinalNotificationBuilder.setTicker("Extract Failed")
                         .setSmallIcon(R.drawable.ic_extracting)
                         .setContentTitle("Extract Failed");
