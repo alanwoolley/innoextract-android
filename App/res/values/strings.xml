@@ -13,4 +13,7 @@ The following limitations apply:
     <string name="cannot_write_to_directory">"Unable to write to directory.
 
 Please choose another directory and ensure that the application has permission to write to external storage."</string>
+    <string name="permission_button">Close</string>
+    <string name="permission_title">Permission required</string>
+    <string name="permission_message">Permission is required to read external storage in order to extract</string>
 </resources>
