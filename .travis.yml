@@ -30,7 +30,7 @@ deploy:
   skip_cleanup: 'true'
   api_key:
     secure: IQZ419yGt7iGUmBSgGl8ah3ZXJw005uoPlEqlNelFsqAImsUgEXsJFORg+Jo8l/Lyfi3H1hDCn5IM/KTOsUuAIabMctOSP99AyIK8AzNbnLQbU57lvZwfAnxFBn024ir7pYXw/MIoheWnR3RJs+ATiP301HLaWpdxTEhcsDn2n8=
-  file: App/build/output/apk/release/App-release.apk
+  file: App/build/outputs/apk/release/App-release.apk
   on:
     branch: master
     tags: true
