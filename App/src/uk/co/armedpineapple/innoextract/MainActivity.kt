@@ -48,11 +48,11 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
 
     private fun hideSelectorFragment() {
 
-        supportFragmentManager.beginTransaction().setCustomAnimations(R.anim.slide_in_bottom, R.anim.slide_out_bottom).hide(supportFragmentManager.findFragmentById(R.id.selectorFragment)).commit()
+        supportFragmentManager.beginTransaction().setCustomAnimations(R.anim.slide_in_bottom, R.anim.slide_out_bottom).hide(supportFragmentManager.findFragmentById(R.id.selectorFragment)).commitAllowingStateLoss()
     }
 
     private fun showSelectorFragment() {
-        supportFragmentManager.beginTransaction().setCustomAnimations(R.anim.slide_in_bottom, R.anim.slide_out_bottom).show(supportFragmentManager.findFragmentById(R.id.selectorFragment)).commit()
+        supportFragmentManager.beginTransaction().setCustomAnimations(R.anim.slide_in_bottom, R.anim.slide_out_bottom).show(supportFragmentManager.findFragmentById(R.id.selectorFragment)).commitAllowingStateLoss()
     }
 
     inner class Connection : ServiceConnection {
