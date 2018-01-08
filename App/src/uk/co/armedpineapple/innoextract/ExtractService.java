@@ -309,9 +309,23 @@ public class ExtractService extends Service implements IExtractService {
                 if (line.length() > 0) {
                     if (line.startsWith("T$")) {
                         String[] parts = line.split("\\$");
+                        int current = 0;
+                        int max = 1;
 
-                        callback.onProgress(Integer.valueOf(parts[1]),
-                                Integer.valueOf(parts[2]), 0, 0);
+                        if (parts.length > 3) {
+                            try {
+                                current = Integer.valueOf(parts[1]);
+                            } catch (NumberFormatException e) {
+                                Log.e(LOG_TAG, "Couldn't parse current progress");
+                            }
+                            try {
+                                max = Integer.valueOf(parts[2]);
+                            } catch (NumberFormatException e) {
+                                Log.e(LOG_TAG, "Couldn't parse max progress");
+                            }
+                        }
+
+                        callback.onProgress(current, max, 0, 0);
                         return;
                     }
                     logBuilder.append(line).append("<br/>");
