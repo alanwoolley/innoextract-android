@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools"
           package="uk.co.armedpineapple.innoextract"
-          android:versionCode="4"
-          android:versionName="3.0.1"
+          android:versionCode="5"
+          android:versionName="3.0.2"
 >
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
