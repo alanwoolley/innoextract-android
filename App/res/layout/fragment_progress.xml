@@ -19,9 +19,6 @@
                 android:layout_height="wrap_content"
                 android:scaleType="centerInside" android:cropToPadding="false"
                 android:adjustViewBounds="true"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-
                 android:layout_margin="40dp" android:maxWidth="360dp"
                 android:minHeight="360dp"/>
         <TextView

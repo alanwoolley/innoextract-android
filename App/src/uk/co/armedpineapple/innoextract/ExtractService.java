@@ -25,6 +25,7 @@ import android.app.*;
 import android.content.*;
 import android.graphics.*;
 import android.os.*;
+import android.support.annotation.*;
 import android.support.v4.app.*;
 import android.text.*;
 import android.text.style.*;
@@ -267,6 +268,7 @@ public class ExtractService extends Service implements IExtractService {
     private class ServiceBusyException extends RuntimeException {
     }
 
+    @Keep
     public void gotString(String inString, int streamno) {
         Message msg = mLoggingThread.lineHandler.obtainMessage();
         msg.what = streamno;
