@@ -48,6 +48,7 @@ public class ExtractService extends Service implements IExtractService {
     private static final String LOG_TAG = "ExtractService";
     private static final int ONGOING_NOTIFICATION = 1;
     private static final int FINAL_NOTIFICATION = 2;
+    private static final String NOTIFICATION_CHANNEL = "Extract Progress";
 
     private boolean isBusy = false;
     private NotificationManager mNotificationManager;
@@ -78,7 +79,22 @@ public class ExtractService extends Service implements IExtractService {
     @Override public void onCreate() {
         super.onCreate();
 
-        mNotificationBuilder = new NotificationCompat.Builder(this);
+        if (Build.VERSION.SDK_INT >= 26) {
+            NotificationManager notificationManager = (NotificationManager) getSystemService(
+                    Context.NOTIFICATION_SERVICE);
+            if (notificationManager != null) {
+                NotificationChannel progressChannel = new NotificationChannel(
+                        NOTIFICATION_CHANNEL, getString(R.string.notification_channel),
+                        NotificationManager.IMPORTANCE_DEFAULT);
+                progressChannel.setDescription(getString(R.string.notification_channel_description));
+                progressChannel.enableLights(false);
+                progressChannel.enableVibration(false);
+                progressChannel.setSound(null, null);
+                notificationManager.createNotificationChannel(progressChannel);
+            }
+        }
+
+        mNotificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL);
 
     }
 
@@ -158,6 +174,7 @@ public class ExtractService extends Service implements IExtractService {
                 mFinalNotificationBuilder.setTicker("Extract Successful")
                         .setSmallIcon(R.drawable.ic_extracting)
                         .setContentTitle("Extracted")
+                        .setChannelId(NOTIFICATION_CHANNEL)
                         .setContentText("Extraction Successful");
 
                 try {
@@ -186,6 +203,7 @@ public class ExtractService extends Service implements IExtractService {
                 done.set(true);
                 mFinalNotificationBuilder.setTicker("Extract Failed")
                         .setSmallIcon(R.drawable.ic_extracting)
+                        .setChannelId(NOTIFICATION_CHANNEL)
                         .setContentTitle("Extract Failed");
 
                 try {
@@ -209,13 +227,14 @@ public class ExtractService extends Service implements IExtractService {
             }
 
         };
-        mFinalNotificationBuilder = new NotificationCompat.Builder(this, "Progress");
+        mFinalNotificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL);
         mNotificationManager = (NotificationManager) getSystemService(
                 NOTIFICATION_SERVICE);
 
         mNotificationBuilder.setContentTitle("Extracting...")
                 .setSmallIcon(R.drawable.ic_extracting)
                 .setTicker("Extracting inno setup file")
+                .setChannelId(NOTIFICATION_CHANNEL)
                 .setContentText("Extracting inno setup file");
 
         startForeground(ONGOING_NOTIFICATION, mNotificationBuilder.build());

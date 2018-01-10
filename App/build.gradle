@@ -125,7 +125,7 @@ android.applicationVariants.all { variant ->
                 project.ext.abiCodes.get(output.getFilter(OutputFile.ABI))
 
 
-        if (baseAbiVersionCode != null) {
+        if (baseAbiVersionCode != null ) {
 
             output.versionCodeOverride =
                     baseAbiVersionCode * 100000000 + buildVersionCode()
