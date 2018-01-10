@@ -4,6 +4,7 @@ addons:
   apt:
     packages:
     - lib32z1
+    - zip
 android:
   components:
   - tools
@@ -25,12 +26,17 @@ before_install:
 script:
 - chmod +x gradlew
 - ./gradlew build
+after_script:
+  - zip -jr mapping.zip App/build/outputs/mapping
 deploy:
   provider: releases
   skip_cleanup: 'true'
   api_key:
     secure: IQZ419yGt7iGUmBSgGl8ah3ZXJw005uoPlEqlNelFsqAImsUgEXsJFORg+Jo8l/Lyfi3H1hDCn5IM/KTOsUuAIabMctOSP99AyIK8AzNbnLQbU57lvZwfAnxFBn024ir7pYXw/MIoheWnR3RJs+ATiP301HLaWpdxTEhcsDn2n8=
-  file: App/build/outputs/apk/release/App-release.apk
+  file_glob: true
+  file:
+    - App/build/outputs/apk/release/*.apk
+    - mapping.zip
   on:
     branch: master
     tags: true
