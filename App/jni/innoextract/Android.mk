@@ -4,18 +4,14 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE := innoextract
 
-BOOST_INC_DIR := ../boost/include/boost-1_53
-LZMA_INC_DIR := ../lzma/include
 SRC_DIR := src
 LIBICONV_INC_DIR := ../libiconv-1.13.1/include
 
-LOCAL_C_INCLUDES :=	$(LOCAL_PATH)/$(BOOST_INC_DIR) \
-					$(LOCAL_PATH)/$(LZMA_INC_DIR) \
-					$(LOCAL_PATH)/$(SRC_DIR) \
+LOCAL_C_INCLUDES :=	$(LOCAL_PATH)/$(SRC_DIR) \
 					$(LOCAL_PATH)/ \
 					$(LOCAL_PATH)/$(LIBICONV_INC_DIR)
 
-LOCAL_STATIC_LIBRARIES := iconv liblzma libbz2 libboost_iostreams  libiconv  libboost_date_time libboost_program_options libboost_filesystem libboost_system
+LOCAL_STATIC_LIBRARIES := libbz2 liblzma libboost_program_options libiconv libboost_date_time libboost_filesystem libboost_system iconv libboost_iostreams libboost_iostreams_zlib libboost_iostreams_bzip2
 LOCAL_CPP_FEATURES := exceptions rtti
 LOCAL_LDLIBS := -lz -llog
 LOCAL_C_FLAGS := -DUSE_LZMA=1 -DUSE_STATIC_LIBS=1

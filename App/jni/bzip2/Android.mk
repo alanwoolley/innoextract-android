@@ -10,5 +10,6 @@ LOCAL_SRC_FILES := blocksort.c \
 	bzlib.c
 	
 LOCAL_MODULE := libbz2
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
 
 include $(BUILD_STATIC_LIBRARY)
