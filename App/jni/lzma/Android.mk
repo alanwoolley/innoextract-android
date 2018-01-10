@@ -82,7 +82,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/liblzma/common \
                     $(LOCAL_PATH)/liblzma/simple \
                     $(LOCAL_PATH)/liblzma/api \
                     $(LOCAL_PATH)/common \
-                    $(LOCAL_PATH)
+                    $(LOCAL_PATH)/config/$(TARGET_ARCH_ABI)
 
 LOCAL_CFLAGS += -DHAVE_CONFIG_H
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/liblzma/api $(LOCAL_PATH)/liblzma/api/lzma
