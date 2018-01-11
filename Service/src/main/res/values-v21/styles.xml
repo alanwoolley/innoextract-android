@@ -9,7 +9,7 @@
 
         -->
         <item name="android:colorPrimary">@color/primary</item>
-        <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:colorPrimaryDark">@color/primary_dark</item>
         <item name="android:colorBackground">@color/primary_dark</item>
         <item name="android:textColorPrimary">@color/primary_text</item>
         <item name="android:navigationBarColor">@color/primary_dark</item>
