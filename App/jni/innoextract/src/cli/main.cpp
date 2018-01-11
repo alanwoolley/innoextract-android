@@ -137,6 +137,7 @@ int main(int argc, char * argv[]) {
 	po::options_description action("Actions");
 	action.add_options()
 		("test,t", "Only verify checksums, don't write anything")
+        ("check", "Check")
 		("extract,e", "Extract files (default action)")
 		("list,l", "Only list files, don't write anything")
 		("list-languages", "List languages supported by the installer")

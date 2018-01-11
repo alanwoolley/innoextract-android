@@ -91,7 +91,6 @@ extern "C" int Java_uk_co_armedpineapple_innoextract_ExtractService_nativeDoExtr
 
 extern "C" int Java_uk_co_armedpineapple_innoextract_ExtractService_nativeCheckInno(
 		JNIEnv* env, jclass cls, jstring toExtractObj) {
-
 		// Get parameters
 
         const char *toExtract = env->GetStringUTFChars(toExtractObj, NULL);
@@ -103,7 +102,7 @@ extern "C" int Java_uk_co_armedpineapple_innoextract_ExtractService_nativeCheckI
 
         char* args[3];
         args[0] = (char*) "Extractor";
-        args[1] = (char*) "-ks";
+        args[1] = (char*) "--check";
         args[2] = (char*) toExtract;
 
         int out = main(3, (char**) args);
@@ -170,7 +169,10 @@ extern "C" void Java_uk_co_armedpineapple_innoextract_ExtractService_nativeInit(
 	mainClass = (jclass) env->NewGlobalRef(cls);
 	mainObject = (jobject) env->NewGlobalRef(obj);
 
-	pipe(filedes_stdout);
+    setvbuf(stdout, 0, _IOLBF, 0);
+    setvbuf(stderr, 0, _IONBF, 0);
+
+    pipe(filedes_stdout);
 	pipe(filedes_stderr);
 
 	dup2(filedes_stdout[1], STDOUT_FILENO);
