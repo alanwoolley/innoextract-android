@@ -19,17 +19,13 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package uk.co.armedpineapple.innoextract;
+package uk.co.armedpineapple.innoextract.service;
 
-import android.os.Bundle;
-import android.app.Activity;
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
-import android.webkit.WebView;
-import android.widget.TextView;
+import android.content.*;
+import android.os.*;
+import android.support.v7.app.*;
+import android.support.v7.widget.*;
+import android.webkit.*;
 
 public class LogActivity extends AppCompatActivity {
 

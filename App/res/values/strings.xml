@@ -17,6 +17,4 @@ Please choose another directory and ensure that the application has permission t
     <string name="permission_title">Permission required</string>
     <string name="permission_message">Permission is required to read external storage in order to extract</string>
 
-    <string name="notification_channel">Extraction Progress</string>
-    <string name="notification_channel_description">Updates on the progress of Inno Setup file extraction</string>
 </resources>

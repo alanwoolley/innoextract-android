@@ -1,8 +1,8 @@
-package uk.co.armedpineapple.innoextract
+package uk.co.armedpineapple.innoextract.service
 
 import java.io.*
 
-internal interface IExtractService {
+interface IExtractService {
 
     fun isExtractInProgress() : Boolean
 

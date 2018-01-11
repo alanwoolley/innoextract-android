@@ -49,7 +49,7 @@ typedef struct {
 
 } thread_data;
 
-extern "C" int Java_uk_co_armedpineapple_innoextract_ExtractService_nativeDoExtract(
+extern "C" int Java_uk_co_armedpineapple_innoextract_service_ExtractService_nativeDoExtract(
 		JNIEnv* env, jclass cls, jstring toExtractObj, jstring extractDirObj) {
 
 	// Get parameters
@@ -89,7 +89,7 @@ extern "C" int Java_uk_co_armedpineapple_innoextract_ExtractService_nativeDoExtr
 	return out;
 }
 
-extern "C" int Java_uk_co_armedpineapple_innoextract_ExtractService_nativeCheckInno(
+extern "C" int Java_uk_co_armedpineapple_innoextract_service_ExtractService_nativeCheckInno(
 		JNIEnv* env, jclass cls, jstring toExtractObj) {
 		// Get parameters
 
@@ -122,7 +122,7 @@ void *readchar(void* data) {
 	thread_data* td = (thread_data*) data;
 
 	char c;
-	while (c = fgetc(td->inputFile)) {
+	while ((c = fgetc(td->inputFile))) {
 		std::stringstream * stream;
 		if (td->streamNumber == 1) {
 			stream = &outStream;
@@ -157,9 +157,10 @@ void *readchar(void* data) {
 		}
 	}
 
+    pthread_exit(NULL);
 }
 
-extern "C" void Java_uk_co_armedpineapple_innoextract_ExtractService_nativeInit(
+extern "C" void Java_uk_co_armedpineapple_innoextract_service_ExtractService_nativeInit(
 		JNIEnv *env, jobject obj, jclass clazz, jint fileno) {
 	int data = 0;
 

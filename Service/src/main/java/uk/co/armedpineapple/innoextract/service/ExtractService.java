@@ -19,7 +19,7 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package uk.co.armedpineapple.innoextract;
+package uk.co.armedpineapple.innoextract.service;
 
 import android.app.*;
 import android.content.*;
@@ -279,7 +279,7 @@ public class ExtractService extends Service implements IExtractService {
     }
 
     public class ServiceBinder extends Binder {
-        ExtractService getService() {
+        public ExtractService getService() {
             return ExtractService.this;
         }
     }

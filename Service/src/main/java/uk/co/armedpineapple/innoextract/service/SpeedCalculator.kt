@@ -1,4 +1,4 @@
-package uk.co.armedpineapple.innoextract
+package uk.co.armedpineapple.innoextract.service
 
 class SpeedCalculator {
 
