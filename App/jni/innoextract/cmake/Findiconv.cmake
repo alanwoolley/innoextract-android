@@ -1,5 +1,5 @@
 
-# Copyright (C) 2012-2013 Daniel Scharrer
+# Copyright (C) 2012-2014 Daniel Scharrer
 #
 # This software is provided 'as-is', without any express or implied
 # warranty.  In no event will the author(s) be held liable for any damages
@@ -72,7 +72,7 @@ use_static_libs_restore()
 
 set(iconv_DEFINITIONS)
 if(WIN32 AND iconv_USE_STATIC_LIBS)
-	set(iconv_DEFINITIONS -DLIBICONV_STATIC)
+	set(iconv_DEFINITIONS -DLIBICONV_STATIC -DUSING_STATIC_LIBICONV)
 endif()
 
 # handle the QUIETLY and REQUIRED arguments and set iconv_FOUND to TRUE if 

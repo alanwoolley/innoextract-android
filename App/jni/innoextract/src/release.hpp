@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Daniel Scharrer
+ * Copyright (C) 2011-2015 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -18,8 +18,13 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-#ifndef INNOEXTRACT_VERSION_HPP
-#define INNOEXTRACT_VERSION_HPP
+/*!
+ * \file
+ *
+ * Strings describing the innoextract version.
+ */
+#ifndef INNOEXTRACT_RELEASE_HPP
+#define INNOEXTRACT_RELEASE_HPP
 
 //! Name of the program being built
 extern const char innoextract_name[];
@@ -30,10 +35,13 @@ extern const char innoextract_version[];
 //! Range of supported Inno Setup versions
 extern const char innosetup_versions[];
 
+//! Bug tracker URL
+extern const char innoextract_bugs[];
+
 //! Copyright line for the current program
 extern const char innoextract_copyright[];
 
 //! License text for the current program
 extern const char innoextract_license[];
 
-#endif // INNOEXTRACT_VERSION_HPP
+#endif // INNOEXTRACT_RELEASE_HPP

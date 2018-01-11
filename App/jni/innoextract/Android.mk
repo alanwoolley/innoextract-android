@@ -19,6 +19,8 @@ LOCAL_C_FLAGS := -DUSE_LZMA=1 -DUSE_STATIC_LIBS=1
 # Add your application source files here...
 LOCAL_SRC_FILES :=	$(SRC_DIR)/cli/debug.cpp \
 					$(SRC_DIR)/cli/main.cpp \
+                    $(SRC_DIR)/cli/extract.cpp \
+                    $(SRC_DIR)/cli/gog.cpp \
 					$(SRC_DIR)/crypto/adler32.cpp \
 					$(SRC_DIR)/crypto/checksum.cpp \
 					$(SRC_DIR)/crypto/crc32.cpp \
@@ -54,8 +56,10 @@ LOCAL_SRC_FILES :=	$(SRC_DIR)/cli/debug.cpp \
 					$(SRC_DIR)/stream/lzma.cpp \
 					$(SRC_DIR)/stream/slice.cpp \
 					$(SRC_DIR)/util/console.cpp \
+					$(SRC_DIR)/util/encoding.cpp \
 					$(SRC_DIR)/util/load.cpp \
 					$(SRC_DIR)/util/log.cpp \
+					$(SRC_DIR)/util/process.cpp \
 					$(SRC_DIR)/util/time.cpp \
 					$(SRC_DIR)/release.cpp \
 					native_interface.cpp

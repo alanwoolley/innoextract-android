@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Daniel Scharrer
+ * Copyright (C) 2011-2014 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -18,17 +18,22 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
+/*!
+ * \file
+ *
+ * Utilities to associate strings with enum values.
+ */
 #ifndef INNOEXTRACT_UTIL_ENUM_HPP
 #define INNOEXTRACT_UTIL_ENUM_HPP
 
 #include <stddef.h>
 #include <ostream>
 
+#include <boost/range/size.hpp>
 #include <boost/utility/enable_if.hpp>
 
 #include "util/console.hpp"
 #include "util/flags.hpp"
-#include "util/util.hpp"
 
 template <class Enum>
 struct get_enum {
@@ -66,7 +71,7 @@ struct enum_names {
 	const char * enum_names<get_enum<Enum>::type>::name = (Name); \
 	const char * enum_names<get_enum<Enum>::type>::names[] = { __VA_ARGS__ }; \
 	const size_t enum_names<get_enum<Enum>::type>::count \
-	 = ARRAY_SIZE(enum_names<get_enum<Enum>::type>::names);
+	 = size_t(boost::size(enum_names<get_enum<Enum>::type>::names));
 
 #define USE_ENUM_NAMES(Enum) \
 	(void)enum_names<get_enum<Enum>::type>::count; \

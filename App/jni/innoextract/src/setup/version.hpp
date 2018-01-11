@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Daniel Scharrer
+ * Copyright (C) 2011-2014 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -18,6 +18,11 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
+/*!
+ * \file
+ *
+ * Inno Setup version number utilities.
+ */
 #ifndef INNOEXTRACT_SETUP_VERSION_HPP
 #define INNOEXTRACT_SETUP_VERSION_HPP
 
@@ -49,7 +54,7 @@ struct version {
 	
 	bool known;
 	
-	version() : known(false) { }
+	version() : value(0), bits(0), unicode(false), known(false) { }
 	
 	version(version_constant value, bool unicode = false,
 	        bool known = false, boost::uint8_t bits = 32)

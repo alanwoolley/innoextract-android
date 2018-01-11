@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Daniel Scharrer
+ * Copyright (C) 2011-2014 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -19,6 +19,8 @@
  */
 
 /*!
+ * \file
+ *
  * Central point to load all the different headers in the correct order.
  */
 #ifndef INNOEXTRACT_SETUP_INFO_HPP
@@ -75,6 +77,7 @@ struct info {
 		Types,
 		WizardImages,
 		DecompressorDll,
+		DecryptDll,
 		NoSkip
 	);
 	
@@ -107,6 +110,10 @@ struct info {
 	//! Contents of the helper DLL used to decompress setup data in some versions.
 	//! Loading enabled by \c DecompressorDll
 	std::string decompressor_dll;
+	
+	//! Contents of the helper DLL used to decrypt setup data.
+	//! Loading enabled by \c DecryptDll
+	std::string decrypt_dll;
 	
 	/*!
 	 * Load setup headers.

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Daniel Scharrer
+ * Copyright (C) 2011-2015 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -24,6 +24,7 @@
 
 #include <boost/cstdint.hpp>
 #include <boost/static_assert.hpp>
+#include <boost/range/size.hpp>
 
 #include <stddef.h>
 
@@ -46,7 +47,7 @@ struct setup_loader_version {
 	
 };
 
-const setup_loader_version known_setup_loader_versions[] = {
+static const setup_loader_version known_setup_loader_versions[] = {
 	{ { 'r', 'D', 'l', 'P', 't', 'S', '0', '2', 0x87, 'e', 'V', 'x' },    INNO_VERSION(1, 2, 10) },
 	{ { 'r', 'D', 'l', 'P', 't', 'S', '0', '4', 0x87, 'e', 'V', 'x' },    INNO_VERSION(4, 0,  0) },
 	{ { 'r', 'D', 'l', 'P', 't', 'S', '0', '5', 0x87, 'e', 'V', 'x' },    INNO_VERSION(4, 0,  3) },
@@ -85,7 +86,7 @@ bool offsets::load_from_exe_file(std::istream & is) {
 bool offsets::load_from_exe_resource(std::istream & is) {
 	
 	exe_reader::resource resource = exe_reader::find_resource(is, ResourceNameInstaller);
-	if(!resource.offset) {
+	if(!resource) {
 		is.clear();
 		return false;
 	}
@@ -101,16 +102,15 @@ bool offsets::load_offsets_at(std::istream & is, boost::uint32_t pos) {
 	}
 	
 	char magic[12];
-	if(is.read(magic, std::streamsize(ARRAY_SIZE(magic))).fail()) {
+	if(is.read(magic, std::streamsize(sizeof(magic))).fail()) {
 		is.clear();
 		return false;
 	}
 	
 	setup::version_constant version = 0;
-	for(size_t i = 0; i < ARRAY_SIZE(known_setup_loader_versions); i++) {
-		BOOST_STATIC_ASSERT(ARRAY_SIZE(known_setup_loader_versions[i].magic)
-		                    == ARRAY_SIZE(magic));
-		if(!memcmp(magic, known_setup_loader_versions[i].magic, ARRAY_SIZE(magic))) {
+	for(size_t i = 0; i < size_t(boost::size(known_setup_loader_versions)); i++) {
+		BOOST_STATIC_ASSERT(sizeof(known_setup_loader_versions[i].magic) == sizeof(magic));
+		if(!memcmp(magic, known_setup_loader_versions[i].magic, sizeof(magic))) {
 			version = known_setup_loader_versions[i].version;
 			break;
 		}
@@ -121,7 +121,7 @@ bool offsets::load_offsets_at(std::istream & is, boost::uint32_t pos) {
 	
 	crypto::crc32 checksum;
 	checksum.init();
-	checksum.update(magic, ARRAY_SIZE(magic));
+	checksum.update(magic, sizeof(magic));
 	
 	if(version >= INNO_VERSION(5, 1,  5)) {
 		boost::uint32_t revision = checksum.load<boost::uint32_t>(is);
@@ -171,7 +171,7 @@ bool offsets::load_offsets_at(std::istream & is, boost::uint32_t pos) {
 			return false;
 		}
 		if(checksum.finalize() != expected) {
-			log_error << "[loader] CRC32 mismatch";
+			log_error << "Loader checksum mismatch!";
 			return false;
 		}
 	}

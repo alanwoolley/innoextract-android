@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Daniel Scharrer
+ * Copyright (C) 2011-2016 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -28,8 +28,11 @@
 #include <boost/version.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/range/begin.hpp>
+#include <boost/range/end.hpp>
+#include <boost/range/size.hpp>
 
-#include "util/util.hpp"
+#include "util/load.hpp"
 #include "util/log.hpp"
 
 namespace setup {
@@ -50,7 +53,7 @@ struct known_legacy_version {
 	
 };
 
-const known_legacy_version legacy_versions[] = {
+static const known_legacy_version legacy_versions[] = {
 	{ "i1.2.10--16\x1a", INNO_VERSION(1, 2, 10), 16 },
 	{ "i1.2.10--32\x1a", INNO_VERSION(1, 2, 10), 32 },
 };
@@ -68,7 +71,7 @@ struct known_version {
 	
 };
 
-const known_version versions[] = {
+static const known_version versions[] = {
 	{ "Inno Setup Setup Data (1.3.21)",     INNO_VERSION_EXT(1, 3, 21, 0), false },
 	{ "Inno Setup Setup Data (1.3.25)",     INNO_VERSION_EXT(1, 3, 25, 0), false },
 	{ "Inno Setup Setup Data (2.0.0)",      INNO_VERSION_EXT(2, 0,  0, 0), false },
@@ -143,6 +146,11 @@ const known_version versions[] = {
 	{ "Inno Setup Setup Data (5.4.2) (u)",  INNO_VERSION_EXT(5, 4,  2, 0), true  },
 	{ "Inno Setup Setup Data (5.5.0)",      INNO_VERSION_EXT(5, 5,  0, 0), false },
 	{ "Inno Setup Setup Data (5.5.0) (u)",  INNO_VERSION_EXT(5, 5,  0, 0), true  },
+	{ "!!! BlackBox v2?, marked as 5.5.0",  INNO_VERSION_EXT(5, 5,  0, 1), true  },
+	{ "Inno Setup Setup Data (5.5.6)",      INNO_VERSION_EXT(5, 5,  6, 0), false },
+	{ "Inno Setup Setup Data (5.5.6) (u)",  INNO_VERSION_EXT(5, 5,  6, 0), true  },
+	{ "Inno Setup Setup Data (5.5.7)",      INNO_VERSION_EXT(5, 5,  7, 0), false },
+	{ "Inno Setup Setup Data (5.5.7) (u)",  INNO_VERSION_EXT(5, 5,  7, 0), true  },
 };
 
 } // anonymous namespace
@@ -165,14 +173,6 @@ std::ostream & operator<<(std::ostream & os, const version & v) {
 	return os;
 }
 
-static unsigned to_unsigned(const char * chars, size_t count) {
-#if BOOST_VERSION < 105200
-	return boost::lexical_cast<unsigned>(std::string(chars, count));
-#else
-	return boost::lexical_cast<unsigned>(chars, count);
-#endif
-}
-
 void version::load(std::istream & is) {
 	
 	static const char digits[] = "0123456789";
@@ -184,7 +184,7 @@ void version::load(std::istream & is) {
 	
 	if(legacy_version[0] == 'i' && legacy_version[sizeof(legacy_version) - 1] == '\x1a') {
 		
-		for(size_t i = 0; i < ARRAY_SIZE(legacy_versions); i++) {
+		for(size_t i = 0; i < size_t(boost::size(legacy_versions)); i++) {
 			if(!memcmp(legacy_version, legacy_versions[i].name, sizeof(legacy_version))) {
 				value = legacy_versions[i].version;
 				bits = legacy_versions[i].bits;
@@ -196,7 +196,7 @@ void version::load(std::istream & is) {
 		}
 		
 		debug("unknown legacy version: \""
-		      << std::string(legacy_version, ARRAY_SIZE(legacy_version)) << '"');
+		      << std::string(legacy_version, sizeof(legacy_version)) << '"');
 		
 		if(legacy_version[0] != 'i' || legacy_version[2] != '.' || legacy_version[4] != '.'
 		   || legacy_version[7] != '-' || legacy_version[8] != '-') {
@@ -211,12 +211,12 @@ void version::load(std::istream & is) {
 			throw version_error();
 		}
 		
-		std::string version_str(legacy_version, legacy_version + ARRAY_SIZE(legacy_version));
+		std::string version_str(legacy_version, sizeof(legacy_version));
 		
 		try {
-			unsigned a = to_unsigned(version_str.data() + 1, 1);
-			unsigned b = to_unsigned(version_str.data() + 3, 1);
-			unsigned c = to_unsigned(version_str.data() + 5, 2);
+			unsigned a = util::to_unsigned(version_str.data() + 1, 1);
+			unsigned b = util::to_unsigned(version_str.data() + 3, 1);
+			unsigned c = util::to_unsigned(version_str.data() + 5, 2);
 			value = INNO_VERSION(a, b, c);
 		} catch(boost::bad_lexical_cast) {
 			throw version_error();
@@ -229,12 +229,13 @@ void version::load(std::istream & is) {
 	}
 	
 	stored_version version;
+	BOOST_STATIC_ASSERT(sizeof(legacy_version) <= sizeof(version));
 	memcpy(version, legacy_version, sizeof(legacy_version));
 	is.read(version + sizeof(legacy_version),
 	        std::streamsize(sizeof(version) - sizeof(legacy_version)));
 	
 	
-	for(size_t i = 0; i < ARRAY_SIZE(versions); i++) {
+	for(size_t i = 0; i < size_t(boost::size(versions)); i++) {
 		if(!memcmp(version, versions[i].name, sizeof(version))) {
 			value = versions[i].version;
 			bits = 32;
@@ -245,7 +246,7 @@ void version::load(std::istream & is) {
 		}
 	}
 	
-	char * end = std::find(version, version + ARRAY_SIZE(version), '\0');
+	char * end = std::find(version, version + boost::size(version), '\0');
 	std::string version_str(version, end);
 	debug("unknown version: \"" << version_str << '"');
 	if(version_str.find("Inno Setup") == std::string::npos) {
@@ -266,21 +267,21 @@ void version::load(std::istream & is) {
 			if(a_end == std::string::npos || version_str[a_end] != '.') {
 				continue;
 			}
-			unsigned a = to_unsigned(version_str.data() + a_start, a_end - a_start);
+			unsigned a = util::to_unsigned(version_str.data() + a_start, a_end - a_start);
 			
 			size_t b_start = a_end + 1;
 			size_t b_end = version_str.find_first_not_of(digits, b_start);
 			if(b_end == std::string::npos || version_str[b_end] != '.') {
 				continue;
 			}
-			unsigned b = to_unsigned(version_str.data() + b_start, b_end - b_start);
+			unsigned b = util::to_unsigned(version_str.data() + b_start, b_end - b_start);
 			
 			size_t c_start = b_end + 1;
 			size_t c_end = version_str.find_first_not_of(digits, c_start);
 			if(c_end == std::string::npos) {
 				continue;
 			}
-			unsigned c = to_unsigned(version_str.data() + c_start, c_end - c_start);
+			unsigned c = util::to_unsigned(version_str.data() + c_start, c_end - c_start);
 			
 			size_t d_start = c_end;
 			if(version_str[d_start] == 'a') {
@@ -295,7 +296,7 @@ void version::load(std::istream & is) {
 				d_start++;
 				size_t d_end = version_str.find_first_not_of(digits, d_start);
 				if(d_end != std::string::npos && d_end != d_start) {
-					d = to_unsigned(version_str.data() + d_start, d_end - d_start);
+					d = util::to_unsigned(version_str.data() + d_start, d_end - d_start);
 				}
 			}
 			
@@ -332,20 +333,25 @@ bool version::is_ambiguous() const {
 		return true;
 	}
 	
+	if(value == INNO_VERSION(5, 5, 0)) {
+		// might be either 5.5.0 or 5.5.0.1
+		return true;
+	}
+	
 	return false;
 }
 
 version_constant version::next() {
 	
-	const known_legacy_version * legacy_end = legacy_versions + ARRAY_SIZE(legacy_versions);
+	const known_legacy_version * legacy_end = boost::end(legacy_versions);
 	const known_legacy_version * legacy_version;
-	legacy_version = std::upper_bound(legacy_versions, legacy_end, value);
+	legacy_version = std::upper_bound(boost::begin(legacy_versions), legacy_end, value);
 	if(legacy_version != legacy_end) {
-		return value = legacy_version->version;
+		return legacy_version->version;
 	}
 	
-	const known_version * end = versions + ARRAY_SIZE(versions);
-	const known_version * version = std::upper_bound(versions, end, value);
+	const known_version * end = boost::end(versions);
+	const known_version * version = std::upper_bound(boost::begin(versions), end, value);
 	if(version != end) {
 		return version->version;
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Daniel Scharrer
+ * Copyright (C) 2011-2014 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -19,6 +19,8 @@
  */
 
 /*!
+ * \file
+ *
  * Filter to be used with boost::iostreams for calculating a \ref crypto::checksum.
  */
 #ifndef INNOEXTRACT_STREAM_CHECKSUM_HPP
@@ -54,12 +56,12 @@ public:
 	 * \param type   The type of checksum to calculate.
 	 */
 	checksum_filter(crypto::checksum * output, crypto::checksum_type type)
-		: output(output) {
-		hasher.init(type);
-	}
+		: hasher(type)
+		, output(output)
+	{ }
 	checksum_filter(const checksum_filter & o) : hasher(o.hasher), output(o.output) { }
 	
-	template<typename Source>
+	template <typename Source>
 	std::streamsize read(Source & src, char * dest, std::streamsize n) {
 		
 		std::streamsize nread = boost::iostreams::read(src, dest, n);

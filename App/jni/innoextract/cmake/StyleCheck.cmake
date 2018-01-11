@@ -1,5 +1,5 @@
 
-# Copyright (C) 2013 Daniel Scharrer
+# Copyright (C) 2013-2015 Daniel Scharrer
 #
 # This software is provided 'as-is', without any express or implied
 # warranty.  In no event will the author(s) be held liable for any damages
@@ -19,13 +19,12 @@
 
 find_package(PythonInterp)
 
-unset(STYLE_FILTER)
+set(STYLE_FILTER)
 
 # Complains about any c-style cast -> too annoying.
 set(STYLE_FILTER ${STYLE_FILTER},-readability/casting)
 
 # Insists on including evrything in the .cpp file even if it is included in the header.
-# This behaviour conflicts with orther tools.
 set(STYLE_FILTER ${STYLE_FILTER},-build/include_what_you_use)
 
 # Too many false positives and not very helpful error messages.
@@ -53,26 +52,32 @@ set(STYLE_FILTER ${STYLE_FILTER},-readability/todo)
 # Annoyting to use with boost::program_options
 set(STYLE_FILTER ${STYLE_FILTER},-whitespace/semicolon)
 
+get_filename_component(STYLE_CHECK_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+set(STYLE_CHECK_SCRIPT "${STYLE_CHECK_DIR}/cpplint.py")
+
 # Add a target that runs cpplint.py
 #
 # Parameters:
 # - TARGET_NAME the name of the target to add
-# - SOURCES_LIST a complete list of source files to check
-# - INCLUDES_LIST a complete list of include files to check
-function(add_style_check_target TARGET_NAME SOURCES_LIST INCLUDES_LIST)
+# - SOURCES_LIST a complete list of source and include files to check
+function(add_style_check_target TARGET_NAME SOURCES_LIST PROJECT)
 	
 	if(NOT PYTHONINTERP_FOUND)
 		return()
 	endif()
 	
+	list(SORT SOURCES_LIST)
+	list(REMOVE_DUPLICATES SOURCES_LIST)
+	
 	add_custom_target(${TARGET_NAME}
 		COMMAND "${CMAKE_COMMAND}" -E chdir
 			"${CMAKE_SOURCE_DIR}"
 			"${PYTHON_EXECUTABLE}"
-			"${CMAKE_MODULE_PATH}/cpplint.py"
+			"${STYLE_CHECK_SCRIPT}"
 			"--filter=${STYLE_FILTER}"
-			${SOURCES_LIST} ${INCLUDES_LIST}
-		DEPENDS ${SOURCES_LIST} ${INCLUDES_LIST}
+			"--project=${PROJECT}"
+			${SOURCES_LIST}
+		DEPENDS ${SOURCES_LIST} ${STYLE_CHECK_SCRIPT}
 		COMMENT "Checking code style."
 		VERBATIM
 	)

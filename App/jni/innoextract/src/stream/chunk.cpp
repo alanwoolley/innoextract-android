@@ -23,13 +23,13 @@
 #include <boost/iostreams/filter/bzip2.hpp>
 #include <boost/iostreams/filter/zlib.hpp>
 #include <boost/make_shared.hpp>
+#include <boost/range/size.hpp>
 
 #include "release.hpp"
 #include "stream/lzma.hpp"
 #include "stream/restrict.hpp"
 #include "stream/slice.hpp"
 #include "util/log.hpp"
-#include "util/util.hpp"
 
 namespace io = boost::iostreams;
 
@@ -65,11 +65,11 @@ bool chunk::operator==(const chunk & o) const {
 chunk_reader::pointer chunk_reader::get(slice_reader & base, const chunk & chunk) {
 	
 	if(!base.seek(chunk.first_slice, chunk.offset)) {
-		throw chunk_error("error seeking to chunk start");
+		throw chunk_error("could not seek to chunk start");
 	}
 	
-	char magic[ARRAY_SIZE(chunk_id)];
-	if(base.read(magic, 4) != 4 || memcmp(magic, chunk_id, ARRAY_SIZE(chunk_id))) {
+	char magic[sizeof(chunk_id)];
+	if(base.read(magic, 4) != 4 || memcmp(magic, chunk_id, sizeof(chunk_id))) {
 		throw chunk_error("bad chunk magic");
 	}
 	

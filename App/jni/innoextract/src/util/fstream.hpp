@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Scharrer
+ * Copyright (C) 2013-2014 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -19,7 +19,9 @@
  */
 
 /*!
- * boost::filesystems::{i,o,}fstream doesn't support unicode names on windows
+ * \file
+ *
+ * boost::filesystem::{i,o,}fstream doesn't support unicode names on windows
  * Implement our own wrapper using boost::iostreams.
  */
 #ifndef INNOEXTRACT_UTIL_FSTREAM_HPP

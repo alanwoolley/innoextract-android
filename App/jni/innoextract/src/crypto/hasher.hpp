@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Daniel Scharrer
+ * Copyright (C) 2011-2014 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -18,6 +18,11 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
+/*!
+ * \file
+ *
+ * Utility to hash data with a configurable hash function.
+ */
 #ifndef INNOEXTRACT_CRYPTO_HASHER_HPP
 #define INNOEXTRACT_CRYPTO_HASHER_HPP
 
@@ -36,11 +41,8 @@ class hasher : checksum_base<hasher> {
 	
 public:
 	
-	hasher() { }
-	explicit hasher(checksum_type type) { init(type); }
+	explicit hasher(checksum_type type);
 	hasher(const hasher & o);
-	
-	void init(checksum_type type);
 	
 	void update(const char * data, size_t size);
 	

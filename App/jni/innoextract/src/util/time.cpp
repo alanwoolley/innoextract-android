@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Scharrer
+ * Copyright (C) 2013-2015 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -22,8 +22,7 @@
 
 #include "configure.hpp"
 
-#if INNOEXTRACT_HAVE_TIMEGM || INNOEXTRACT_HAVE_MKGMTIME \
-    || INNOEXTRACT_HAVE_GMTIME_R || INNOEXTRACT_HAVE_GMTIME_S
+#if INNOEXTRACT_HAVE_TIMEGM || INNOEXTRACT_HAVE_GMTIME_R
 #include <time.h>
 #endif
 
@@ -33,9 +32,16 @@
 #include <windows.h>
 #endif
 
+#if INNOEXTRACT_HAVE_DLSYM
+#include <dlfcn.h>
+#endif
+
+#if INNOEXTRACT_HAVE_AT_FDCWD
+#include <fcntl.h>
+#endif
+
 #if INNOEXTRACT_HAVE_UTIMENSAT && INNOEXTRACT_HAVE_AT_FDCWD
 #include <sys/stat.h>
-#include <fcntl.h>
 #elif !defined(_WIN32) && INNOEXTRACT_HAVE_UTIMES
 #include <sys/time.h>
 #elif !defined(_WIN32)
@@ -46,13 +52,42 @@
 
 namespace util {
 
+#if defined(_WIN32)
+
+static const boost::int64_t FiletimeOffset = 0x19DB1DED53E8000ll;
+
+static time from_filetime(FILETIME ft) {
+	
+	boost::int64_t filetime = boost::int64_t(ft.dwHighDateTime) << 32;
+	filetime += boost::int64_t(ft.dwLowDateTime);
+	
+	filetime -= FiletimeOffset;
+	
+	return filetime / 10000000;
+}
+
+static FILETIME to_filetime(time t, boost::uint32_t nsec = 0) {
+	
+	static const boost::int64_t FiletimeOffset = 0x19DB1DED53E8000ll;
+	boost::int64_t time = boost::int64_t(t) * 10000000 + boost::int64_t(nsec) / 100;
+	
+	time += FiletimeOffset;
+	
+	FILETIME filetime;
+	filetime.dwLowDateTime = DWORD(time);
+	filetime.dwHighDateTime = DWORD(time >> 32);
+	return filetime;
+}
+
+#endif
+
 static void set_timezone(const char * value) {
 	
 	const char * variable = "TZ";
 	
 #if defined(_WIN32)
 	
-	SetEnvironmentVariable(variable, value);
+	SetEnvironmentVariableA(variable, value);
 	_tzset();
 	
 #else
@@ -72,23 +107,30 @@ time parse_time(std::tm tm) {
 	
 	tm.tm_isdst = 0;
 	
-#if INNOEXTRACT_HAVE_MKGMTIME64
+#if defined(_WIN32)
 	
 	// Windows
 	
-	return _mkgmtime64(&tm);
+	SYSTEMTIME st;
+	st.wYear         = WORD(tm.tm_year + 1900);
+	st.wMonth        = WORD(tm.tm_mon + 1);
+	st.wDay          = WORD(tm.tm_mday);
+	st.wHour         = WORD(tm.tm_hour);
+	st.wMinute       = WORD(tm.tm_min);
+	st.wSecond       = WORD(tm.tm_sec);
+	st.wMilliseconds = 0;
+	
+	FILETIME ft;
+	if(!SystemTimeToFileTime(&st, &ft)) {
+		return 0;
+	}
+	return from_filetime(ft);
 	
 #elif INNOEXTRACT_HAVE_TIMEGM
 	
 	// GNU / BSD extension
 	
 	return timegm(&tm);
-	
-#elif INNOEXTRACT_HAVE_MKGMTIME
-	
-	// Windows (32-bit for MinGW32)
-	
-	return _mkgmtime(&tm);
 	
 #else
 	
@@ -114,7 +156,7 @@ static Time to_time_t(time t, const char * file = "conversion") {
 	Time ret = Time(t);
 	
 	if(time(ret) != t) {
-		log_warning << "truncating timestamp " << t << " to " << ret << " for " << file;
+		log_warning << "Truncating timestamp " << t << " to " << ret << " for " << file;
 	}
 	
 	return ret;
@@ -124,12 +166,26 @@ std::tm format_time(time t) {
 	
 	std::tm ret;
 	
-#if INNOEXTRACT_HAVE_GMTIME64_S
+#if defined(_WIN32)
 	
 	// Windows
 	
-	__time64_t tt = to_time_t<__time64_t>(t);
-	_gmtime64_s(&ret, &tt);
+	FILETIME ft = to_filetime(t);
+	
+	SYSTEMTIME st;
+	if(FileTimeToSystemTime(&ft, &st)) {
+		ret.tm_year = int(st.wYear) - 1900;
+		ret.tm_mon  = int(st.wMonth) - 1;
+		ret.tm_wday = int(st.wDayOfWeek);
+		ret.tm_mday = int(st.wDay);
+		ret.tm_hour = int(st.wHour);
+		ret.tm_min  = int(st.wMinute);
+		ret.tm_sec  = int(st.wSecond);
+	} else {
+		ret.tm_year = ret.tm_mon = ret.tm_mday = -1;
+		ret.tm_hour = ret.tm_min = ret.tm_sec = -1;
+	}
+	ret.tm_isdst = -1;
 	
 #elif INNOEXTRACT_HAVE_GMTIME_R
 	
@@ -138,19 +194,12 @@ std::tm format_time(time t) {
 	time_t tt = to_time_t<time_t>(t);
 	gmtime_r(&tt, &ret);
 	
-#elif INNOEXTRACT_HAVE_GMTIME_S
-	
-	// Windows (MSVC)
-	
-	time_t tt = to_time_t<time_t>(t);
-	gmtime_s(&ret, &tt);
-	
 #else
 	
-	// Standard C++, but may not be thread-safe
+	// Standard C++
 	
 	std::time_t tt = to_time_t<std::time_t>(t);
-	std::tm * tmp = std::gmtime(&tt);
+	std::tm * tmp = std::gmtime(&tt); /* not thread-safe */
 	if(tmp) {
 		ret = *tmp;
 	} else {
@@ -204,18 +253,37 @@ static HANDLE open_file(LPCWSTR name) {
 
 #endif
 
+#if INNOEXTRACT_HAVE_DYNAMIC_UTIMENSAT
+extern "C" typedef int (*utimensat_proc)
+	(int fd, const char *path, const struct timespec times[2], int flag);
+#endif
+
 bool set_file_time(const boost::filesystem::path & path, time t, boost::uint32_t nsec) {
 	
-#if INNOEXTRACT_HAVE_UTIMENSAT && INNOEXTRACT_HAVE_AT_FDCWD
+#if (INNOEXTRACT_HAVE_DYNAMIC_UTIMENSAT || INNOEXTRACT_HAVE_UTIMENSAT) \
+    && INNOEXTRACT_HAVE_AT_FDCWD
 	
 	// nanosecond precision, for Linux and POSIX.1-2008+ systems
 	
-	struct timespec times[2];
-	times[0].tv_sec = to_time_t<time_t>(t, path.string().c_str());
-	times[0].tv_nsec = boost::int32_t(nsec);
-	times[1] = times[0];
+	struct timespec timens[2];
+	timens[0].tv_sec = to_time_t<time_t>(t, path.string().c_str());
+	timens[0].tv_nsec = boost::int32_t(nsec);
+	timens[1] = timens[0];
 	
-	return (utimensat(AT_FDCWD, path.string().c_str(), times, 0) == 0);
+#endif
+	
+#if INNOEXTRACT_HAVE_DYNAMIC_UTIMENSAT && INNOEXTRACT_HAVE_AT_FDCWD
+	
+	static utimensat_proc utimensat_func = (utimensat_proc)dlsym(RTLD_DEFAULT, "utimensat");
+	if(utimensat_func) {
+		return (utimensat_func(AT_FDCWD, path.string().c_str(), timens, 0) == 0);
+	}
+	
+#endif
+	
+#if INNOEXTRACT_HAVE_UTIMENSAT && INNOEXTRACT_HAVE_AT_FDCWD
+	
+	return (utimensat(AT_FDCWD, path.string().c_str(), timens, 0) == 0);
 	
 #elif defined(_WIN32)
 	
@@ -230,13 +298,7 @@ bool set_file_time(const boost::filesystem::path & path, time t, boost::uint32_t
 		return false;
 	}
 	
-	// Convert the std::time_t and nanoseconds to a FILETIME struct
-	static const boost::int64_t FiletimeOffset = 0x19DB1DED53E8000ll;
-	boost::int64_t time = boost::int64_t(t) * 10000000 + boost::int64_t(nsec) / 100;
-	time += FiletimeOffset;
-	FILETIME filetime;
-	filetime.dwLowDateTime = DWORD(time);
-	filetime.dwHighDateTime = DWORD(time >> 32);
+	FILETIME filetime = to_filetime(t, nsec);
 	
 	bool ret = (SetFileTime(handle, &filetime, &filetime, &filetime) != 0);
 	CloseHandle(handle);

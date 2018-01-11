@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Daniel Scharrer
+ * Copyright (C) 2011-2016 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -19,6 +19,8 @@
  */
 
 /*!
+ * \file
+ *
  * Utility function to load stored data while properly handling encodings and endianness.
  */
 #ifndef INNOEXTRACT_UTIL_LOAD_HPP
@@ -29,20 +31,13 @@
 #include <string>
 
 #include <boost/cstdint.hpp>
+#include <boost/range/size.hpp>
 
+#include "util/encoding.hpp"
 #include "util/endian.hpp"
 #include "util/types.hpp"
-#include "util/util.hpp"
 
 namespace util {
-
-/*!
- * Convert a string to UTF-8 from a specified encoding.
- * \param from     The input string to convert.
- * \param to       The output for the converted string.
- * \param codepage The Windows codepage number for the input string encoding.
- */
-void to_utf8(const std::string & from, std::string & to, boost::uint32_t codepage = 1252);
 
 /*!
  * Wrapper to load a length-prefixed string from an input stream into a std::string.
@@ -87,24 +82,34 @@ inline std::istream & operator>>(std::istream & is, const binary_string & str) {
  * Usage: <code>is >> encoded_string(str, codepage)</code>
  *
  * You can also use the \ref ansi_string convenience wrapper for Windows-1252 strings.
+ *
+ * \note This wrapper is not thread-safe.
  */
 struct encoded_string {
 	
 	std::string & data;
-	boost::uint32_t codepage;
+	codepage_id codepage;
 	
 	/*!
 	 * \param target   The std::string object to receive the loaded UTF-8 string.
 	 * \param codepage The Windows codepage for the encoding of the stored string.
 	 */
-	encoded_string(std::string & target, boost::uint32_t codepage)
+	encoded_string(std::string & target, codepage_id codepage)
 		: data(target), codepage(codepage) { }
 	
-	//! Load and convert a length-prefixed string
-	static void load(std::istream & is, std::string & target, boost::uint32_t codepage);
+	/*!
+	 * Load and convert a length-prefixed string
+	 *
+	 * \note This function is not thread-safe.
+	 */
+	static void load(std::istream & is, std::string & target, codepage_id codepage);
 	
-	//! Load and convert a length-prefixed string
-	static std::string load(std::istream & is, boost::uint32_t codepage) {
+	/*!
+	 * Load and convert a length-prefixed string
+	 *
+	 * \note This function is not thread-safe.
+	 */
+	static std::string load(std::istream & is, codepage_id codepage) {
 		std::string target;
 		load(is, target, codepage);
 		return target;
@@ -116,7 +121,11 @@ inline std::istream & operator>>(std::istream & is, const encoded_string & str) 
 	return is;
 }
 
-//! Convenience specialization of \ref encoded_string for loading Windows-1252 strings
+/*!
+ * Convenience specialization of \ref encoded_string for loading Windows-1252 strings
+ *
+ * \note This function is not thread-safe.
+ */
 struct ansi_string : encoded_string {
 	
 	explicit ansi_string(std::string & target) : encoded_string(target, 1252) { }
@@ -173,7 +182,7 @@ template <class T>
 void discard(T & is, boost::uint64_t bytes) {
 	char buf[1024];
 	while(bytes) {
-		std::streamsize n = std::streamsize(std::min<boost::uint64_t>(bytes, ARRAY_SIZE(buf)));
+		std::streamsize n = std::streamsize(std::min<boost::uint64_t>(bytes, sizeof(buf)));
 		is.read(buf, n);
 		bytes -= boost::uint64_t(n);
 	}
@@ -187,13 +196,19 @@ void discard(T & is, boost::uint64_t bytes) {
  * \param last   Index of the last desired bit (inclusive).
  */
 template <typename T>
-T get_bits(T number, int first, int last) {
-	typedef typename uint_t<sizeof(T) * 8>::exact UT;
+T get_bits(T number, unsigned first, unsigned last) {
+	typedef typename uint_t<int(sizeof(T) * 8)>::exact UT;
 	UT data = UT(number);
 	data = UT(data >> first), last -= first;
 	UT mask = UT(((last + 1 == sizeof(T) * 8) ? UT(0) : UT(UT(1) << (last + 1))) - 1);
 	return T(data & mask);
 }
+
+/*!
+ * Parse an ASCII representation of an unsigned integer
+ * \throws boost::bad_lexical_cast on error
+ */
+unsigned to_unsigned(const char * chars, size_t count);
 
 } // namespace util
 

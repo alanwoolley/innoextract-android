@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Daniel Scharrer
+ * Copyright (C) 2011-2014 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -18,6 +18,11 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
+/*!
+ * \file
+ *
+ * Structures for directory entries stored in Inno Setup files.
+ */
 #ifndef INNOEXTRACT_SETUP_DIRECTORY_HPP
 #define INNOEXTRACT_SETUP_DIRECTORY_HPP
 
@@ -49,7 +54,7 @@ struct directory_entry : public item {
 	
 	boost::uint32_t attributes;
 	
-	int permission; //!< index into the permission entry list
+	boost::int16_t permission; //!< index into the permission entry list
 	
 	flags options;
 	

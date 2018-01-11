@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013 Daniel Scharrer
+ * Copyright (C) 2012-2016 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -19,15 +19,24 @@
  */
 
 /*!
+ * \file
+ *
  * Map for converting between stored filenames and output filenames.
  */
-#ifndef INNOEXTRACT_SETUP_FILENAME_MAP_HPP
-#define INNOEXTRACT_SETUP_FILENAME_MAP_HPP
+#ifndef INNOEXTRACT_SETUP_FILENAME_HPP
+#define INNOEXTRACT_SETUP_FILENAME_HPP
 
 #include <string>
 #include <map>
 
 namespace setup {
+
+//! Separator to use for output paths.
+#if defined(_WIN32)
+static const char path_sep = '\\';
+#else
+static const char path_sep = '/';
+#endif
 
 /*!
  * Map to convert between raw windows file paths stored in the setup file (which can
@@ -35,7 +44,7 @@ namespace setup {
  */
 class filename_map : public std::map<std::string, std::string> {
 	
-	const std::string & lookup(const std::string & key) const;
+	std::string lookup(const std::string & key) const;
 	
 	bool lowercase;
 	bool expand;
@@ -54,6 +63,9 @@ public:
 	//! Set if paths should be converted to lower-case.
 	void set_lowercase(bool enable) { lowercase = enable; }
 	
+	//! Set if paths should be converted to lower-case.
+	bool is_lowercase() const { return lowercase; }
+	
 	//! Set if variables should be expanded and path separators converted.
 	void set_expand(bool enable) { expand = enable; }
 	
@@ -61,4 +73,4 @@ public:
 
 } // namespace setup
 
-#endif // INNOEXTRACT_SETUP_FILENAME_MAP_HPP
+#endif // INNOEXTRACT_SETUP_FILENAME_HPP

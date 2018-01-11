@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Daniel Scharrer
+ * Copyright (C) 2011-2015 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -18,12 +18,18 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
+/*!
+ * \file
+ *
+ * Utilities for decoding stored enum values into run-time values.
+ */
 #ifndef INNOEXTRACT_UTIL_STOREDENUM_HPP
 #define INNOEXTRACT_UTIL_STOREDENUM_HPP
 
 #include <stddef.h>
 #include <vector>
 #include <bitset>
+#include <ios>
 
 #include <boost/cstdint.hpp>
 #include <boost/static_assert.hpp>
@@ -33,30 +39,28 @@
 #include "util/enum.hpp"
 #include "util/load.hpp"
 #include "util/log.hpp"
-#include "util/util.hpp"
 
-#include "configure.hpp"
-
-template <class Enum>
-struct enum_value_map {
-	
-	typedef Enum enum_type;
-	typedef Enum flag_type;
-	
-};
-
-#define STORED_ENUM_MAP(MapName, Default, ...) \
-struct MapName : public enum_value_map<BOOST_TYPEOF(Default)> { \
-	static const flag_type default_value; \
-	static const flag_type values[]; \
+// Shared info for enums and flags
+#define STORED_MAP_HELPER(MapName, TypeRep, DefaultDecl, ...) \
+struct MapName { \
+	typedef BOOST_TYPEOF(TypeRep) enum_type; \
+	DefaultDecl \
+	static const enum_type values[]; \
 	static const size_t count; \
 }; \
-const MapName::flag_type MapName::default_value = Default; \
-const MapName::flag_type MapName::values[] = { __VA_ARGS__ }; \
-const size_t MapName::count = ARRAY_SIZE(MapName::values)
+const MapName::enum_type MapName::values[] = { __VA_ARGS__ }; \
+const size_t MapName::count = (sizeof(MapName::values)/sizeof(*(MapName::values)))
 
-#define STORED_FLAGS_MAP(MapName, Flag0, ...) \
-	STORED_ENUM_MAP(MapName, Flag0, Flag0, ## __VA_ARGS__)
+//! Declare a mapping from integers to enum elements to be used for \ref stored_enum
+#define STORED_ENUM_MAP(MapName, Default, /* elements */ ...) \
+	STORED_MAP_HELPER(MapName, Default, \
+	static const enum_type default_value;, \
+	## __VA_ARGS__); \
+const MapName::enum_type MapName::default_value = Default
+
+//! Declare a mapping from bits to flag enum elements to be used for \ref stored_flags
+#define STORED_FLAGS_MAP(MapName, Flag0, /* additional flags */ ...) \
+	STORED_MAP_HELPER(MapName, Flag0, , Flag0, ## __VA_ARGS__)
 
 template <class Mapping>
 struct stored_enum {
@@ -81,7 +85,7 @@ public:
 			return Mapping::values[value];
 		}
 		
-		log_warning << "unexpected " << enum_names<enum_type>::name << " value: " << value;
+		log_warning << "Unexpected " << enum_names<enum_type>::name << " value: " << value;
 		
 		return Mapping::default_value;
 	}
@@ -174,7 +178,7 @@ public:
 		}
 		
 		if(bits) {
-			log_warning << "unexpected " << enum_names<enum_type>::name << " flags: "
+			log_warning << "Unexpected " << enum_names<enum_type>::name << " flags: "
 			            << std::hex << bits << std::dec;
 		}
 		

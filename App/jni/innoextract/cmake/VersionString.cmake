@@ -1,5 +1,5 @@
 
-# Copyright (C) 2011-2013 Daniel Scharrer
+# Copyright (C) 2011-2016 Daniel Scharrer
 #
 # This software is provided 'as-is', without any express or implied
 # warranty.  In no event will the author(s) be held liable for any damages
@@ -16,6 +16,9 @@
 # 2. Altered source versions must be plainly marked as such, and must not be
 #    misrepresented as being the original software.
 # 3. This notice may not be removed or altered from any source distribution.
+
+get_filename_component(VERSION_STRING_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+set(VERSION_STRING_SCRIPT "${VERSION_STRING_DIR}/VersionScript.cmake")
 
 # Create a rule to generate a version string at compile time.
 #
@@ -44,19 +47,22 @@
 # The version file is regenerated whenever VERSION_FILE or the current commit changes.
 function(version_file SRC DST VERSION_SOURCES GIT_DIR)
 	
-	set(mode "variable")
+	set(MODE_VARIABLE 0)
+	set(MODE_FILE 1)
+	
+	set(mode ${MODE_VARIABLE})
 	
 	set(args)
-	set(dependencies "${CMAKE_MODULE_PATH}/VersionScript.cmake")
+	set(dependencies "${VERSION_STRING_SCRIPT}")
 	
 	foreach(arg IN LISTS VERSION_SOURCES)
 		
-		if(mode STREQUAL "variable")
-			set(mode "file")
+		if(mode EQUAL MODE_VARIABLE)
+			set(mode ${MODE_FILE})
 		else()
 			get_filename_component(arg "${arg}" ABSOLUTE)
-			list(APPEND dependencies ${abs_file})
-			set(mode "variable")
+			list(APPEND dependencies ${arg})
+			set(mode ${MODE_VARIABLE})
 		endif()
 		
 		list(APPEND args ${arg})
@@ -68,16 +74,24 @@ function(version_file SRC DST VERSION_SOURCES GIT_DIR)
 	get_filename_component(abs_git_dir "${GIT_DIR}" ABSOLUTE)
 	
 	set(defines)
-	if(${ARGC} GREATER 4)
+	if(ARGC GREATER 4)
 		set(defines ${ARGV4})
 	endif()
 	
-	if(EXISTS "${abs_git_dir}/HEAD")
-		list(APPEND dependencies "${abs_git_dir}/HEAD")
-	endif()
-	
-	if(EXISTS "${abs_git_dir}/logs/HEAD")
-		list(APPEND dependencies "${abs_git_dir}/logs/HEAD")
+	if(EXISTS "${abs_git_dir}")
+		find_program(GIT_COMMAND git)
+		if(GIT_COMMAND)
+			list(APPEND dependencies "${GIT_COMMAND}")
+		endif()
+		if(EXISTS "${abs_git_dir}/HEAD")
+			list(APPEND dependencies "${abs_git_dir}/HEAD")
+		endif()
+		if(EXISTS "${abs_git_dir}/packed-refs")
+			list(APPEND dependencies "${abs_git_dir}/packed-refs")
+		endif()
+		if(EXISTS "${abs_git_dir}/logs/HEAD")
+			list(APPEND dependencies "${abs_git_dir}/logs/HEAD")
+		endif()
 	endif()
 	
 	add_custom_command(
@@ -89,8 +103,9 @@ function(version_file SRC DST VERSION_SOURCES GIT_DIR)
 			"-DOUTPUT=${abs_dst}"
 			"-DVERSION_SOURCES=${args}"
 			"-DGIT_DIR=${abs_git_dir}"
+			"-DGIT_COMMAND=${GIT_COMMAND}"
 			${defines}
-			-P "${CMAKE_MODULE_PATH}/VersionScript.cmake"
+			-P "${VERSION_STRING_SCRIPT}"
 		MAIN_DEPENDENCY
 			"${abs_src}"
 		DEPENDS

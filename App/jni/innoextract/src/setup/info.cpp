@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Daniel Scharrer
+ * Copyright (C) 2011-2015 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -96,15 +96,15 @@ static void load_wizard_and_decompressor(std::istream & is, const setup::version
 	
 	(void)entries;
 	
+	info.wizard_image.clear();
+	info.wizard_image_small.clear();
 	if(entries & (info::WizardImages | info::NoSkip)) {
 		is >> util::binary_string(info.wizard_image);
 		if(version >= INNO_VERSION(2, 0, 0)) {
 			is >> util::binary_string(info.wizard_image_small);
 		}
 	} else {
-		info.wizard_image.clear();
 		util::binary_string::skip(is);
-		info.wizard_image_small.clear();
 		if(version >= INNO_VERSION(2, 0, 0)) {
 			util::binary_string::skip(is);
 		}
@@ -121,21 +121,32 @@ static void load_wizard_and_decompressor(std::istream & is, const setup::version
 			util::binary_string::skip(is);
 		}
 	}
+	
+	info.decrypt_dll.clear();
+	if(header.options & header::EncryptionUsed) {
+		if(entries & (info::DecryptDll | info::NoSkip)) {
+			is >> util::binary_string(info.decrypt_dll);
+		} else {
+			// decrypt dll - we don't need this
+			util::binary_string::skip(is);
+		}
+	}
+	
 }
 
 } // anonymous namespace
 
-static void check_is_end(stream::block_reader::pointer & is) {
+static void check_is_end(stream::block_reader::pointer & is, const char * what) {
 	is->exceptions(std::ios_base::goodbit);
 	char dummy;
 	if(!is->get(dummy).eof()) {
-		throw std::ios_base::failure("expected end of stream");
+		throw std::ios_base::failure(what);
 	}
 }
 
 void info::load(std::istream & ifs, entry_types e, const setup::version & v) {
 	
-	if(e & (Messages|NoSkip)) {
+	if(e & (Messages | NoSkip)) {
 		e |= Languages;
 	}
 	
@@ -171,13 +182,12 @@ void info::load(std::istream & ifs, entry_types e, const setup::version & v) {
 	}
 	
 	// restart the compression stream
-	check_is_end(is);
+	check_is_end(is, "unknown data at end of primary header stream");
 	is = stream::block_reader::get(ifs, v);
 	
 	load_entries(*is, v, e, header.data_entry_count, data_entries, DataEntries);
 	
-	is->exceptions(std::ios_base::goodbit);
-	check_is_end(is);
+	check_is_end(is, "unknown data at end of secondary header stream");
 }
 
 void info::load(std::istream & is, entry_types entries) {
@@ -185,9 +195,11 @@ void info::load(std::istream & is, entry_types entries) {
 	version.load(is);
 	
 	if(!version.known) {
-		log_warning << "unexpected setup data version: "
+		log_warning << "Unexpected setup data version: "
 		            << color::white << version << color::reset;
 	}
+	
+	version_constant listed_version = version.value;
 	
 	// Some setup versions didn't increment the data version number when they should have.
 	// To work around this, we try to parse the headers for both data versions.
@@ -204,6 +216,7 @@ void info::load(std::istream & is, entry_types entries) {
 		} catch(...) {
 			version.value = version.next();
 			if(!version) {
+				version.value = listed_version;
 				throw;
 			}
 			is.clear();
@@ -211,7 +224,12 @@ void info::load(std::istream & is, entry_types entries) {
 		}
 	}
 	
-	load(is, entries, version);
+	try {
+		load(is, entries, version);
+	} catch(...) {
+		version.value = listed_version;
+		throw;
+	}
 }
 
 info::info() { }

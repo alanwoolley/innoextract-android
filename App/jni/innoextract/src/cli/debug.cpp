@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Daniel Scharrer
+ * Copyright (C) 2011-2014 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -24,6 +24,7 @@
 #include <iostream>
 
 #include <boost/foreach.hpp>
+#include <boost/range/size.hpp>
 
 #include "loader/offsets.hpp"
 #include "setup/component.hpp"
@@ -49,7 +50,6 @@
 #include "util/log.hpp"
 #include "util/output.hpp"
 #include "util/time.hpp"
-#include "util/util.hpp"
 
 void print_offsets(const loader::offsets & offsets) {
 	
@@ -62,8 +62,8 @@ void print_offsets(const loader::offsets & offsets) {
 			          << print_hex(offsets.exe_compressed_size) << color::reset;
 		}
 		std::cout << "  uncompressed: " << color::cyan
-		          << print_bytes(offsets.exe_uncompressed_size) << color::reset << '\n';
-		std::cout << "- exe checksum: " << color::cyan << offsets.exe_checksum
+		          << print_bytes(offsets.exe_uncompressed_size) << color::reset;
+		std::cout << "  checksum: " << color::cyan << offsets.exe_checksum
 		          << color::reset << '\n';
 	}
 	std::cout << if_not_zero("- message offset", print_hex(offsets.message_offset));
@@ -216,7 +216,7 @@ static void print_entry(const setup::info & info, size_t i,
 	}
 	
 	std::cout << if_not_zero("  Attributes", entry.attributes);
-	std::cout << if_not_equal("  Permission entry", entry.permission, -1);
+	std::cout << if_not_equal("  Permission entry", entry.permission, boost::int16_t(-1));
 	std::cout << if_not_zero("  Options", entry.options);
 }
 
@@ -241,7 +241,7 @@ static void print_entry(const setup::info & info, size_t i,
 	
 	std::cout << if_not_zero("  Attributes", entry.attributes);
 	std::cout << if_not_zero("  Size", entry.external_size);
-	std::cout << if_not_equal("  Permission entry", entry.permission, -1);
+	std::cout << if_not_equal("  Permission entry", entry.permission, boost::int16_t(-1));
 	std::cout << if_not_zero("  Options", entry.options);
 	std::cout << if_not_equal("  Type", entry.type, setup::file_entry::UserFile);
 }
@@ -376,11 +376,15 @@ static void print_entry(const setup::info & info, size_t i,
 	          << (isUTC ? " (UTC)" : " (local)")
 	          << '\n';
 	
-	std::cout << if_not_zero("  Options", entry.options);
+	setup::data_entry::flags options = entry.options;
+	options &= ~setup::data_entry::VersionInfoNotValid;
+	std::cout << if_not_zero("  Options", options);
 	
 	if(entry.options & setup::data_entry::VersionInfoValid) {
-		std::cout << if_not_zero("  File version LS", entry.file_version_ls);
-		std::cout << if_not_zero("  File version MS", entry.file_version_ms);
+		std::cout << "  File version: " << ((entry.file_version >> 48) & 0xffff) << '.'
+		                                << ((entry.file_version >> 32) & 0xffff) << '.'
+		                                << ((entry.file_version >> 16) & 0xffff) << '.'
+		                                << ((entry.file_version >>  0) & 0xffff) << '\n';
 	}
 }
 
@@ -467,6 +471,19 @@ static void print_header(const setup::header & header) {
 	
 	if(header.options & (setup::header::Password | setup::header::EncryptionUsed)) {
 		std::cout << "Password: " << color::cyan << header.password << color::reset << '\n';
+		setup::salt empty_salt;
+		std::memset(empty_salt, 0, sizeof(empty_salt));
+		BOOST_STATIC_ASSERT(sizeof(empty_salt) == sizeof(header.password_salt));
+		if(memcmp(empty_salt, header.password_salt, sizeof(header.password_salt))) {
+			std::cout << "Password salt: " << color::cyan;
+			std::cout << std::hex;
+			for(std::size_t i = 0; i < std::size_t(boost::size(header.password_salt)); i++) {
+				std::cout << std::setfill('0') << std::setw(2)
+				          << int(boost::uint8_t(header.password_salt[i]));
+			}
+			std::cout << color::reset << '\n';
+			std::cout << std::dec;
+		}
 	}
 	
 	std::cout << if_not_zero("Extra disk space required", header.extra_disk_space_required);
@@ -524,7 +541,7 @@ static const char * magic_numbers[][2] = {
 
 static const char * guess_extension(const std::string & data) {
 	
-	for(size_t i = 0; i < ARRAY_SIZE(magic_numbers); i++) {
+	for(size_t i = 0; i < size_t(boost::size(magic_numbers)); i++) {
 		
 		size_t n = strlen(magic_numbers[i][0]);
 		
@@ -564,6 +581,9 @@ static void print_aux(const setup::info & info) {
 
 void print_info(const setup::info & info) {
 	
+	std::ios_base::fmtflags old = std::cout.flags();
+	std::cout << std::boolalpha;
+	
 	print_header(info.header);
 	
 	print_entries(info, info.languages, "Languages");
@@ -584,4 +604,6 @@ void print_info(const setup::info & info) {
 	print_entries(info, info.data_entries, "Data entries");
 	
 	print_aux(info);
+	
+	std::cout.setf(old, std::ios_base::boolalpha);
 }

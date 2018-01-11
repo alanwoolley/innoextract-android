@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Daniel Scharrer
+ * Copyright (C) 2011-2014 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -19,6 +19,8 @@
  */
 
 /*!
+ * \file
+ *
  * Output utility functions.
  */
 #ifndef INNOEXTRACT_UTIL_OUTPUT_HPP
@@ -28,9 +30,9 @@
 #include <string>
 
 #include <boost/cstdint.hpp>
+#include <boost/range/size.hpp>
 
 #include "util/console.hpp"
-#include "util/util.hpp"
 
 struct quoted {
 	
@@ -178,26 +180,27 @@ struct print_bytes {
 template <class T>
 std::ostream & operator<<(std::ostream & os, const print_bytes<T> & s) {
 	
-	std::streamsize precision = os.precision();
-	
 	size_t frac = size_t(1024 * (s.value - T(boost::uint64_t(s.value))));
 	boost::uint64_t whole = boost::uint64_t(s.value);
 	
 	size_t i = 0;
 	
-	while(whole > 1024 && i < ARRAY_SIZE(byte_size_units) - 1) {
-		
+	while(whole >= 1024 && i < size_t(boost::size(byte_size_units)) - 1) {
 		frac = whole % 1024, whole /= 1024;
-		
 		i++;
 	}
 	
-	float num = float(whole) + (float(frac) / 1024.f);
+	if((whole >= 100 && s.precision <= 3) || (whole >= 10 && s.precision <= 2)
+	   || s.precision <= 1) {
+		os << whole;
+	} else {
+		float num = float(whole) + (float(frac) / 1024.f);
+		std::streamsize old_precision = os.precision(s.precision);
+		os << num;
+		os.precision(old_precision);
+	}
 	
-	os << std::setprecision(s.precision) << num << ' ' << byte_size_units[i];
-	
-	os.precision(precision);
-	return os;
+	return os << ' ' << byte_size_units[i];
 }
 
 }

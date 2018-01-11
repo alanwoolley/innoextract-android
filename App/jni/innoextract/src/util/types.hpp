@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Daniel Scharrer
+ * Copyright (C) 2011-2014 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -19,6 +19,8 @@
  */
 
 /*!
+ * \file
+ *
  * Utility functions for dealing with types.
  */
 #ifndef INNOEXTRACT_UTIL_TYPES_HPP
@@ -30,15 +32,11 @@
 #include <boost/integer/static_min_max.hpp>
 #include <boost/integer.hpp>
 
-#include "util/util.hpp"
-
-#include "configure.hpp"
-
 namespace util {
 
 #if BOOST_VERSION < 104200
 
-template <size_t Bits>
+template <int Bits>
 struct uint_t { };
 template <>
 struct uint_t<8>  : public boost::uint_t<8>  { typedef boost::uint8_t exact; };
@@ -49,7 +47,7 @@ struct uint_t<32> : public boost::uint_t<32> { typedef boost::uint32_t exact; };
 template <>
 struct uint_t<64>                            { typedef boost::uint64_t exact; };
 
-template <size_t Bits>
+template <int Bits>
 struct int_t { };
 template <>
 struct int_t<8>  : public boost::int_t<8>  { typedef boost::int8_t exact; };
@@ -88,34 +86,6 @@ struct compatible_integer<Base, Bits, true> {
 		boost::static_unsigned_min<Bits, sizeof(Base) * 8>::value
 	>::exact type;
 };
-
-
-//! Get the alignment of a type.
-template <class T>
-unsigned int alignment_of() {
-#if INNOEXTRACT_HAVE_ALIGNOF
-	return alignof(T);
-#elif defined(_MSC_VER) && _MSC_VER >= 1300
-	return __alignof(T);
-#elif defined(__GNUC__)
-	return __alignof__(T);
-#else
-	return sizeof(T);
-#endif
-}
-
-//! Check if a pointer has aparticular alignment.
-inline bool is_aligned_on(const void * p, size_t alignment) {
-	return alignment == 1
-	       || (is_power_of_2(alignment) ? mod_power_of_2(size_t(p), alignment) == 0
-	                                    : size_t(p) % alignment == 0);
-}
-
-//! Check if a pointer is aligned for a specific type.
-template <class T>
-bool is_aligned(const void * p) {
-	return is_aligned_on(p, alignment_of<T>());
-}
 
 //! CRTP helper class to hide the ugly static casts needed to get to the derived class.
 template <class Impl>

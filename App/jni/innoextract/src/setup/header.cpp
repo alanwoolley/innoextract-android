@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Daniel Scharrer
+ * Copyright (C) 2011-2016 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -26,12 +26,19 @@
 #include <boost/static_assert.hpp>
 
 #include "setup/version.hpp"
+#include "util/encoding.hpp"
 #include "util/load.hpp"
 #include "util/storedenum.hpp"
 
 namespace setup {
 
 namespace {
+
+STORED_ENUM_MAP(stored_alpha_format, header::AlphaIgnored,
+	header::AlphaIgnored,
+	header::AlphaDefined,
+	header::AlphaPremultiplied
+);
 
 STORED_ENUM_MAP(stored_install_verbosity, header::NormalInstallMode,
 	header::NormalInstallMode,
@@ -216,6 +223,11 @@ void header::load(std::istream & is, const version & version) {
 	} else {
 		close_applications_filter.clear();
 	}
+	if(version >= INNO_VERSION(5, 5, 6)) {
+		is >> util::encoded_string(setup_mutex, version.codepage());
+	} else {
+		setup_mutex.clear();
+	}
 	if(version >= INNO_VERSION(5, 2, 5)) {
 		is >> util::ansi_string(license_text);
 		is >> util::ansi_string(info_before);
@@ -292,11 +304,21 @@ void header::load(std::istream & is, const version & version) {
 	} else {
 		back_color2 = 0;
 	}
-	image_back_color = util::load<boost::uint32_t>(is);
+	if(version < INNO_VERSION(5, 5, 7)) {
+		image_back_color = util::load<boost::uint32_t>(is);
+	} else {
+		image_back_color = 0;
+	}
 	if(version >= INNO_VERSION(2, 0, 0) && version < INNO_VERSION(5, 0, 4)) {
 		small_image_back_color = util::load<boost::uint32_t>(is);
 	} else {
 		small_image_back_color = 0;
+	}
+	
+	if(version >= INNO_VERSION(5, 5, 7)) {
+		image_alpha_format = stored_enum<stored_alpha_format>(is).get();
+	} else {
+		image_alpha_format = AlphaIgnored;
 	}
 	
 	if(version < INNO_VERSION(4, 2, 0)) {
@@ -312,7 +334,7 @@ void header::load(std::istream & is, const version & version) {
 	if(version >= INNO_VERSION(4, 2, 2)) {
 		is.read(password_salt, std::streamsize(sizeof(password_salt)));
 	} else {
-		memset(password_salt, 0, sizeof(password_salt));
+		std::memset(password_salt, 0, sizeof(password_salt));
 	}
 	
 	if(version >= INNO_VERSION(4, 0, 0)) {
@@ -405,6 +427,18 @@ void header::load(std::istream & is, const version & version) {
 		uninstall_display_size = 0;
 	}
 	
+	if(version == INNO_VERSION_EXT(5, 5, 0, 1)) {
+		/*
+		 * This is needed to extract an Inno Setup variant (BlackBox v2?) that uses
+		 * the 5.5.0 (unicode) data version string while the format differs:
+		 * The language entries are off by one byte and the EncryptionUsed flag
+		 * gets set while there is no decrypt_dll.
+		 * I'm not sure where exactly this byte goes, but it's after the compression
+		 * type and before EncryptionUsed flag.
+		 * The other values/flags between here and there look sane (mostly default).
+		 */
+		(void)util::load<boost::uint8_t>(is);
+	}
 	
 	stored_flag_reader<flags> flagreader(is, version.bits);
 	
@@ -540,6 +574,9 @@ void header::load(std::istream & is, const version & version) {
 	} else {
 		options |= AllowNetworkDrive;
 	}
+	if(version >= INNO_VERSION(5, 5, 7)) {
+		flagreader.add(ForceCloseApplications);
+	}
 	
 	options |= flagreader;
 	
@@ -634,6 +671,7 @@ NAMES(setup::header::flags, "Setup Option",
 	"close applications",
 	"restart applications",
 	"allow network drive",
+	"force close applications",
 	"uninstallable",
 	"disable dir page",
 	"disable program group page",
@@ -654,6 +692,12 @@ NAMES(setup::header::architecture_types, "Architecture",
 	"x86",
 	"amd64",
 	"IA64",
+)
+
+NAMES(setup::header::alpha_format, "Alpha Format",
+	"ignored",
+	"defined",
+	"premultiplied",
 )
 
 NAMES(setup::header::install_verbosity, "Install Mode",

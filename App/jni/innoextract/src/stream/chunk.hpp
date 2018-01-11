@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Daniel Scharrer
+ * Copyright (C) 2011-2014 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -19,11 +19,13 @@
  */
 
 /*!
+ * \file
+ *
  * Wrapper to read and decompress a chunk from a \ref stream::slice_reader.
  *
  * A chunk consists of one compression stream (one of \ref stream::compression_method) and
- * contains one or more \ref file "files". Files may also have additional filters managed by
- * \ref stream::file_reader.
+ * contains one or more \ref stream::file "files".
+ * Files may also have additional filters managed by \ref stream::file_reader.
  */
 #ifndef INNOEXTRACT_STREAM_CHUNK_HPP
 #define INNOEXTRACT_STREAM_CHUNK_HPP
@@ -78,6 +80,7 @@ struct chunk {
 	
 	bool operator<(const chunk & o) const;
 	bool operator==(const chunk & o) const;
+	
 };
 
 class silce_source;

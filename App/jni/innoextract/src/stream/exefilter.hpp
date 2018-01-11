@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Daniel Scharrer
+ * Copyright (C) 2011-2014 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -19,6 +19,8 @@
  */
 
 /*!
+ * \file
+ *
  * Filters to be used with boost::iostreams for undoing transformations Inno Setup applies
  * to stored executable files to make them more compressible.
  */
@@ -34,6 +36,8 @@
 #include <boost/iostreams/concepts.hpp>
 #include <boost/iostreams/get.hpp>
 #include <boost/iostreams/read.hpp>
+
+namespace stream {
 
 /*!
  * Filter to decode executable files stored by Inno Setup versions before 5.2.0.
@@ -54,14 +58,16 @@ public:
 	
 	inno_exe_decoder_4108() { close(0); }
 	
-	template<typename Source>
+	template <typename Source>
 	std::streamsize read(Source & src, char * dest, std::streamsize n);
 	
 	
-	template<typename Source>
+	template <typename Source>
 	void close(const Source &) {
 		addr_bytes_left = 0, addr_offset = 5;
 	}
+	
+private:
 	
 	boost::uint32_t addr;
 	size_t addr_bytes_left;
@@ -93,10 +99,10 @@ public:
 	explicit inno_exe_decoder_5200(bool flip_high_byte)
 		: flip_high_byte(flip_high_byte) { close(0); }
 	
-	template<typename Source>
+	template <typename Source>
 	std::streamsize read(Source & src, char * dest, std::streamsize n);
 	
-	template<typename Source>
+	template <typename Source>
 	void close(const Source &) {
 		offset = 0, flush_bytes = 0;
 	}
@@ -135,7 +141,7 @@ private:
 
 // Implementation:
 
-template<typename Source>
+template <typename Source>
 std::streamsize inno_exe_decoder_4108::read(Source & src, char * dest, std::streamsize n) {
 	
 	for(std::streamsize i = 0; i < n; i++, addr_offset++) {
@@ -165,7 +171,7 @@ std::streamsize inno_exe_decoder_4108::read(Source & src, char * dest, std::stre
 	return n;
 }
 
-template<typename Source>
+template <typename Source>
 std::streamsize inno_exe_decoder_5200::read(Source & src, char * dest, std::streamsize n) {
 	
 	char * end = dest + n;
@@ -263,5 +269,7 @@ std::streamsize inno_exe_decoder_5200::read(Source & src, char * dest, std::stre
 #undef total_read
 	
 }
+
+} // namespace stream
 
 #endif // INNOEXTRACT_STREAM_EXEFILTER_HPP

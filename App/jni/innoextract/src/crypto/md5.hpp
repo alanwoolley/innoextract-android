@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Daniel Scharrer
+ * Copyright (C) 2011-2015 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -18,6 +18,11 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
+/*!
+ * \file
+ *
+ * MD5 hashing routines.
+ */
 #ifndef INNOEXTRACT_CRYPTO_MD5_HPP
 #define INNOEXTRACT_CRYPTO_MD5_HPP
 

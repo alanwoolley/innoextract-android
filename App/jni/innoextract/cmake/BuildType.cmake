@@ -8,15 +8,28 @@ option(SET_OPTIMIZATION_FLAGS "Adjust compiler optimization flags" ON)
 if(CMAKE_BUILD_TYPE STREQUAL "")
 	set(CMAKE_BUILD_TYPE "Release")
 endif()
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-	add_definitions(-DDEBUG)
-	set(DEBUG 1)
-endif()
 
 if(MSVC)
 	
 	if(SET_WARNING_FLAGS)
+		add_definitions(/wd4250) # harasses you when inheriting from std::basic_{i,o}stream
 		add_definitions(/wd4996) # 'unsafe' stdlib functions used by Boost
+	endif()
+	
+	if(SET_OPTIMIZATION_FLAGS)
+		# Enable linker optimization in release
+		#  /OPT:REF   Eliminate unreferenced code
+		#  /OPT:ICF   COMDAT folding (merge functions generating the same code)
+		#  /GL + /LTCG
+		set(CMAKE_CXX_FLAGS_RELEASE
+		    "${CMAKE_CXX_FLAGS_RELEASE} /Ox /Os /GL")
+		if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+			set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /arch:SSE2")
+		endif()
+		set(CMAKE_EXE_LINKER_FLAGS_RELEASE
+		    "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /OPT:REF /OPT:ICF /LTCG")
+		set(CMAKE_SHARED_LINKER_FLAGS_RELEASE
+		    "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /OPT:REF /OPT:ICF /LTCG")
 	endif()
 	
 else(MSVC)
@@ -37,15 +50,32 @@ else(MSVC)
 		add_cxxflag("-Wsign-conversion")
 		add_cxxflag("-Wmissing-declarations")
 		add_cxxflag("-Wredundant-decls")
+		add_cxxflag("-Wdouble-promotion")
+		if(NOT DEBUG_EXTRA AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+			# GCC is 'clever' and silently accepts -Wno-*  - check for the non-negated variant
+			check_compiler_flag(FLAG_FOUND "-Wmaybe-uninitialized")
+			if(FLAG_FOUND)
+				add_cxxflag("-Wno-maybe-uninitialized")
+			endif()
+		endif()
 		
 		# clang
 		add_cxxflag("-Wliteral-conversion")
 		add_cxxflag("-Wshift-overflow")
 		add_cxxflag("-Wbool-conversions")
+		add_cxxflag("-Wheader-guard")
+		add_cxxflag("-Wpessimizing-move")
 		
 		# icc
-		if(NOT DEBUG_EXTRA)
-			add_cxxflag("-wd1418") # 'external function definition with no prior declaration'
+		if(NOT DEBUG_EXTRA AND CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
+			# '... was declared but never referenced'
+			# While normally a sensible warning, it also fires when a member isn't used for
+			# *all* instantiations of a template class, making the warning too annoying to
+			# be useful
+			add_cxxflag("-wd177")
+			# 'external function definition with no prior declaration'
+			# This gets annoying fast with small inline/template functions.
+			add_cxxflag("-wd1418")
 		endif()
 		
 	endif(SET_WARNING_FLAGS)

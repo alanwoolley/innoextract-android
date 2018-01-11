@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Daniel Scharrer
+ * Copyright (C) 2011-2014 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -19,12 +19,15 @@
  */
 
 /*!
+ * \file
+ *
  * Abstraction for reading the embedded or external raw setup data.
  */
-#ifndef INNOEXTRACT_STREAM_SLICEREADER_HPP
-#define INNOEXTRACT_STREAM_SLICEREADER_HPP
+#ifndef INNOEXTRACT_STREAM_SLICE_HPP
+#define INNOEXTRACT_STREAM_SLICE_HPP
 
 #include <ios>
+#include <string>
 
 #include <boost/iostreams/concepts.hpp>
 #include <boost/filesystem/path.hpp>
@@ -33,7 +36,7 @@
 
 namespace stream {
 
-//! Error thrown by \ref chunk_reader if there was a problem.
+//! Error thrown by \ref slice_reader if there was a problem.
 struct slice_error : public std::ios_base::failure {
 	
 	explicit slice_error(std::string msg) : std::ios_base::failure(msg) { }
@@ -61,7 +64,7 @@ class slice_reader : public boost::iostreams::source {
 	// Information for eading external setup data
 	path_type    dir;             //!< Slice directory specified at construction.
 	path_type    last_dir;        //!< Directory containing the current slice.
-	path_type    base_file;       //!< Base file name for slices.
+	std::string  base_file;       //!< Base file name for slices.
 	const size_t slices_per_disk; //!< Number of slices grouped into each disk (for names).
 	
 	// Information about the current slice
@@ -73,11 +76,14 @@ class slice_reader : public boost::iostreams::source {
 	util::ifstream ifs; //!< File input stream used when reading from external slices.
 	std::istream * is;  //!< Input stream to read from.
 	
-	bool seek(size_t slice);
+	void seek(size_t slice);
 	bool open_file(const path_type & file);
-	bool open(size_t slice, const path_type & slice_file);
+	void open(size_t slice);
 	
 public:
+	
+	static std::string slice_filename(const std::string & basename, size_t slice,
+	                                  size_t slices_per_disk = 1);
 	
 	/*!
 	 * Construct a \ref slice_reader to read from data inside the setup file.
@@ -107,7 +113,7 @@ public:
 	 * \param basename        The base name for slice files.
 	 * \param slices_per_disk How many slices are grouped into one disk. Must not be \c 0.
 	 */
-	slice_reader(const path_type & dir, const path_type & basename, size_t slices_per_disk);
+	slice_reader(const path_type & dir, const std::string & basename, size_t slices_per_disk);
 	
 	/*!
 	 * Attempt to seek to an offset within a slice.
@@ -150,4 +156,4 @@ public:
 
 } // namespace stream
 
-#endif // INNOEXTRACT_STREAM_SLICEREADER_HPP
+#endif // INNOEXTRACT_STREAM_SLICE_HPP

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Daniel Scharrer
+ * Copyright (C) 2012-2015 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -18,6 +18,11 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
+/*!
+ * \file
+ *
+ * Functions to evaluation Inno Setup boolean expressions.
+ */
 #ifndef INNOEXTRACT_SETUP_EXPRESSION_HPP
 #define INNOEXTRACT_SETUP_EXPRESSION_HPP
 
@@ -26,6 +31,8 @@
 namespace setup {
 
 bool expression_match(const std::string & test, const std::string & expression);
+
+bool is_simple_expression(const std::string & expression);
 
 } // namespace setup
 

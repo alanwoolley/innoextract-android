@@ -1,5 +1,5 @@
 
-# Copyright (C) 2011-2013 Daniel Scharrer
+# Copyright (C) 2011-2016 Daniel Scharrer
 #
 # This software is provided 'as-is', without any express or implied
 # warranty.  In no event will the author(s) be held liable for any damages
@@ -16,6 +16,10 @@
 # 2. Altered source versions must be plainly marked as such, and must not be
 #    misrepresented as being the original software.
 # 3. This notice may not be removed or altered from any source distribution.
+
+# Note: In CMake before 3.0 set(var "" PARENT_SCOPE) *unsets* the variable in the
+# parent scope instead of setting it to the empty string.
+# This means if(var STREQUAL "") will be false since var is not defined and thus not expanded.
 
 function(check_compile RESULT FILE FLAG TYPE)
 	
@@ -60,11 +64,11 @@ function(check_compile RESULT FILE FLAG TYPE)
 	set(old_CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}")
 	set(old_CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}")
 	set(old_CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS}")
-	if("${TYPE}" STREQUAL "linker flag")
+	if(TYPE STREQUAL "linker flag")
 		set(CMAKE_EXE_LINKER_FLAGS "${old_CMAKE_EXE_LINKER_FLAGS} ${FLAG}")
 		set(CMAKE_SHARED_LINKER_FLAGS "${old_CMAKE_SHARED_LINKER_FLAGS} ${FLAG}")
 		set(CMAKE_MODULE_LINKER_FLAGS "${old_CMAKE_MODULE_LINKER_FLAGS} ${FLAG}")
-	elseif("${TYPE}" STREQUAL "compiler flag")
+	elseif(TYPE STREQUAL "compiler flag")
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${FLAG}")
 	endif()
 	
@@ -118,6 +122,14 @@ function(check_flag RESULT FLAG TYPE)
 	set(${RESULT} "${result}" PARENT_SCOPE)
 endfunction(check_flag)
 
+function(check_builtin RESULT EXPR)
+	set(compile_test_file "${CMAKE_CURRENT_BINARY_DIR}/compile_expr_test.cpp")
+	string(REGEX MATCH "[a-zA-Z_][a-zA-Z_0-9]*" type "${EXPR}")
+	file(WRITE ${compile_test_file} "__attribute__((const)) int main(){ (void)(${EXPR}); return 0; }\n")
+	check_compile(result "${compile_test_file}" "${type}" "compiler builtin")
+	set(${RESULT} "${result}" PARENT_SCOPE)
+endfunction(check_builtin)
+
 function(check_compiler_flag RESULT FLAG)
 	check_flag(result "${FLAG}" compiler)
 	set(${RESULT} "${result}" PARENT_SCOPE)
@@ -134,7 +146,7 @@ function(add_cxxflag FLAG)
 	
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${RESULT}" PARENT_SCOPE)
 	
-	if("${RESULT}" STREQUAL "")
+	if(NOT DEFINED RESULT OR RESULT STREQUAL "")
 		set(FLAG_FOUND 0 PARENT_SCOPE)
 	else()
 		set(FLAG_FOUND 1 PARENT_SCOPE)
@@ -150,7 +162,7 @@ function(add_ldflag FLAG)
 	set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${RESULT}" PARENT_SCOPE)
 	set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${RESULT}" PARENT_SCOPE)
 	
-	if("${RESULT}" STREQUAL "")
+	if(NOT DEFINED RESULT OR RESULT STREQUAL "")
 		set(FLAG_FOUND 0 PARENT_SCOPE)
 	else()
 		set(FLAG_FOUND 1 PARENT_SCOPE)
@@ -180,6 +192,12 @@ endfunction(try_link_library)
 ##############################################################################
 # Check that a a library actually works for the current configuration
 function(check_link_library LIBRARY_NAME LIBRARY_VARIABLE)
+	
+	if(MSVC)
+		# The main point of this is to work around CMakes ignorance of lib32.
+		# This doesn't really apply for systems that don't use a unix-like library dir layout.
+		return()
+	endif()
 	
 	set(lib_current "${${LIBRARY_VARIABLE}}")
 	set(found_var "ARX_CLL_${LIBRARY_NAME}_FOUND")

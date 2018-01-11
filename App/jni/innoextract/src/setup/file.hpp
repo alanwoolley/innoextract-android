@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Daniel Scharrer
+ * Copyright (C) 2011-2015 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -18,6 +18,11 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
+/*!
+ * \file
+ *
+ * Structures for file entries stored in Inno Setup files.
+ */
 #ifndef INNOEXTRACT_SETUP_FILE_HPP
 #define INNOEXTRACT_SETUP_FILE_HPP
 
@@ -81,6 +86,10 @@ struct file_entry : public item {
 		RegSvrExe,
 	};
 	
+	enum file_attributes {
+		ReadOnly = 0x1
+	};
+	
 	std::string source;
 	std::string destination;
 	std::string install_font_name;
@@ -90,7 +99,7 @@ struct file_entry : public item {
 	boost::uint32_t attributes;
 	boost::uint64_t external_size;
 	
-	int permission; //!< index into the permission entry list
+	boost::int16_t permission; //!< index into the permission entry list
 	
 	flags options;
 	

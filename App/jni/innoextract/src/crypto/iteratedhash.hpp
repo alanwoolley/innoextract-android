@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Daniel Scharrer
+ * Copyright (C) 2011-2014 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -18,6 +18,11 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
+/*!
+ * \file
+ *
+ * Generic hashing utilities.
+ */
 #ifndef INNOEXTRACT_CRYPTO_ITERATEDHASH_HPP
 #define INNOEXTRACT_CRYPTO_ITERATEDHASH_HPP
 
@@ -26,11 +31,13 @@
 #include <cstring>
 
 #include <boost/cstdint.hpp>
+#include <boost/range/size.hpp>
 
 #include "crypto/checksum.hpp"
+#include "util/align.hpp"
 #include "util/endian.hpp"
+#include "util/math.hpp"
 #include "util/types.hpp"
-#include "util/util.hpp"
 
 namespace crypto {
 
@@ -125,7 +132,7 @@ size_t iterated_hash<T>::hash(const char * input, size_t length) {
 		do {
 			
 			hash_word buffer[block_size / sizeof(hash_word)];
-			byte_order::load(input, buffer, ARRAY_SIZE(buffer));
+			byte_order::load(input, buffer, size_t(boost::size(buffer)));
 			
 			transform::transform(state, buffer);
 			

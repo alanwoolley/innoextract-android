@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Daniel Scharrer
+ * Copyright (C) 2011-2016 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -56,7 +56,6 @@ static lzma_stream * init_raw_lzma_stream(lzma_vli filter, lzma_options_lzma & o
 
 bool lzma_decompressor_impl_base::filter(const char * & begin_in, const char * end_in,
                                          char * & begin_out, char * end_out, bool flush) {
-	(void)flush;
 	
 	lzma_stream * strm = static_cast<lzma_stream *>(stream);
 	
@@ -67,6 +66,10 @@ bool lzma_decompressor_impl_base::filter(const char * & begin_in, const char * e
 	strm->avail_out = size_t(end_out - begin_out);
 	
 	lzma_ret ret = lzma_code(strm, LZMA_RUN);
+	
+	if(flush && ret == LZMA_BUF_ERROR && strm->avail_out > 0) {
+		throw lzma_error("truncated lzma stream", ret);
+	}
 	
 	begin_in = reinterpret_cast<const char *>(strm->next_in);
 	begin_out = reinterpret_cast<char *>(strm->next_out);
@@ -107,8 +110,8 @@ bool inno_lzma1_decompressor_impl::filter(const char * & begin_in, const char * 
 		if(properties > (9 * 5 * 5)) {
 			throw lzma_error("inno lzma1 property error", LZMA_FORMAT_ERROR);
 		}
-		options.pb = properties / (9 * 5);
-		options.lp = (properties % (9 * 5)) / 9;
+		options.pb = boost::uint32_t(properties / (9 * 5));
+		options.lp = boost::uint32_t((properties % (9 * 5)) / 9);
 		options.lc = properties % 9;
 		
 		options.dict_size = util::little_endian::load<boost::uint32_t>(header + 1);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Daniel Scharrer
+ * Copyright (C) 2011-2016 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -19,6 +19,8 @@
  */
 
 /*!
+ * \file
+ *
  * Terminal output functions: colors, progress bar.
  */
 #ifndef INNOEXTRACT_UTIL_CONSOLE_HPP
@@ -36,16 +38,9 @@ namespace color {
 
 /*!
  * Object that can be written to the console to change the output color.
- *
- * On some operating systems these will only work if streamed directly into std::cout
- * ot std::cerr.
  */
 struct shell_command {
-#if defined(_WIN32)
-	boost::uint16_t command;
-#else
 	const char * command;
-#endif
 };
 
 std::ostream & operator<<(std::ostream & os, const shell_command command);
@@ -74,12 +69,10 @@ extern shell_command dim_white;
 //! The last set output color.
 extern shell_command current;
 
-#if !defined(_WIN32)
 inline std::ostream & operator<<(std::ostream & os, const shell_command command) {
 	color::current = command;
 	return os << command.command;
 }
-#endif
 
 enum is_enabled {
 	enable,
@@ -97,10 +90,18 @@ void init(is_enabled color = automatic, is_enabled progress = automatic);
 
 } // namespace color
 
+enum ClearMode {
+	FullClear,    //!< Perform a full clear.
+	FastClear,    //!< Perform a full clear if it is cheap, otherwise only reset the cursor.
+	DeferredClear //!< Perform a full clear if it is cheap, otherwise leave the line as-is,
+	              //!< but insert new writes before it until the next full/fast clear.
+};
+
 //! A text-based progress bar for terminals.
 class progress {
 	
-
+	boost::uint64_t max;
+	boost::uint64_t value;
 	bool show_rate;
 	
 	boost::posix_time::ptime start_time;
@@ -112,9 +113,7 @@ class progress {
 	std::ostringstream label;
 	
 public:
-	boost::uint64_t max;
-	boost::uint64_t value;
-
+	
 	/*!
 	 * \param max       Maximumum progress values.
 	 *                  If this value is \c 0, the progress bar will be unbounded.
@@ -133,8 +132,10 @@ public:
 	 *              maximum set in the constructor, the bar will be full.
 	 * \param force Force updating the progress bar. Normally, the progress bar. Otherwise,
 	 *              updates are rate-limited and small deltas are not displayed immediately.
+	 *
+	 * \return true if the progres bar was updated
 	 */
-	void update(boost::uint64_t delta = 0, bool force = false);
+	bool update(boost::uint64_t delta = 0, bool force = false);
 	
 	/*!
 	 * Draw a bounded progress bar (with a maximum).
@@ -152,11 +153,17 @@ public:
 	 */
 	static void show_unbounded(float value, const std::string & label = std::string());
 	
-	//! Clear any progress bar to make way for other output.
-	static int clear();
+	/*!
+	 * Clear any progress bar to make way for other output.
+	 *
+	 * \param mode The clear mode to perform.
+	 */
+	static void clear(ClearMode mode = FullClear);
 	
 	//! Enable or disable the progress bar.
 	static void set_enabled(bool enable);
+	
+	static bool is_enabled();
 	
 };
 

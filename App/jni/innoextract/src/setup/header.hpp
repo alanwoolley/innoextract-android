@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Daniel Scharrer
+ * Copyright (C) 2011-2016 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -18,6 +18,11 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
+/*!
+ * \file
+ *
+ * Structures for the main setup header in Inno Setup files.
+ */
 #ifndef INNOEXTRACT_SETUP_HEADER_HPP
 #define INNOEXTRACT_SETUP_HEADER_HPP
 
@@ -93,6 +98,7 @@ struct header {
 		CloseApplications,
 		RestartApplications,
 		AllowNetworkDrive,
+		ForceCloseApplications,
 		
 		// Obsolete flags
 		Uninstallable,
@@ -108,6 +114,7 @@ struct header {
 		DisableDirExistsWarning,
 		BackSolid,
 		OverwriteUninstRegEntries
+		
 	);
 	
 	FLAGS(architecture_types,
@@ -145,6 +152,7 @@ struct header {
 	std::string create_uninstall_registry_key;
 	std::string uninstallable;
 	std::string close_applications_filter;
+	std::string setup_mutex;
 	std::string license_text;
 	std::string info_before;
 	std::string info_after;
@@ -177,6 +185,13 @@ struct header {
 	Color back_color2;
 	Color image_back_color;
 	Color small_image_back_color;
+	
+	enum alpha_format {
+		AlphaIgnored,
+		AlphaDefined,
+		AlphaPremultiplied
+	};
+	alpha_format image_alpha_format;
 	
 	crypto::checksum password;
 	salt password_salt;
@@ -252,6 +267,7 @@ struct header {
 
 NAMED_FLAGS(setup::header::flags)
 NAMED_FLAGS(setup::header::architecture_types)
+NAMED_ENUM(setup::header::alpha_format)
 NAMED_ENUM(setup::header::install_verbosity)
 NAMED_ENUM(setup::header::log_mode)
 NAMED_ENUM(setup::header::style)

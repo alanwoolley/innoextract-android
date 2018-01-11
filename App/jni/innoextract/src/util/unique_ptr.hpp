@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Scharrer
+ * Copyright (C) 2013-2014 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -19,6 +19,8 @@
  */
 
 /*!
+ * \file
+ *
  * Wrapper to select std::unique_ptr if available, std::auto_ptr otherwise.
  */
 #ifndef INNOEXTRACT_UTIL_UNIQUE_PTR_HPP
@@ -30,7 +32,7 @@
 
 namespace util {
 
-//! Get a unique_ptr or auto_ptr for the given type.
+//! Get a std::unique_ptr or std::auto_ptr for the given type.
 template <typename T>
 struct unique_ptr {
 #if INNOEXTRACT_HAVE_STD_UNIQUE_PTR

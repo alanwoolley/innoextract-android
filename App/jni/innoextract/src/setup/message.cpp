@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Daniel Scharrer
+ * Copyright (C) 2011-2014 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -24,6 +24,7 @@
 
 #include "setup/language.hpp"
 #include "setup/version.hpp"
+#include "util/encoding.hpp"
 #include "util/load.hpp"
 
 namespace setup {
@@ -39,7 +40,7 @@ void message_entry::load(std::istream & is, const version & version,
 	boost::uint32_t codepage;
 	if(language < 0) {
 		codepage = version.codepage();
-	} else if(language < 0 || size_t(language) >= languages.size()) {
+	} else if(size_t(language) >= languages.size()) {
 		value.clear();
 		return;
 	} else {

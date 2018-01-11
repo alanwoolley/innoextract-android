@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Daniel Scharrer
+ * Copyright (C) 2011-2015 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -18,6 +18,11 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
+/*!
+ * \file
+ *
+ * Structures for file content entries stored in Inno Setup files.
+ */
 #ifndef INNOEXTRACT_SETUP_DATA_HPP
 #define INNOEXTRACT_SETUP_DATA_HPP
 
@@ -61,11 +66,15 @@ struct data_entry {
 	boost::int64_t timestamp;
 	boost::uint32_t timestamp_nsec;
 	
-	boost::uint32_t file_version_ms;
-	boost::uint32_t file_version_ls;
+	boost::uint64_t file_version;
 	
 	flags options;
 	
+	/*!
+	 * Load one data entry.
+	 *
+	 * \note This function may not be thread-safe on all operating systems.
+	 */
 	void load(std::istream & is, const version & version);
 	
 };

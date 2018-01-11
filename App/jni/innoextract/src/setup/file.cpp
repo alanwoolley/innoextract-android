@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Daniel Scharrer
+ * Copyright (C) 2011-2014 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -111,7 +111,7 @@ void file_entry::load(std::istream & is, const version & version) {
 	if(version >= INNO_VERSION(4, 1, 0)) {
 		permission = util::load<boost::int16_t>(is);
 	} else {
-		permission = -1;
+		permission = boost::int16_t(-1);
 	}
 	
 	stored_flag_reader<flags> flagreader(is, version.bits);
