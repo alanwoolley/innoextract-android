@@ -38,6 +38,5 @@ deploy:
     - App/build/outputs/apk/release/*.apk
     - mapping.zip
   on:
-    branch: master
     tags: true
     repo: alanwoolley/innoextract-android
