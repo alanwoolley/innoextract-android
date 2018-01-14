@@ -6,8 +6,10 @@
     <string name="unable_to_extract">"This application cannot extract this file.
 
 The following limitations apply:
-    \u2022 Inno Setup 1.2.10 to 5.5.6
-    \u2022 Encrypted installers are not supported"
+    \u2022 Inno Setup 1.2.10 to 5.5.8
+    \u2022 Encrypted installers are not supported
+
+Please check that your file is a valid Inno Setup file."
     </string>
 
     <string name="cannot_write_to_directory">"Unable to write to directory.
