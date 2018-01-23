@@ -164,11 +164,11 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
                 done.set(true)
                 speedCalculator = null
 
-                mFinalNotificationBuilder.setTicker("Extract Successful")
+                mFinalNotificationBuilder.setTicker(getString(R.string.final_notification_success_ticker))
                         .setSmallIcon(R.drawable.ic_extracting)
-                        .setContentTitle("Extracted")
+                        .setContentTitle(getString(R.string.final_notification_success_title))
                         .setChannelId(NOTIFICATION_CHANNEL)
-                        .setContentText("Extraction Successful")
+                        .setContentText(getString(R.string.final_notification_success_text))
 
                 try {
                     logIntent.putExtra("log", writeLogToFile())
@@ -194,10 +194,10 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
             override fun onFailure(e: Exception) {
                 warn("Failed to extract")
                 done.set(true)
-                mFinalNotificationBuilder.setTicker("Extract Failed")
+                mFinalNotificationBuilder.setTicker(getString(R.string.extract_failed))
                         .setSmallIcon(R.drawable.ic_extracting)
                         .setChannelId(NOTIFICATION_CHANNEL)
-                        .setContentTitle("Extract Failed")
+                        .setContentTitle(getString(R.string.extract_failed))
 
                 try {
                     logIntent.putExtra("log", writeLogToFile())
@@ -207,7 +207,7 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
                                     PendingIntent.FLAG_UPDATE_CURRENT)
 
                     mFinalNotificationBuilder
-                            .addAction(R.drawable.ic_view_log, "View Log",
+                            .addAction(R.drawable.ic_view_log, getString(R.string.final_notification_action_text),
                                     logPendingIntent)
                 } catch (eb: IOException) {
                     error("couldn't write log file", eb)
@@ -224,11 +224,11 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
         mNotificationManager = getSystemService(
                 Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        mNotificationBuilder.setContentTitle("Extracting...")
+        mNotificationBuilder.setContentTitle(getString(R.string.progress_notification_title))
                 .setSmallIcon(R.drawable.ic_extracting)
-                .setTicker("Extracting inno setup file")
+                .setTicker(getString(R.string.progress_notification_ticker))
                 .setChannelId(NOTIFICATION_CHANNEL)
-                .setContentText("Extracting inno setup file")
+                .setContentText(getString(R.string.progress_notification_text))
 
         startForeground(ONGOING_NOTIFICATION, mNotificationBuilder.build())
 
