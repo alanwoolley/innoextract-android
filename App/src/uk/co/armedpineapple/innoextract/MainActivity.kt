@@ -151,7 +151,7 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
 
     private fun onResult(success: Boolean) {
         if (success) {
-            Log.d("TEST", "SUCCESS!!")
+            debug("Permissions granted")
         } else {
             finish()
         }
