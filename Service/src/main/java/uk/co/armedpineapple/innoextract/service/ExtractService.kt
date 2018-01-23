@@ -82,7 +82,6 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
         super.onCreate()
 
         mNotificationBuilder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL)
-        mFinalNotificationBuilder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL)
         mNotificationManager = getSystemService(
                 Context.NOTIFICATION_SERVICE) as NotificationManager
 
@@ -118,6 +117,10 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
         val logIntent = Intent(this, LogActivity::class.java)
 
         val cb = object : IExtractService.ExtractCallback {
+
+            init {
+                mFinalNotificationBuilder = NotificationCompat.Builder(this@ExtractService, NOTIFICATION_CHANNEL)
+            }
 
             private var speedCalculator: SpeedCalculator? = SpeedCalculator()
             private val done = AtomicBoolean(false)
@@ -275,11 +278,11 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
 
     @Keep
     fun gotString(inString: String, streamno: Int) {
+        verbose("Received: $inString")
         val msg = mLoggingThread!!.lineHandler.obtainMessage()
         msg.what = streamno
         msg.obj = inString
         mLoggingThread!!.lineHandler.sendMessage(msg)
-        verbose("Received: $inString")
     }
 
     inner class LoggingThread internal constructor(name: String, internal var callback: IExtractService.ExtractCallback) : HandlerThread(name) {
@@ -301,12 +304,6 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
                         warn("Unknown message")
                         parseErr(msg.obj as String)
                     }
-                }
-                if (msg.what == STDOUT) {
-                    parseOut(msg.obj as String)
-                } else {
-                    parseErr(msg.obj as String)
-
                 }
             }
 

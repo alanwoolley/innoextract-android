@@ -2,7 +2,7 @@ package uk.co.armedpineapple.innoextract.service
 
 class SpeedCalculator {
 
-    private val MIN_TIME = 2500
+    private val MIN_TIME = 5000
     private var lastTime: Long = 0
     private var lastValue: Long = 0
 
