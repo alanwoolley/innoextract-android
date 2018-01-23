@@ -46,7 +46,7 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
     var connection = Connection()
     var launchIntent : Intent? = null
 
-    lateinit private var extractService: IExtractService
+    private lateinit var extractService: IExtractService
 
     private fun hideSelectorFragment() {
 
@@ -141,10 +141,6 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
         if (isServiceBound && extractService.isExtractInProgress()) {
             hideSelectorFragment()
         }
-    }
-
-    override fun onStop() {
-        super.onStop()
     }
 
     override fun onDestroy() {

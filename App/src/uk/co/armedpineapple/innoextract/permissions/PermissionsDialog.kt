@@ -4,8 +4,6 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.support.v7.app.AlertDialog
 import com.karumi.dexter.MultiplePermissionsReport
-import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.BaseMultiplePermissionsListener
 import uk.co.armedpineapple.innoextract.R
 
@@ -22,7 +20,7 @@ class PermissionsDialog(private val context: Context, private val onResult: (suc
         if (!report.areAllPermissionsGranted()) {
             showDialog()
         } else {
-            onResult(true);
+            onResult(true)
         }
     }
 

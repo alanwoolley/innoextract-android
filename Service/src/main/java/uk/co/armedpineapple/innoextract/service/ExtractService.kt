@@ -142,7 +142,7 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
                 if (done.get()) return
                 mNotificationBuilder.setProgress(max, value, false)
 
-                val bps = Math.max(speedCalculator!!.update(value.toLong()), 1).toInt()
+                val bps = Math.max(speedCalculator!!.update(value.toLong()), 1024).toInt()
                 val kbps = bps / 1024
                 val secondsLeft = (max - value) / bps
 
