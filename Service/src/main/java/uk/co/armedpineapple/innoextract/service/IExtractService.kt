@@ -9,7 +9,7 @@ interface IExtractService {
     fun extract(toExtract: File, extractDir: File,
                 callback: ExtractCallback)
 
-    fun check(toExtract: File, callback: (Boolean) -> Unit)
+    fun check(toCheck: File, callback: (Boolean) -> Unit)
 
     interface ExtractCallback {
         fun onProgress(value: Int, max: Int, speedBps: Int, remainingSeconds: Int)

@@ -24,7 +24,7 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
         val progressFragment = supportFragmentManager.findFragmentById(R.id.progressFragment) as? ProgressFragment
         if (progressFragment != null) {
             val pct = (1.0f * value/max) * 100
-            progressFragment.update(pct.toInt(), speedBps, remainingSeconds)
+            progressFragment.update(pct.toInt(), remainingSeconds)
         }
     }
 

@@ -1,7 +1,6 @@
 package uk.co.armedpineapple.innoextract
 
 import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
@@ -17,7 +16,7 @@ class ProgressFragment : Fragment() {
 
     private var mListener: OnFragmentInteractionListener? = null
 
-    fun update(pct: Int, speedBps: Int, remainingSeconds: Int) {
+    fun update(pct: Int, remainingSeconds: Int) {
         if (!isAdded) {
             return
         }
@@ -65,6 +64,4 @@ class ProgressFragment : Fragment() {
 
 
     interface OnFragmentInteractionListener
-
-
 }

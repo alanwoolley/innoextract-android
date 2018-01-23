@@ -1,6 +1,8 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
+ext.anko_version='0.10.4'
+
 android {
     compileSdkVersion 27
     defaultConfig {
@@ -40,6 +42,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:27.0.2'
     implementation 'joda-time:joda-time:2.9.9'
+    implementation "org.jetbrains.anko:anko-commons:$anko_version"
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'

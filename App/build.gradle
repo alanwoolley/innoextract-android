@@ -8,7 +8,6 @@ project.ext.version = "3.0.4-beta2"
 
 ext.anko_version='0.10.4'
 
-
 repositories {
     mavenCentral()
     maven { url 'http://guardian.github.com/maven/repo-releases' }
@@ -28,7 +27,7 @@ dependencies {
     compile 'com.karumi:dexter:4.2.0'
     compile 'com.github.debop:koda-time:1.2.1'
 
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     compile "org.jetbrains.anko:anko-commons:$anko_version"
     implementation project(':Service')
 }
