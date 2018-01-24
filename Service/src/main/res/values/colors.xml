@@ -1,0 +1,12 @@
+<!--?xml version="1.0" encoding="UTF-8"?-->
+<resources>
+    <color name="primary">#009688</color>
+    <color name="colorPrimary">#00796b</color>
+    <color name="primary_dark">#00796b</color>
+    <color name="primary_light">#b2dfdb</color>
+    <color name="accent">#448AFF</color>
+    <color name="secondary_text">#212121</color>
+    <color name="primary_text">#FFFFFF</color>
+    <color name="navColor">#009688</color>
+    <color name="actionModeToolbar">#009688</color>
+</resources>

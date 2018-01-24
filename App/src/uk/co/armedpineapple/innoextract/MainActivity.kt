@@ -14,6 +14,8 @@ import com.karumi.dexter.Dexter
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.debug
 import uk.co.armedpineapple.innoextract.permissions.PermissionsDialog
+import uk.co.armedpineapple.innoextract.service.ExtractService
+import uk.co.armedpineapple.innoextract.service.IExtractService
 import java.io.File
 
 class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFragment.OnFragmentInteractionListener, IExtractService.ExtractCallback, AnkoLogger, AppCompatActivity() {
@@ -22,7 +24,7 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
         val progressFragment = supportFragmentManager.findFragmentById(R.id.progressFragment) as? ProgressFragment
         if (progressFragment != null) {
             val pct = (1.0f * value/max) * 100
-            progressFragment.update(pct.toInt(), speedBps, remainingSeconds)
+            progressFragment.update(pct.toInt(), remainingSeconds)
         }
     }
 
@@ -44,7 +46,7 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
     var connection = Connection()
     var launchIntent : Intent? = null
 
-    lateinit private var extractService: IExtractService
+    private lateinit var extractService: IExtractService
 
     private fun hideSelectorFragment() {
 
@@ -141,10 +143,6 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         unbindService(connection)
@@ -153,7 +151,7 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
 
     private fun onResult(success: Boolean) {
         if (success) {
-            Log.d("TEST", "SUCCESS!!")
+            debug("Permissions granted")
         } else {
             finish()
         }

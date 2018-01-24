@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Inno Setup Extractor Service</string>
+    <string name="title_activity_log">Extract Log</string>
+
+    <string name="notification_channel">Extraction Progress</string>
+    <string name="notification_channel_description">Updates on the progress of Inno Setup file extraction</string>
+    <string name="extract_failed">Extract Failed</string>
+    <string name="progress_notification_title">Extracting…</string>
+    <string name="progress_notification_ticker">Extracting inno setup file
+    </string>
+    <string name="progress_notification_text">Extracting inno setup file
+    </string>
+    <string name="final_notification_action_text">View Log</string>
+    <string name="final_notification_success_ticker">Extract Successful</string>
+    <string name="final_notification_success_title">Extracted</string>
+    <string name="final_notification_success_text">Extraction Successful
+    </string>
+</resources>

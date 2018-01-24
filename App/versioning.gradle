@@ -1,0 +1,9 @@
+ext {
+    buildVersionCode = {
+
+        def (major, minor, patch) = version.toLowerCase().split('-')[0].tokenize('.')
+        (major, minor, patch) = [major, minor, patch].collect{it.toInteger()}
+
+        (major * 100000) + (minor * 1000) + patch
+    }
+}

@@ -6,8 +6,10 @@
     <string name="unable_to_extract">"This application cannot extract this file.
 
 The following limitations apply:
-    \u2022 Inno Setup 1.2.10 to 5.5.6
-    \u2022 Encrypted installers are not supported"
+    \u2022 Inno Setup 1.2.10 to 5.5.8
+    \u2022 Encrypted installers are not supported
+
+Please check that your file is a valid Inno Setup file."
     </string>
 
     <string name="cannot_write_to_directory">"Unable to write to directory.
@@ -16,4 +18,5 @@ Please choose another directory and ensure that the application has permission t
     <string name="permission_button">Close</string>
     <string name="permission_title">Permission required</string>
     <string name="permission_message">Permission is required to read external storage in order to extract</string>
+
 </resources>
