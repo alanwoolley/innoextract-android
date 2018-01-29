@@ -60,4 +60,6 @@ signing.properties
 *.jks
 signing.tar
 mapping.zip
+.settings
+
 
