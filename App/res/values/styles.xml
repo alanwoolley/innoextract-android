@@ -6,6 +6,11 @@
 
 
     -->
+    <style name="AppBaseTheme.ActionBar" parent="AppBaseTheme">
+        <item name="windowActionBar">true</item>
+        <item name="windowNoTitle">false</item>
+    </style>
+
     <style name="AppBaseTheme" parent="Theme.AppCompat.NoActionBar">
         <!--
             Theme customizations available in newer API levels can go in

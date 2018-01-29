@@ -18,7 +18,7 @@
         <activity
                 android:name="net.rdrei.android.dirchooser.DirectoryChooserActivity"
                 android:label="Choose Directory"
-                android:theme="@style/AppBaseTheme"/>
+                android:theme="@style/AppBaseTheme.ActionBar"/>
 
         <activity android:name=".MainActivity"
                   android:theme="@style/AppBaseTheme"
