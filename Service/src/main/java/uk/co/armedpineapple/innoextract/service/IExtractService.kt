@@ -7,7 +7,7 @@ interface IExtractService {
     fun isExtractInProgress() : Boolean
 
     fun extract(toExtract: File, extractDir: File,
-                callback: ExtractCallback)
+                callback: ExtractCallback, configuration : Configuration = Configuration())
 
     fun check(toCheck: File, callback: (Boolean) -> Unit)
 
@@ -19,5 +19,9 @@ interface IExtractService {
         fun onFailure(e: Exception)
     }
 
-
+    data class Configuration(
+            val showOngoingNotification : Boolean = true,
+            val showFinalNotification: Boolean = true,
+            val showLogActionButton : Boolean = false
+    )
 }

@@ -8,7 +8,6 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.widget.Toast
 import com.karumi.dexter.Dexter
 import org.jetbrains.anko.AnkoLogger
@@ -23,7 +22,7 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
     override fun onProgress(value: Int, max: Int, speedBps: Int, remainingSeconds: Int) {
         val progressFragment = supportFragmentManager.findFragmentById(R.id.progressFragment) as? ProgressFragment
         if (progressFragment != null) {
-            val pct = (1.0f * value/max) * 100
+            val pct = (1.0f * value / max) * 100
             progressFragment.update(pct.toInt(), remainingSeconds)
         }
     }
@@ -44,7 +43,7 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
 
     var isServiceBound = false
     var connection = Connection()
-    var launchIntent : Intent? = null
+    var launchIntent: Intent? = null
 
     private lateinit var extractService: IExtractService
 
@@ -133,7 +132,7 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
 
         setContentView(R.layout.activity_main)
 
-        launchIntent = intent;
+        launchIntent = intent
     }
 
     override fun onStart() {

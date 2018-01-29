@@ -103,9 +103,7 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
         callback.invoke(result == 0)
     }
 
-    override fun extract(toExtract: File,
-                         extractDir: File,
-                         callback: IExtractService.ExtractCallback) {
+    override fun extract(toExtract: File, extractDir: File, callback: IExtractService.ExtractCallback, configuration: IExtractService.Configuration) {
 
         if (isBusy)
             throw ServiceBusyException()
@@ -154,8 +152,10 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
 
 
                 mNotificationBuilder.setStyle(NotificationCompat.BigTextStyle().bigText(message))
-                startForeground(ONGOING_NOTIFICATION,
-                        mNotificationBuilder.build())
+                if (configuration.showOngoingNotification) {
+                    startForeground(ONGOING_NOTIFICATION,
+                            mNotificationBuilder.build())
+                }
                 callback.onProgress(value, max, bps, secondsLeft)
             }
 
@@ -171,21 +171,26 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
                         .setContentText(getString(R.string.final_notification_success_text))
 
                 try {
+                    if (configuration.showLogActionButton) {
                     logIntent.putExtra("log", writeLogToFile())
 
-                    val logPendingIntent = PendingIntent
-                            .getActivity(this@ExtractService, 0, logIntent,
-                                    PendingIntent.FLAG_UPDATE_CURRENT)
+                        val logPendingIntent = PendingIntent
+                                .getActivity(this@ExtractService, 0, logIntent,
+                                        PendingIntent.FLAG_UPDATE_CURRENT)
 
-                    mFinalNotificationBuilder
-                            .addAction(R.drawable.ic_view_log, "View Log",
-                                    logPendingIntent)
+
+                        mFinalNotificationBuilder
+                                .addAction(R.drawable.ic_view_log, "View Log",
+                                        logPendingIntent)
+                    }
                 } catch (e: IOException) {
                     error("couldn't write log file!")
                 }
 
-                mNotificationManager.notify(FINAL_NOTIFICATION,
-                        mFinalNotificationBuilder.build())
+                if (configuration.showOngoingNotification) {
+                    mNotificationManager.notify(FINAL_NOTIFICATION,
+                            mFinalNotificationBuilder.build())
+                }
                 stopForeground(true)
                 callback.onSuccess()
                 stopSelf()
@@ -213,8 +218,10 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
                     error("couldn't write log file", eb)
                 }
 
-                mNotificationManager.notify(FINAL_NOTIFICATION,
-                        mFinalNotificationBuilder.build())
+                if (configuration.showFinalNotification) {
+                    mNotificationManager.notify(FINAL_NOTIFICATION,
+                            mFinalNotificationBuilder.build())
+                }
                 callback.onFailure(e)
                 stopSelf()
             }
@@ -230,7 +237,10 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
                 .setChannelId(NOTIFICATION_CHANNEL)
                 .setContentText(getString(R.string.progress_notification_text))
 
-        startForeground(ONGOING_NOTIFICATION, mNotificationBuilder.build())
+        if (configuration.showOngoingNotification) {
+            startForeground(ONGOING_NOTIFICATION, mNotificationBuilder.build())
+        }
+
 
         if (mLoggingThread != null && mLoggingThread!!.isAlive) {
             mLoggingThread!!.interrupt()
