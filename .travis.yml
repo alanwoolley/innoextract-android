@@ -37,6 +37,7 @@ deploy:
   file:
     - App/build/outputs/apk/release/*.apk
     - mapping.zip
+    - Service/build/outputs/aar/*.aar
   on:
     tags: true
     repo: alanwoolley/innoextract-android
