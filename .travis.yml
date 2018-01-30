@@ -33,6 +33,7 @@ deploy:
   - provider: script
     script: ./gradlew bintrayUpload
     on:
+      all_branches: true
       repo: alanwoolley/innoextract-android
   - provider: releases
     skip_cleanup: 'true'
