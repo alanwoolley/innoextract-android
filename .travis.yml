@@ -25,7 +25,8 @@ before_install:
 - tar xvf signing.tar
 script:
 - chmod +x gradlew
-- ./gradlew build
+- ./gradlew assembleRelease
+- ./gradlew testRelease
 before_deploy:
   - zip -jr mapping.zip App/build/outputs/mapping
 deploy:
