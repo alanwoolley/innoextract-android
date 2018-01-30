@@ -112,7 +112,7 @@ bintray {
     configurations = ['archives']
     // Package info for BinTray
     pkg {
-        repo = "uk.co.armedpineapple.innoextract"
+        repo = "innoextract-android"
         name = "service"
         userOrg = user
         licenses = ['MIT']
