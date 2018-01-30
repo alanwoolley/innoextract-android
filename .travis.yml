@@ -34,7 +34,7 @@ deploy:
     skip_cleanup: 'true'
     script: ./gradlew bintrayUpload
     on:
-      all_branches: true
+      tags: true
       repo: alanwoolley/innoextract-android
   - provider: releases
     skip_cleanup: 'true'
