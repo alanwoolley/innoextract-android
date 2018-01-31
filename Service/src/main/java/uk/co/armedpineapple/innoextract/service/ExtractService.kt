@@ -91,7 +91,7 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
     }
 
     override fun check(toCheck: File,
-                       callback: Function1<Boolean, Unit>) {
+                       callback: (Boolean) -> Unit) {
 
         if (isBusy)
             throw ServiceBusyException()
@@ -103,7 +103,7 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
         callback.invoke(result == 0)
     }
 
-    override fun extract(toExtract: File, extractDir: File, callback: IExtractService.ExtractCallback, configuration: IExtractService.Configuration) {
+    override fun extract(toExtract: File, extractDir: File, callback: ExtractCallback, configuration: Configuration) {
 
         if (isBusy)
             throw ServiceBusyException()
@@ -114,7 +114,7 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
 
         val logIntent = Intent(this, LogActivity::class.java)
 
-        val cb = object : IExtractService.ExtractCallback {
+        val cb = object : ExtractCallback {
 
             init {
                 mFinalNotificationBuilder = NotificationCompat.Builder(this@ExtractService, NOTIFICATION_CHANNEL)
@@ -295,7 +295,7 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
         mLoggingThread!!.lineHandler.sendMessage(msg)
     }
 
-    inner class LoggingThread internal constructor(name: String, internal var callback: IExtractService.ExtractCallback) : HandlerThread(name) {
+    inner class LoggingThread internal constructor(name: String, internal var callback: ExtractCallback) : HandlerThread(name) {
         internal lateinit var lineHandler: Handler
 
         override fun onLooperPrepared() {

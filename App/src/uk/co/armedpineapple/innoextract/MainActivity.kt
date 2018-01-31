@@ -13,11 +13,12 @@ import com.karumi.dexter.Dexter
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.debug
 import uk.co.armedpineapple.innoextract.permissions.PermissionsDialog
+import uk.co.armedpineapple.innoextract.service.ExtractCallback
 import uk.co.armedpineapple.innoextract.service.ExtractService
 import uk.co.armedpineapple.innoextract.service.IExtractService
 import java.io.File
 
-class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFragment.OnFragmentInteractionListener, IExtractService.ExtractCallback, AnkoLogger, AppCompatActivity() {
+class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFragment.OnFragmentInteractionListener, ExtractCallback, AnkoLogger, AppCompatActivity() {
 
     override fun onProgress(value: Int, max: Int, speedBps: Int, remainingSeconds: Int) {
         val progressFragment = supportFragmentManager.findFragmentById(R.id.progressFragment) as? ProgressFragment
@@ -42,7 +43,7 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
 
 
     var isServiceBound = false
-    var connection = Connection()
+    private var connection = Connection()
     var launchIntent: Intent? = null
 
     private lateinit var extractService: IExtractService

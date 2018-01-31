@@ -1,27 +1,36 @@
 package uk.co.armedpineapple.innoextract.service
 
-import java.io.*
+import java.io.File
 
 interface IExtractService {
 
-    fun isExtractInProgress() : Boolean
+    fun isExtractInProgress(): Boolean
 
     fun extract(toExtract: File, extractDir: File,
-                callback: ExtractCallback, configuration : Configuration = Configuration())
+                callback: ExtractCallback, configuration: Configuration = Configuration())
 
     fun check(toCheck: File, callback: (Boolean) -> Unit)
+    fun check(toCheck: File, callback: CheckCallback) = check(toCheck, callback::onResult)
 
-    interface ExtractCallback {
-        fun onProgress(value: Int, max: Int, speedBps: Int, remainingSeconds: Int)
 
-        fun onSuccess()
 
-        fun onFailure(e: Exception)
-    }
-
-    data class Configuration(
-            val showOngoingNotification : Boolean = true,
-            val showFinalNotification: Boolean = true,
-            val showLogActionButton : Boolean = false
-    )
 }
+interface ExtractCallback {
+    fun onProgress(value: Int, max: Int, speedBps: Int, remainingSeconds: Int)
+
+    fun onSuccess()
+
+    fun onFailure(e: Exception)
+}
+
+interface CheckCallback {
+    fun onResult(success: Boolean)
+}
+
+data class Configuration(
+        var showOngoingNotification: Boolean = true,
+        var showFinalNotification: Boolean = true,
+        var showLogActionButton: Boolean = false
+)
+
+
