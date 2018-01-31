@@ -1,6 +1,0 @@
-# incremental data. DO NOT EDIT.
-# format is <lastModified> <length> <SHA-1> <path>
-# Encoding is UTF-8
-1370643998177 666 df8c4296898f2f64392afda09576483d67f668f4 C:\Users\Alan\workspace\innoextract\src\uk\co\armedpineapple\innoextract\NativeInputStream.java
-1373450444331 2936 7b2d38afa66db054b35e0d418b49d4a188dbdf1e C:\Users\Alan\workspace\innoextract\src\uk\co\armedpineapple\innoextract\MainActivity.java
-1373449328578 3357 d7efca283bd679d0038bde03651ee4462da29e1a C:\Users\Alan\workspace\innoextract\src\uk\co\armedpineapple\innoextract\ExtractService.java
