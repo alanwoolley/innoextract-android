@@ -2,7 +2,6 @@ package uk.co.armedpineapple.innoextract.service
 
 class SpeedCalculator {
 
-    private val MIN_TIME = 5000
     private var lastTime: Long = 0
     private var lastValue: Long = 0
 
@@ -21,12 +20,16 @@ class SpeedCalculator {
             return bps.toLong()
 
         } finally {
-            if (now - lastTime > MIN_TIME) {
+            if (now - lastTime > Companion.MIN_TIME) {
                 lastTime = now
                 lastValue = progress
             }
         }
 
+    }
+
+    companion object {
+        private const val MIN_TIME = 5000
     }
 
 }

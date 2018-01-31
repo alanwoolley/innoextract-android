@@ -25,19 +25,28 @@ before_install:
 - tar xvf signing.tar
 script:
 - chmod +x gradlew
-- ./gradlew build
+- ./gradlew assembleRelease
+- ./gradlew testRelease
 before_deploy:
   - zip -jr mapping.zip App/build/outputs/mapping
 deploy:
-  provider: releases
-  skip_cleanup: 'true'
-  api_key:
-    secure: IQZ419yGt7iGUmBSgGl8ah3ZXJw005uoPlEqlNelFsqAImsUgEXsJFORg+Jo8l/Lyfi3H1hDCn5IM/KTOsUuAIabMctOSP99AyIK8AzNbnLQbU57lvZwfAnxFBn024ir7pYXw/MIoheWnR3RJs+ATiP301HLaWpdxTEhcsDn2n8=
-  file_glob: true
-  file:
-    - App/build/outputs/apk/release/*.apk
-    - mapping.zip
-    - Service/build/outputs/aar/*.aar
-  on:
-    tags: true
-    repo: alanwoolley/innoextract-android
+  - provider: script
+    skip_cleanup: 'true'
+    script: ./gradlew bintrayUpload
+    on:
+      tags: true
+      repo: alanwoolley/innoextract-android
+  - provider: releases
+    skip_cleanup: 'true'
+    api_key:
+      secure: IQZ419yGt7iGUmBSgGl8ah3ZXJw005uoPlEqlNelFsqAImsUgEXsJFORg+Jo8l/Lyfi3H1hDCn5IM/KTOsUuAIabMctOSP99AyIK8AzNbnLQbU57lvZwfAnxFBn024ir7pYXw/MIoheWnR3RJs+ATiP301HLaWpdxTEhcsDn2n8=
+    file_glob: true
+    file:
+      - App/build/outputs/apk/release/*.apk
+      - mapping.zip
+      - Service/build/outputs/aar/*.aar
+    on:
+      tags: true
+      repo: alanwoolley/innoextract-android
+
+
