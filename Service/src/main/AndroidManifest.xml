@@ -3,26 +3,17 @@
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="uk.co.armedpineapple.innoextract.SHOW_LOG_FILE"/>
-
-    <permission android:name="uk.co.armedpineapple.innoextract.EXTRACT_INNO_FILE"/>
-    <permission android:name="uk.co.armedpineapple.innoextract.SHOW_LOG_FILE" android:protectionLevel="signature"/>
-
 
     <application>
     <service
             android:name=".ExtractService"
             android:enabled="true"
-            android:exported="true"
-            android:permission="uk.co.armedpineapple.innoextract.EXTRACT_INNO_FILE"/>
+            android:exported="false"/>
         <activity
                 android:name=".LogActivity"
                 android:label="@string/title_activity_log"
-                android:theme="@style/BaseTheme"
-                android:permission="uk.co.armedpineapple.innoextract.SHOW_LOG_FILE"/>
+                android:theme="@style/BaseTheme"/>
 
     </application>
-
-
 
 </manifest>
