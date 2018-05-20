@@ -1,10 +1,7 @@
 package uk.co.armedpineapple.innoextract
 
 import android.Manifest
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
+import android.content.*
 import android.os.Bundle
 import android.os.IBinder
 import android.support.v7.app.AppCompatActivity
@@ -12,6 +9,9 @@ import android.widget.Toast
 import com.karumi.dexter.Dexter
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.debug
+import uk.co.armedpineapple.innoextract.fragments.IntroFragment
+import uk.co.armedpineapple.innoextract.fragments.ProgressFragment
+import uk.co.armedpineapple.innoextract.fragments.SelectorFragment
 import uk.co.armedpineapple.innoextract.permissions.PermissionsDialog
 import uk.co.armedpineapple.innoextract.service.ExtractCallback
 import uk.co.armedpineapple.innoextract.service.ExtractService
@@ -21,7 +21,7 @@ import java.io.File
 class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFragment.OnFragmentInteractionListener, ExtractCallback, AnkoLogger, AppCompatActivity() {
 
     override fun onProgress(value: Int, max: Int, speedBps: Int, remainingSeconds: Int) {
-        val progressFragment = supportFragmentManager.findFragmentById(R.id.progressFragment) as? ProgressFragment
+        val progressFragment = supportFragmentManager.findFragmentById(R.id.topFragment) as? ProgressFragment
         if (progressFragment != null) {
             val pct = (1.0f * value / max) * 100
             progressFragment.update(pct.toInt(), remainingSeconds)
@@ -29,13 +29,13 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
     }
 
     override fun onSuccess() {
-        val progressFragment = supportFragmentManager.findFragmentById(R.id.progressFragment) as? ProgressFragment
+        val progressFragment = supportFragmentManager.findFragmentById(R.id.topFragment) as? ProgressFragment
         progressFragment?.onExtractFinished()
         showSelectorFragment()
     }
 
     override fun onFailure(e: Exception) {
-        val progressFragment = supportFragmentManager.findFragmentById(R.id.progressFragment) as? ProgressFragment
+        val progressFragment = supportFragmentManager.findFragmentById(R.id.topFragment) as? ProgressFragment
         progressFragment?.onExtractFinished()
         showSelectorFragment()
 
@@ -50,11 +50,11 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
 
     private fun hideSelectorFragment() {
 
-        supportFragmentManager.beginTransaction().setCustomAnimations(R.anim.slide_in_bottom, R.anim.slide_out_bottom).hide(supportFragmentManager.findFragmentById(R.id.selectorFragment)).commitAllowingStateLoss()
+        supportFragmentManager.beginTransaction().setCustomAnimations(R.anim.slide_in_bottom, R.anim.slide_out_bottom).hide(supportFragmentManager.findFragmentById(R.id.bottomFragment)).commitAllowingStateLoss()
     }
 
     private fun showSelectorFragment() {
-        supportFragmentManager.beginTransaction().setCustomAnimations(R.anim.slide_in_bottom, R.anim.slide_out_bottom).show(supportFragmentManager.findFragmentById(R.id.selectorFragment)).commitAllowingStateLoss()
+        supportFragmentManager.beginTransaction().setCustomAnimations(R.anim.slide_in_bottom, R.anim.slide_out_bottom).show(supportFragmentManager.findFragmentById(R.id.bottomFragment)).commitAllowingStateLoss()
     }
 
     inner class Connection : ServiceConnection {
@@ -71,7 +71,7 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
             if (launchIntent != null) {
                 val uri = launchIntent?.data
                 if (uri != null) {
-                    (supportFragmentManager.findFragmentById(R.id.selectorFragment) as? SelectorFragment)?.onNewFile(uri)
+                    (supportFragmentManager.findFragmentById(R.id.bottomFragment) as? SelectorFragment)?.onNewFile(uri)
                     onFileSelected(File(uri.path))
                 }
                 launchIntent = null
@@ -86,7 +86,7 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
         }
 
         fun reportStatus(valid: Boolean) {
-            val selectorFragment = supportFragmentManager.findFragmentById(R.id.selectorFragment) as? SelectorFragment
+            val selectorFragment = supportFragmentManager.findFragmentById(R.id.bottomFragment) as? SelectorFragment
             selectorFragment?.isFileValid = valid
 
             if (!valid) {
@@ -102,7 +102,7 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
     }
 
     override fun onTargetSelected(target: File) {
-        val selectorFragment = supportFragmentManager.findFragmentById(R.id.selectorFragment) as? SelectorFragment
+        val selectorFragment = supportFragmentManager.findFragmentById(R.id.bottomFragment) as? SelectorFragment
         val valid = target.exists() && target.isDirectory && target.canWrite()
         selectorFragment?.isTargetValid = valid
     }
@@ -140,6 +140,12 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
         super.onStart()
         if (isServiceBound && extractService.isExtractInProgress()) {
             hideSelectorFragment()
+        }
+
+        val introShown = getPreferences(Context.MODE_PRIVATE).getBoolean(getString(R.string.pref_intro), false)
+        if (!introShown) {
+            val introFragment = IntroFragment()
+            introFragment.show(supportFragmentManager, "intro_fragment")
         }
     }
 

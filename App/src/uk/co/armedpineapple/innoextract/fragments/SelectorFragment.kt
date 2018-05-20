@@ -1,4 +1,4 @@
-package uk.co.armedpineapple.innoextract
+package uk.co.armedpineapple.innoextract.fragments
 
 import android.app.Activity.RESULT_OK
 import android.content.Context
@@ -20,6 +20,7 @@ import com.aditya.filebrowser.FileChooser
 import kotlinx.android.synthetic.main.fragment_selector.*
 import net.rdrei.android.dirchooser.DirectoryChooserActivity
 import net.rdrei.android.dirchooser.DirectoryChooserConfig
+import uk.co.armedpineapple.innoextract.R
 import java.io.File
 import kotlin.properties.Delegates
 
