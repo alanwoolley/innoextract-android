@@ -16,6 +16,8 @@ import uk.co.armedpineapple.innoextract.permissions.PermissionsDialog
 import uk.co.armedpineapple.innoextract.service.ExtractCallback
 import uk.co.armedpineapple.innoextract.service.ExtractService
 import uk.co.armedpineapple.innoextract.service.IExtractService
+import uk.co.armedpineapple.innoextract.services.DefaultFirstLaunchService
+import uk.co.armedpineapple.innoextract.services.FirstLaunchService
 import java.io.File
 
 class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFragment.OnFragmentInteractionListener, ExtractCallback, AnkoLogger, AppCompatActivity() {
@@ -41,7 +43,7 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
 
     }
 
-
+    private lateinit var firstLaunchService: FirstLaunchService
     var isServiceBound = false
     private var connection = Connection()
     var launchIntent: Intent? = null
@@ -122,13 +124,15 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
 
         Dexter.withActivity(this)
                 .withPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
-                .withListener(PermissionsDialog(this, { onResult(it) }))
+                .withListener(PermissionsDialog(this) { onResult(it) })
                 .check()
 
         debug("Binding service")
         val i = Intent(this, ExtractService::class.java)
         val serviceConnected = bindService(i, connection, Context.BIND_ABOVE_CLIENT or Context.BIND_AUTO_CREATE)
-        debug("Service connected? : " + serviceConnected)
+        debug("Service connected? : $serviceConnected")
+
+        firstLaunchService = DefaultFirstLaunchService(applicationContext)
 
 
         setContentView(R.layout.activity_main)
@@ -142,8 +146,7 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
             hideSelectorFragment()
         }
 
-        val introShown = getPreferences(Context.MODE_PRIVATE).getBoolean(getString(R.string.pref_intro), false)
-        if (!introShown) {
+        if (firstLaunchService.isFirstLaunch) {
             val introFragment = IntroFragment()
             introFragment.show(supportFragmentManager, "intro_fragment")
         }
