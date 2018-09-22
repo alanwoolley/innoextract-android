@@ -19,6 +19,7 @@ import uk.co.armedpineapple.innoextract.service.IExtractService
 import uk.co.armedpineapple.innoextract.services.DefaultFirstLaunchService
 import uk.co.armedpineapple.innoextract.services.FirstLaunchService
 import java.io.File
+import javax.inject.Inject
 
 class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFragment.OnFragmentInteractionListener, ExtractCallback, AnkoLogger, AppCompatActivity() {
 
@@ -43,7 +44,9 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
 
     }
 
-    private lateinit var firstLaunchService: FirstLaunchService
+    @Inject
+    lateinit var firstLaunchService: FirstLaunchService
+
     var isServiceBound = false
     private var connection = Connection()
     var launchIntent: Intent? = null
@@ -121,6 +124,7 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        (application as AndroidApplication).component.inject(this)
 
         Dexter.withActivity(this)
                 .withPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -131,8 +135,6 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
         val i = Intent(this, ExtractService::class.java)
         val serviceConnected = bindService(i, connection, Context.BIND_ABOVE_CLIENT or Context.BIND_AUTO_CREATE)
         debug("Service connected? : $serviceConnected")
-
-        firstLaunchService = DefaultFirstLaunchService(applicationContext)
 
 
         setContentView(R.layout.activity_main)

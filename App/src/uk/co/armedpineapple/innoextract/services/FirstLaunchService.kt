@@ -1,9 +1,8 @@
 package uk.co.armedpineapple.innoextract.services
 
-import android.content.Context
 import android.content.SharedPreferences
-import org.jetbrains.anko.defaultSharedPreferences
 import uk.co.armedpineapple.innoextract.BuildConfig
+import javax.inject.Inject
 
 private const val launchVersionPreference = "lastlaunch_version"
 
@@ -12,7 +11,8 @@ interface FirstLaunchService {
     val isFirstLaunchForVersion: Boolean
 }
 
-class DefaultFirstLaunchService(private val context: Context) : FirstLaunchService {
+
+class DefaultFirstLaunchService @Inject constructor(preferences: SharedPreferences) : FirstLaunchService {
 
     override val isFirstLaunch: Boolean
     override val isFirstLaunchForVersion: Boolean
@@ -27,7 +27,4 @@ class DefaultFirstLaunchService(private val context: Context) : FirstLaunchServi
 
         preferences.edit().putInt(launchVersionPreference, thisVersion).apply()
     }
-
-    private val preferences: SharedPreferences
-        get() = context.defaultSharedPreferences
 }
