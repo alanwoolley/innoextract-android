@@ -1,7 +1,10 @@
 package uk.co.armedpineapple.innoextract
 
 import android.Manifest
-import android.content.*
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.support.v7.app.AppCompatActivity
@@ -16,7 +19,6 @@ import uk.co.armedpineapple.innoextract.permissions.PermissionsDialog
 import uk.co.armedpineapple.innoextract.service.ExtractCallback
 import uk.co.armedpineapple.innoextract.service.ExtractService
 import uk.co.armedpineapple.innoextract.service.IExtractService
-import uk.co.armedpineapple.innoextract.services.DefaultFirstLaunchService
 import uk.co.armedpineapple.innoextract.services.FirstLaunchService
 import java.io.File
 import javax.inject.Inject
@@ -41,7 +43,6 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
         val progressFragment = supportFragmentManager.findFragmentById(R.id.topFragment) as? ProgressFragment
         progressFragment?.onExtractFinished()
         showSelectorFragment()
-
     }
 
     @Inject
@@ -52,6 +53,8 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
     var launchIntent: Intent? = null
 
     private lateinit var extractService: IExtractService
+
+    private var shouldShowInstructions = false
 
     private fun hideSelectorFragment() {
 
@@ -124,6 +127,7 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         (application as AndroidApplication).component.inject(this)
 
         Dexter.withActivity(this)
@@ -140,6 +144,7 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
         setContentView(R.layout.activity_main)
 
         launchIntent = intent
+        shouldShowInstructions = firstLaunchService.isFirstLaunch;
     }
 
     override fun onStart() {
@@ -148,9 +153,10 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
             hideSelectorFragment()
         }
 
-        if (firstLaunchService.isFirstLaunch) {
+        if (shouldShowInstructions) {
             val introFragment = IntroFragment()
             introFragment.show(supportFragmentManager, "intro_fragment")
+            shouldShowInstructions = false
         }
     }
 
