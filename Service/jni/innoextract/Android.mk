@@ -21,6 +21,7 @@ LOCAL_SRC_FILES :=	$(SRC_DIR)/cli/debug.cpp \
 					$(SRC_DIR)/cli/main.cpp \
                     $(SRC_DIR)/cli/extract.cpp \
                     $(SRC_DIR)/cli/gog.cpp \
+                    $(SRC_DIR)/cli/goggalaxy.cpp \
 					$(SRC_DIR)/crypto/adler32.cpp \
 					$(SRC_DIR)/crypto/checksum.cpp \
 					$(SRC_DIR)/crypto/crc32.cpp \

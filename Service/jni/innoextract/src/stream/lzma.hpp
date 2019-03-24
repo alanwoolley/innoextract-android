@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2014 Daniel Scharrer
+ * Copyright (C) 2011-2018 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -41,7 +41,7 @@ namespace stream {
 //! Error thrown if there was en error in an LZMA stream
 struct lzma_error : public std::ios_base::failure {
 	
-	lzma_error(std::string msg, int code)
+	lzma_error(const std::string & msg, int code)
 		: std::ios_base::failure(msg), error_code(code) { }
 	
 	//! \return the liblzma code for the error.
@@ -52,7 +52,7 @@ private:
 	int error_code;
 };
 
-class lzma_decompressor_impl_base : public boost::noncopyable {
+class lzma_decompressor_impl_base : private boost::noncopyable {
 	
 public:
 	

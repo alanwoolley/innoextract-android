@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2016 Daniel Scharrer
+ * Copyright (C) 2011-2018 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -121,7 +121,8 @@ struct header {
 		ArchitectureUnknown,
 		X86,
 		Amd64,
-		IA64
+		IA64,
+		ARM64
 	);
 	
 	std::string app_name;
@@ -194,7 +195,7 @@ struct header {
 	alpha_format image_alpha_format;
 	
 	crypto::checksum password;
-	salt password_salt;
+	std::string password_salt;
 	
 	boost::int64_t extra_disk_space_required;
 	size_t slices_per_disk;

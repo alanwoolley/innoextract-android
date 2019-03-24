@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2016 Daniel Scharrer
+ * Copyright (C) 2014-2018 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -52,17 +52,25 @@ struct extract_options {
 	
 	bool warn_unused; //!< Warn if there are unused files
 	
+	bool list_sizes; //!< Show size information for files
+	bool list_checksums; //!< Show checksum information for files
+	
+	bool data_version; //!< Print the data version
 	bool list; //!< List files
 	bool test; //!< Test files (but don't extract)
 	bool extract; //!< Extract files
-	bool check;
 	bool list_languages; //!< List available languages
 	bool gog_game_id; //!< Show the GOG.com game id
+	bool show_password; //!< Show password check information
+	bool check_password; //!< Abort if the provided password is incorrect
 	
 	bool preserve_file_times; //!< Set timestamps of extracted files
 	bool local_timestamps; //!< Use local timezone for setting timestamps
 	
 	bool gog; //!< Try to extract additional archives used in GOG.com installers
+	bool gog_galaxy; //!< Try to re-assemble GOG Galaxy files
+	
+	bool extract_unknown; //!< Try to extract unknown Inno Setup versions
 	
 	bool extract_temp; //!< Extract temporary files
 	bool language_only; //!< Extract files not associated with any language
@@ -73,7 +81,33 @@ struct extract_options {
 	CollisionAction collisions;
 	std::string default_language;
 	
+	std::string password;
+	
 	boost::filesystem::path output_dir;
+	
+	extract_options()
+		: quiet(false)
+		, silent(false)
+		, warn_unused(false)
+		, list_sizes(false)
+		, list_checksums(false)
+		, data_version(false)
+		, list(false)
+		, test(false)
+		, extract(false)
+		, list_languages(false)
+		, gog_game_id(false)
+		, show_password(false)
+		, check_password(false)
+		, preserve_file_times(false)
+		, local_timestamps(false)
+		, gog(false)
+		, gog_galaxy(false)
+		, extract_unknown(false)
+		, extract_temp(false)
+		, language_only(false)
+		, collisions(OverwriteCollisions)
+	{ }
 	
 };
 

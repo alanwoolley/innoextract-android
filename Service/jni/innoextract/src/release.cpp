@@ -38,12 +38,12 @@
 
 const char innoextract_name[] = "innoextract";
 
-const char innoextract_version[] = "1.6";
+const char innoextract_version[] = "1.7";
 
-const char innosetup_versions[] = "Inno Setup 1.2.10 to 5.5.8";
+const char innosetup_versions[] = "Inno Setup 1.2.10 to 5.6.0";
 
 const char innoextract_bugs[] = "http://innoextract.constexpr.org/issues";
 
-const char innoextract_copyright[] = "Copyright (C) 2011-2016 Daniel Scharrer <daniel@constexpr.org>";
+const char innoextract_copyright[] = "Copyright (C) 2011-2018 Daniel Scharrer <daniel@constexpr.org>";
 
 const char innoextract_license[] = "This software is provided 'as-is', without any express or implied\nwarranty.  In no event will the author(s) be held liable for any damages\narising from the use of this software.\n\nPermission is granted to anyone to use this software for any purpose,\nincluding commercial applications, and to alter it and redistribute it\nfreely, subject to the following restrictions:\n\n1. The origin of this software must not be misrepresented; you must not\n   claim that you wrote the original software. If you use this software\n   in a product, an acknowledgment in the product documentation would be\n   appreciated but is not required.\n2. Altered source versions must be plainly marked as such, and must not be\n   misrepresented as being the original software.\n3. This notice may not be removed or altered from any source distribution.\n";

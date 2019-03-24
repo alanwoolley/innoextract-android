@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2014 Daniel Scharrer
+ * Copyright (C) 2011-2018 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -22,36 +22,28 @@
 
 namespace crypto {
 
-hasher::hasher(const hasher & o) {
-	
-	type = o.type;
-	
-	switch(type) {
-		case crypto::Adler32: adler32 = o.adler32; break;
-		case crypto::CRC32: crc32 = o.crc32; break;
-		case crypto::MD5: md5 = o.md5; break;
-		case crypto::SHA1: sha1 = o.sha1; break;
-	};
-}
-
 hasher::hasher(checksum_type type) : type(type) {
 	
 	switch(type) {
+		case crypto::None: break;
 		case crypto::Adler32: adler32.init(); break;
 		case crypto::CRC32: crc32.init(); break;
 		case crypto::MD5: md5.init(); break;
 		case crypto::SHA1: sha1.init(); break;
 	};
+	
 }
 
 void hasher::update(const char * data, size_t size) {
 	
 	switch(type) {
+		case crypto::None: break;
 		case crypto::Adler32: adler32.update(data, size); break;
 		case crypto::CRC32: crc32.update(data, size); break;
 		case crypto::MD5: md5.update(data, size); break;
 		case crypto::SHA1: sha1.update(data, size); break;
 	};
+	
 }
 
 checksum hasher::finalize() {
@@ -61,6 +53,7 @@ checksum hasher::finalize() {
 	result.type = type;
 	
 	switch(type) {
+		case crypto::None: break;
 		case crypto::Adler32: result.adler32 = adler32.finalize(); break;
 		case crypto::CRC32: result.crc32 = crc32.finalize(); break;
 		case crypto::MD5: md5.finalize(result.md5); break;

@@ -1,5 +1,5 @@
 
-# Copyright (C) 2011-2016 Daniel Scharrer
+# Copyright (C) 2011-2017 Daniel Scharrer
 #
 # This software is provided 'as-is', without any express or implied
 # warranty.  In no event will the author(s) be held liable for any damages
@@ -74,7 +74,7 @@ function(check_compile RESULT FILE FLAG TYPE)
 	
 	# Check if we can compile and link a simple file with the new flags
 	try_compile(
-		check_compiler_flag ${CMAKE_BINARY_DIR} ${FILE}
+		check_compiler_flag ${PROJECT_BINARY_DIR} ${FILE}
 		CMAKE_FLAGS "-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}"
 		            "-DCMAKE_EXE_LINKER_FLAGS=${CMAKE_EXE_LINKER_FLAGS}"
 		            "-DCMAKE_SHARED_LINKER_FLAGS=${CMAKE_SHARED_LINKER_FLAGS}"
@@ -117,16 +117,34 @@ endfunction(check_compile)
 
 function(check_flag RESULT FLAG TYPE)
 	set(compile_test_file "${CMAKE_CURRENT_BINARY_DIR}/compile_flag_test.cpp")
-	file(WRITE ${compile_test_file} "__attribute__((const)) int main(){ return 0; }\n")
+	if(MSVC)
+		file(WRITE ${compile_test_file} "int main(){ return 0; }\n")
+	else()
+		file(WRITE ${compile_test_file} "__attribute__((const)) int main(){ return 0; }\n")
+	endif()
 	check_compile(result "${compile_test_file}" "${FLAG}" "${TYPE} flag")
 	set(${RESULT} "${result}" PARENT_SCOPE)
 endfunction(check_flag)
 
+macro(strip_warning_flags VAR)
+	string(REGEX REPLACE "(^| )\\-(W[^ ]*|pedantic)" "" ${VAR} "${${VAR}}")
+endmacro()
+
 function(check_builtin RESULT EXPR)
-	set(compile_test_file "${CMAKE_CURRENT_BINARY_DIR}/compile_expr_test.cpp")
+	string(REGEX REPLACE "[^a-zA-Z0-9_][^a-zA-Z0-9_]*" "-" check "${EXPR}")
+	string(REGEX REPLACE "_*\\-_*" "-" check "${check}")
+	string(REGEX REPLACE "^[_\\-]+" "" check "${check}")
+	string(REGEX REPLACE "[_\\-]+$" "" check "${check}")
+	set(compile_test_file "${CMAKE_CURRENT_BINARY_DIR}/check-builtin-${check}.cpp")
 	string(REGEX MATCH "[a-zA-Z_][a-zA-Z_0-9]*" type "${EXPR}")
 	file(WRITE ${compile_test_file} "__attribute__((const)) int main(){ (void)(${EXPR}); return 0; }\n")
+	set(old_CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+	set(old_CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}")
+	strip_warning_flags(CMAKE_CXX_FLAGS)
+	strip_warning_flags(CMAKE_EXE_LINKER_FLAGS)
 	check_compile(result "${compile_test_file}" "${type}" "compiler builtin")
+	set(CMAKE_CXX_FLAGS "${old_CMAKE_CXX_FLAGS}")
+	set(CMAKE_EXE_LINKER_FLAGS "${old_CMAKE_EXE_LINKER_FLAGS}")
 	set(${RESULT} "${result}" PARENT_SCOPE)
 endfunction(check_builtin)
 
@@ -178,7 +196,7 @@ function(try_link_library LIBRARY_NAME LIBRARY_FILE ERROR_VAR)
 		list(APPEND LIBRARY_FILE "${CMAKE_THREAD_LIBS_INIT}")
 	endif()
 	try_compile(
-		CHECK_${LIBRARY_NAME}_LINK "${CMAKE_BINARY_DIR}" "${link_test_file}"
+		CHECK_${LIBRARY_NAME}_LINK "${PROJECT_BINARY_DIR}" "${link_test_file}"
 		CMAKE_FLAGS "-DLINK_LIBRARIES=${LIBRARY_FILE}"
 		            "-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}"
 		            "-DCMAKE_EXE_LINKER_FLAGS=${CMAKE_EXE_LINKER_FLAGS}"
@@ -191,6 +209,8 @@ endfunction(try_link_library)
 
 ##############################################################################
 # Check that a a library actually works for the current configuration
+# This is neede because CMake prefers /usr/lib over /usr/lib32 for -m32 builds
+# See https://public.kitware.com/Bug/view.php?id=11260
 function(check_link_library LIBRARY_NAME LIBRARY_VARIABLE)
 	
 	if(MSVC)

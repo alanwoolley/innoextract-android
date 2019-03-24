@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Daniel Scharrer
+ * Copyright (C) 2011-2018 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -29,17 +29,18 @@
 
 namespace crypto {
 
-bool checksum::operator==(const checksum & o) const {
+bool checksum::operator==(const checksum & other) const {
 	
-	if(o.type != type) {
+	if(other.type != type) {
 		return false;
 	}
 	
 	switch(type) {
-		case Adler32: return (adler32 == o.adler32);
-		case CRC32: return (crc32 == o.crc32);
-		case MD5: return !memcmp(md5, o.md5, sizeof(md5));
-		case SHA1: return !memcmp(sha1, o.sha1, sizeof(sha1));
+		case None: return true;
+		case Adler32: return (adler32 == other.adler32);
+		case CRC32: return (crc32 == other.crc32);
+		case MD5: return !memcmp(md5, other.md5, sizeof(md5));
+		case SHA1: return !memcmp(sha1, other.sha1, sizeof(sha1));
 		default: return false;
 	};
 }
@@ -47,10 +48,11 @@ bool checksum::operator==(const checksum & o) const {
 } // namespace crypto
 
 NAMES(crypto::checksum_type, "Checksum Type",
+	"None",
 	"Adler32",
 	"CRC32",
 	"MD5",
-	"Sha1",
+	"SHA-1",
 )
 
 std::ostream & operator<<(std::ostream & os, const crypto::checksum & checksum) {
@@ -60,6 +62,10 @@ std::ostream & operator<<(std::ostream & os, const crypto::checksum & checksum) 
 	os << checksum.type << ' ';
 	
 	switch(checksum.type) {
+		case crypto::None: {
+			os << "(no checksum)";
+			break;
+		}
 		case crypto::Adler32: {
 			os << "0x" << std::hex << std::setw(8) << checksum.adler32;
 			break;

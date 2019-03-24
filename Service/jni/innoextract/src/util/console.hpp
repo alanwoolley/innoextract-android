@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2016 Daniel Scharrer
+ * Copyright (C) 2011-2018 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -43,8 +43,6 @@ struct shell_command {
 	const char * command;
 };
 
-std::ostream & operator<<(std::ostream & os, const shell_command command);
-
 //! Reset the output color to the original value.
 extern shell_command reset;
 
@@ -69,7 +67,7 @@ extern shell_command dim_white;
 //! The last set output color.
 extern shell_command current;
 
-inline std::ostream & operator<<(std::ostream & os, const shell_command command) {
+inline std::ostream & operator<<(std::ostream & os, shell_command command) {
 	color::current = command;
 	return os << command.command;
 }
@@ -120,10 +118,6 @@ public:
 	 * \param show_rate Display the rate at which the progress changes.
 	 */
 	progress(boost::uint64_t max = 0, bool show_rate = true);
-	progress(const progress & o)
-		: max(o.max), value(o.value), show_rate(o.show_rate), start_time(o.start_time),
-		  last_status(o.last_status), last_time(o.last_time),
-		  last_rate(o.last_rate), label(o.label.str()) { }
 	
 	/*!
 	 * Update the progress bar.

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2015 Daniel Scharrer
+ * Copyright (C) 2012-2018 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -31,11 +31,11 @@ namespace setup {
 
 namespace {
 
-static bool is_identifier_start(char c) {
-	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
+bool is_identifier_start(char c) {
+	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_' || c == '-';
 }
 
-static bool is_identifier(char c) {
+bool is_identifier(char c) {
 	return is_identifier_start(c) || (c >= '0' && c <= '9') || c == '\\';
 }
 
@@ -150,11 +150,11 @@ struct evaluator {
 
 } // anonymous namespace
 
-bool expression_match(const std::string & test, const std::string & expr) {
+bool expression_match(const std::string & test, const std::string & expression) {
 	try {
-		return evaluator(expr, test).eval();
+		return evaluator(expression, test).eval();
 	} catch(const std::runtime_error & error) {
-		log_warning << "Error evaluating \"" << expr << "\": " << error.what();
+		log_warning << "Error evaluating \"" << expression << "\": " << error.what();
 		return true;
 	}
 }

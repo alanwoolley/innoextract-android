@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2016 Daniel Scharrer
+ * Copyright (C) 2011-2018 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -53,7 +53,7 @@ struct known_legacy_version {
 	
 };
 
-static const known_legacy_version legacy_versions[] = {
+const known_legacy_version legacy_versions[] = {
 	{ "i1.2.10--16\x1a", INNO_VERSION(1, 2, 10), 16 },
 	{ "i1.2.10--32\x1a", INNO_VERSION(1, 2, 10), 32 },
 };
@@ -71,7 +71,7 @@ struct known_version {
 	
 };
 
-static const known_version versions[] = {
+const known_version versions[] = {
 	{ "Inno Setup Setup Data (1.3.21)",     INNO_VERSION_EXT(1, 3, 21, 0), false },
 	{ "Inno Setup Setup Data (1.3.25)",     INNO_VERSION_EXT(1, 3, 25, 0), false },
 	{ "Inno Setup Setup Data (2.0.0)",      INNO_VERSION_EXT(2, 0,  0, 0), false },
@@ -151,23 +151,25 @@ static const known_version versions[] = {
 	{ "Inno Setup Setup Data (5.5.6) (u)",  INNO_VERSION_EXT(5, 5,  6, 0), true  },
 	{ "Inno Setup Setup Data (5.5.7)",      INNO_VERSION_EXT(5, 5,  7, 0), false },
 	{ "Inno Setup Setup Data (5.5.7) (u)",  INNO_VERSION_EXT(5, 5,  7, 0), true  },
+	{ "Inno Setup Setup Data (5.6.0)",      INNO_VERSION_EXT(5, 6,  0, 0), false },
+	{ "Inno Setup Setup Data (5.6.0) (u)",  INNO_VERSION_EXT(5, 6,  0, 0), true  },
 };
 
 } // anonymous namespace
 
-std::ostream & operator<<(std::ostream & os, const version & v) {
+std::ostream & operator<<(std::ostream & os, const version & version) {
 	
-	os << v.a() << '.' << v.b() << '.' << v.c();
-	if(v.d()) {
-		os << '.' << v.d();
+	os << version.a() << '.' << version.b() << '.' << version.c();
+	if(version.d()) {
+		os << '.' << version.d();
 	}
 	
-	if(v.unicode) {
+	if(version.unicode) {
 		os << " (unicode)";
 	}
 	
-	if(v.bits != 32) {
-		os << " (" << int(v.bits) << "-bit)";
+	if(version.bits != 32) {
+		os << " (" << int(version.bits) << "-bit)";
 	}
 	
 	return os;
@@ -218,7 +220,7 @@ void version::load(std::istream & is) {
 			unsigned b = util::to_unsigned(version_str.data() + 3, 1);
 			unsigned c = util::to_unsigned(version_str.data() + 5, 2);
 			value = INNO_VERSION(a, b, c);
-		} catch(boost::bad_lexical_cast) {
+		} catch(const boost::bad_lexical_cast &) {
 			throw version_error();
 		}
 		
@@ -303,7 +305,7 @@ void version::load(std::istream & is) {
 			value = INNO_VERSION_EXT(a, b, c, d);
 			break;
 			
-		} catch(boost::bad_lexical_cast) {
+		} catch(const boost::bad_lexical_cast &) {
 			continue;
 		}
 	}
@@ -335,6 +337,11 @@ bool version::is_ambiguous() const {
 	
 	if(value == INNO_VERSION(5, 5, 0)) {
 		// might be either 5.5.0 or 5.5.0.1
+		return true;
+	}
+	
+	if(value == INNO_VERSION(5, 5, 7)) {
+		// might be either 5.5.7 or 5.6.0
 		return true;
 	}
 	

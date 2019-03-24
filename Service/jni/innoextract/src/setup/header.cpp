@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2016 Daniel Scharrer
+ * Copyright (C) 2011-2018 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -90,11 +90,19 @@ STORED_ENUM_MAP(stored_language_detection_method, header::UILanguage,
 	header::NoLanguageDetection
 );
 
-STORED_FLAGS_MAP(stored_architectures,
+STORED_FLAGS_MAP(stored_architectures_0,
 	header::ArchitectureUnknown,
 	header::X86,
 	header::Amd64,
 	header::IA64
+);
+
+STORED_FLAGS_MAP(stored_architectures_1,
+	header::ArchitectureUnknown,
+	header::X86,
+	header::Amd64,
+	header::IA64,
+	header::ARM64,
 );
 
 // pre-4.2.5
@@ -332,9 +340,11 @@ void header::load(std::istream & is, const version & version) {
 		password.type = crypto::SHA1;
 	}
 	if(version >= INNO_VERSION(4, 2, 2)) {
-		is.read(password_salt, std::streamsize(sizeof(password_salt)));
+		password_salt.resize(8);
+		is.read(&password_salt[0], std::streamsize(password_salt.length()));
+		password_salt.insert(0, "PasswordCheckHash");
 	} else {
-		std::memset(password_salt, 0, sizeof(password_salt));
+		password_salt.clear();
 	}
 	
 	if(version >= INNO_VERSION(4, 0, 0)) {
@@ -399,9 +409,12 @@ void header::load(std::istream & is, const version & version) {
 		compression = stored_enum<stored_compression_method_0>(is).get();
 	}
 	
-	if(version >= INNO_VERSION(5, 1, 0)) {
-		architectures_allowed = stored_flags<stored_architectures>(is).get();
-		architectures_installed_in_64bit_mode = stored_flags<stored_architectures>(is).get();
+	if(version >= INNO_VERSION(5, 6, 0)) {
+		architectures_allowed = stored_flags<stored_architectures_1>(is).get();
+		architectures_installed_in_64bit_mode = stored_flags<stored_architectures_1>(is).get();
+	} else if(version >= INNO_VERSION(5, 1, 0)) {
+		architectures_allowed = stored_flags<stored_architectures_0>(is).get();
+		architectures_installed_in_64bit_mode = stored_flags<stored_architectures_0>(is).get();
 	} else {
 		architectures_allowed = architecture_types::all();
 		architectures_installed_in_64bit_mode = architecture_types::all();
@@ -692,6 +705,7 @@ NAMES(setup::header::architecture_types, "Architecture",
 	"x86",
 	"amd64",
 	"IA64",
+	"ARM64",
 )
 
 NAMES(setup::header::alpha_format, "Alpha Format",

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2016 Daniel Scharrer
+ * Copyright (C) 2011-2018 Daniel Scharrer
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the author(s) be held liable for any damages
@@ -34,10 +34,6 @@ namespace stream {
 static lzma_stream * init_raw_lzma_stream(lzma_vli filter, lzma_options_lzma & options) {
 	
 	options.preset_dict = NULL;
-	
-	if(options.dict_size > (boost::uint32_t(1) << 28)) {
-		throw lzma_error("inno lzma dict size too large", LZMA_FORMAT_ERROR);
-	}
 	
 	lzma_stream * strm = new lzma_stream;
 	lzma_stream tmp = LZMA_STREAM_INIT;
