@@ -37,7 +37,7 @@ class IntroFragment : DialogFragment() {
         if (prefs != null) {
             with(prefs.edit()) {
                 putBoolean(getString(R.string.pref_intro), true)
-                commit()
+                apply()
             }
         }
     }

@@ -57,12 +57,17 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
     private var shouldShowInstructions = false
 
     private fun hideSelectorFragment() {
-
-        supportFragmentManager.beginTransaction().setCustomAnimations(R.anim.slide_in_bottom, R.anim.slide_out_bottom).hide(supportFragmentManager.findFragmentById(R.id.bottomFragment)).commitAllowingStateLoss()
+        val bottomFragment = supportFragmentManager.findFragmentById(R.id.bottomFragment)
+        if (bottomFragment != null) {
+            supportFragmentManager.beginTransaction().setCustomAnimations(R.anim.slide_in_bottom, R.anim.slide_out_bottom).hide(bottomFragment).commitAllowingStateLoss()
+        }
     }
 
     private fun showSelectorFragment() {
-        supportFragmentManager.beginTransaction().setCustomAnimations(R.anim.slide_in_bottom, R.anim.slide_out_bottom).show(supportFragmentManager.findFragmentById(R.id.bottomFragment)).commitAllowingStateLoss()
+        val bottomFragment = supportFragmentManager.findFragmentById(R.id.bottomFragment)
+        if (bottomFragment != null) {
+            supportFragmentManager.beginTransaction().setCustomAnimations(R.anim.slide_in_bottom, R.anim.slide_out_bottom).show(bottomFragment).commitAllowingStateLoss()
+        }
     }
 
     inner class Connection : ServiceConnection {
@@ -85,7 +90,6 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
                 launchIntent = null
             }
         }
-
     }
 
     override fun onFileSelected(extractFile: File) {

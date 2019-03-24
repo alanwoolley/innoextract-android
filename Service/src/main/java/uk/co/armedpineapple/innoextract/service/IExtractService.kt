@@ -12,9 +12,8 @@ interface IExtractService {
     fun check(toCheck: File, callback: (Boolean) -> Unit)
     fun check(toCheck: File, callback: CheckCallback) = check(toCheck, callback::onResult)
 
-
-
 }
+
 interface ExtractCallback {
     fun onProgress(value: Int, max: Int, speedBps: Int, remainingSeconds: Int)
 

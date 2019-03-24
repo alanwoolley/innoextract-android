@@ -20,7 +20,7 @@ class SpeedCalculator {
             return bps.toLong()
 
         } finally {
-            if (now - lastTime > Companion.MIN_TIME) {
+            if (now - lastTime > MIN_TIME) {
                 lastTime = now
                 lastValue = progress
             }

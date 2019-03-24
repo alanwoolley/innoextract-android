@@ -28,22 +28,22 @@ class ProgressFragment : Fragment() {
         val percentView = view?.findViewById<TextView>(R.id.percentTextView)
         val remainingView = view?.findViewById<TextView>(R.id.remainingTextView)
 
-        activity?.runOnUiThread({
+        activity?.runOnUiThread {
             percentView?.visibility = VISIBLE
             remainingView?.visibility = VISIBLE
 
             percentView?.text = String.format("%d%%", pct)
             remainingView?.text = remainingText
-        })
+        }
     }
 
     fun onExtractFinished() {
         val percentView = view?.findViewById<TextView>(R.id.percentTextView)
         val remainingView = view?.findViewById<TextView>(R.id.remainingTextView)
-        activity?.runOnUiThread({
+        activity?.runOnUiThread {
             percentView?.visibility = GONE
             remainingView?.visibility = GONE
-        })
+        }
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? =
