@@ -8,7 +8,7 @@ SRC_DIR := src
 LIBICONV_INC_DIR := ../libiconv-1.13.1/include
 
 LOCAL_C_INCLUDES :=	$(LOCAL_PATH)/$(SRC_DIR) \
-					$(LOCAL_PATH)/ \
+					$(LOCAL_PATH)/native_interface.hpp \
 					$(LOCAL_PATH)/$(LIBICONV_INC_DIR)
 
 LOCAL_STATIC_LIBRARIES := libbz2 liblzma libboost_program_options libiconv libboost_date_time libboost_filesystem libboost_system iconv libboost_iostreams libboost_iostreams_zlib libboost_iostreams_bzip2
