@@ -1,4 +1,4 @@
-package uk.co.armedpineapple.innoextract
+package uk.co.armedpineapple.innoextract.fragments
 
 import android.app.Activity.RESULT_OK
 import android.content.Context
@@ -20,6 +20,7 @@ import com.aditya.filebrowser.FileChooser
 import kotlinx.android.synthetic.main.fragment_selector.*
 import net.rdrei.android.dirchooser.DirectoryChooserActivity
 import net.rdrei.android.dirchooser.DirectoryChooserConfig
+import uk.co.armedpineapple.innoextract.R
 import java.io.File
 import kotlin.properties.Delegates
 
@@ -44,8 +45,8 @@ class SelectorFragment : Fragment() {
         refreshButtons()
     }
 
-    var isFileValid by Delegates.observable(false, { _, _, _ -> refreshButtons()} )
-    var isTargetValid by Delegates.observable(false, { _, _, _ -> refreshButtons()} )
+    var isFileValid by Delegates.observable(false) { _, _, _ -> refreshButtons() }
+    var isTargetValid by Delegates.observable(false) { _, _, _ -> refreshButtons() }
 
 
     private var mListener: OnFragmentInteractionListener? = null
@@ -54,7 +55,6 @@ class SelectorFragment : Fragment() {
                               savedInstanceState: Bundle?): View? =
 
             inflater.inflate(R.layout.fragment_selector, container, false)
-
 
 
     private fun refreshButtons() {
@@ -85,7 +85,6 @@ class SelectorFragment : Fragment() {
         } else {
             showErrorDialog()
         }
-
     }
 
     private fun onClickDirBrowser() {
@@ -121,7 +120,7 @@ class SelectorFragment : Fragment() {
                 if (resultCode == RESULT_OK) {
                     val file: Uri? = data?.data
                     if (file != null) {
-                     onNewFile(file)
+                        onNewFile(file)
                     }
                 }
 
@@ -140,9 +139,9 @@ class SelectorFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fileSelectButton.setOnClickListener({ onClickFileSelect() })
-        dirChooseButton.setOnClickListener({ onClickDirBrowser() })
-        fabExecute.setOnClickListener({ onClickExecute() })
+        fileSelectButton.setOnClickListener { onClickFileSelect() }
+        dirChooseButton.setOnClickListener { onClickDirBrowser() }
+        fabExecute.setOnClickListener { onClickExecute() }
     }
 
     override fun onAttach(context: Context?) {
@@ -160,12 +159,12 @@ class SelectorFragment : Fragment() {
     }
 
     private fun showErrorDialog() {
-        var dialogBuilder = AlertDialog.Builder(this.context!!)
+        val dialogBuilder = AlertDialog.Builder(this.context!!)
         val layout = layoutInflater.inflate(R.layout.dialog_error, null)
         val dialogText = layout.findViewById<TextView>(R.id.dialogText)
 
         dialogBuilder.setView(layout)
-                .setPositiveButton("Close", { d: DialogInterface, _ -> d.cancel() })
+                .setPositiveButton("Close") { d: DialogInterface, _ -> d.cancel() }
 
         if (!isFileValid) {
             dialogBuilder.setTitle("Invalid File")

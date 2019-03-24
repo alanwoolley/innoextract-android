@@ -19,4 +19,10 @@ Please choose another directory and ensure that the application has permission t
     <string name="permission_title">Permission required</string>
     <string name="permission_message">Permission is required to read external storage in order to extract</string>
 
+    <string name="pref_intro" translatable="false">INTRO_SHOWN</string>
+    <string name="intro_button">I Understand</string>
+    <string name="intro_text">This tool will unpack installers created with Inno Setup only. It will NOT:</string>
+    <string name="intro_no_1">Run or install Windows programs or games</string>
+    <string name="intro_no_2">Extract other, non-Inno Setup installers</string>
+
 </resources>

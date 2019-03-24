@@ -2,11 +2,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'maven'
+apply plugin: 'kotlin-kapt'
 apply from: 'versioning.gradle'
 
 project.ext.version = "3.1.3"
 
-ext.anko_version='0.10.4'
+ext.anko_version = '0.10.4'
 
 repositories {
     mavenCentral()
@@ -17,19 +18,23 @@ repositories {
 dependencies {
     implementation 'com.gu:option:1.3'
     implementation 'net.rdrei.android.dirchooser:library:3.2@aar'
-    implementation 'com.adityak:browsemyfiles:1.7'
-    implementation 'com.android.support:support-v4:27.0.2'
-    implementation 'com.android.support:design:27.0.2'
-    implementation 'com.android.support:appcompat-v7:27.0.2'
-    implementation 'com.android.support:support-core-utils:27.0.2'
-    implementation 'com.android.support:support-core-ui:27.0.2'
-    implementation 'com.android.support:support-annotations:27.0.2'
+    implementation 'com.adityak:browsemyfiles:1.8'
+    implementation 'com.android.support:support-v4:28.0.0'
+    implementation 'com.android.support:design:28.0.0'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support:support-core-utils:28.0.0'
+    implementation 'com.android.support:support-core-ui:28.0.0'
+    implementation 'com.android.support:support-annotations:28.0.0'
     implementation 'com.karumi:dexter:4.2.0'
     implementation 'com.github.debop:koda-time:1.2.1'
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "org.jetbrains.anko:anko-commons:$anko_version"
     implementation project(':Service')
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+
+    implementation "com.google.dagger:dagger:$dagger_version"
+    kapt  "com.google.dagger:dagger-compiler:$dagger_version"
 }
 
 def keystorePropertiesFile = rootProject.file("signing.properties")
@@ -41,17 +46,16 @@ def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
 
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 27
+        targetSdkVersion 28
 
         versionName project.ext.version
         versionCode buildVersionCode()
-
 
     }
 
@@ -107,7 +111,7 @@ android {
 
 import com.android.build.OutputFile
 
-ext.abiCodes = ['armeabi-v7a':1, 'arm64-v8a':2, 'x86':3, 'x86_64':4]
+ext.abiCodes = ['armeabi-v7a': 1, 'arm64-v8a': 2, 'x86': 3, 'x86_64': 4]
 
 android.applicationVariants.all { variant ->
 
@@ -118,7 +122,7 @@ android.applicationVariants.all { variant ->
                     project.ext.abiCodes.get(output.getFilter(OutputFile.ABI))
 
 
-            if (baseAbiVersionCode != null ) {
+            if (baseAbiVersionCode != null) {
 
                 output.versionCodeOverride =
                         baseAbiVersionCode * 100000000 + buildVersionCode()
@@ -126,4 +130,3 @@ android.applicationVariants.all { variant ->
         }
     }
 }
-

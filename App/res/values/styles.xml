@@ -40,5 +40,9 @@
         <item name="windowActionBar">false</item>
     </style>
 
+    <style name="IntroDialogTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:windowNoTitle">false</item>
+    </style>
+
 
 </resources>

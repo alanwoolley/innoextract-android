@@ -6,16 +6,18 @@
               android:orientation="vertical">
 
     <fragment
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:name="uk.co.armedpineapple.innoextract.ProgressFragment"
-            android:id="@+id/progressFragment" android:layout_weight="1"
-            tools:layout="@layout/fragment_progress"/>
+        android:id="@+id/topFragment"
+        android:name="uk.co.armedpineapple.innoextract.fragments.ProgressFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        tools:layout="@layout/fragment_progress" />
+
     <fragment
-            android:layout_width="match_parent"
-            android:layout_weight="0"
-            android:name="uk.co.armedpineapple.innoextract.SelectorFragment"
-            tools:layout="@layout/fragment_selector"
-            android:layout_height="240dp" android:id="@+id/selectorFragment"
-    />
+        android:id="@+id/bottomFragment"
+        android:name="uk.co.armedpineapple.innoextract.fragments.SelectorFragment"
+        android:layout_width="match_parent"
+        android:layout_height="240dp"
+        android:layout_weight="0"
+        tools:layout="@layout/fragment_selector" />
 </LinearLayout>

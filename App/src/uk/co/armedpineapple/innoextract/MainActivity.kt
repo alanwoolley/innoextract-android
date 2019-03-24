@@ -12,16 +12,21 @@ import android.widget.Toast
 import com.karumi.dexter.Dexter
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.debug
+import uk.co.armedpineapple.innoextract.fragments.IntroFragment
+import uk.co.armedpineapple.innoextract.fragments.ProgressFragment
+import uk.co.armedpineapple.innoextract.fragments.SelectorFragment
 import uk.co.armedpineapple.innoextract.permissions.PermissionsDialog
 import uk.co.armedpineapple.innoextract.service.ExtractCallback
 import uk.co.armedpineapple.innoextract.service.ExtractService
 import uk.co.armedpineapple.innoextract.service.IExtractService
+import uk.co.armedpineapple.innoextract.services.FirstLaunchService
 import java.io.File
+import javax.inject.Inject
 
 class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFragment.OnFragmentInteractionListener, ExtractCallback, AnkoLogger, AppCompatActivity() {
 
     override fun onProgress(value: Int, max: Int, speedBps: Int, remainingSeconds: Int) {
-        val progressFragment = supportFragmentManager.findFragmentById(R.id.progressFragment) as? ProgressFragment
+        val progressFragment = supportFragmentManager.findFragmentById(R.id.topFragment) as? ProgressFragment
         if (progressFragment != null) {
             val pct = (1.0f * value / max) * 100
             progressFragment.update(pct.toInt(), remainingSeconds)
@@ -29,18 +34,19 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
     }
 
     override fun onSuccess() {
-        val progressFragment = supportFragmentManager.findFragmentById(R.id.progressFragment) as? ProgressFragment
+        val progressFragment = supportFragmentManager.findFragmentById(R.id.topFragment) as? ProgressFragment
         progressFragment?.onExtractFinished()
         showSelectorFragment()
     }
 
     override fun onFailure(e: Exception) {
-        val progressFragment = supportFragmentManager.findFragmentById(R.id.progressFragment) as? ProgressFragment
+        val progressFragment = supportFragmentManager.findFragmentById(R.id.topFragment) as? ProgressFragment
         progressFragment?.onExtractFinished()
         showSelectorFragment()
-
     }
 
+    @Inject
+    lateinit var firstLaunchService: FirstLaunchService
 
     var isServiceBound = false
     private var connection = Connection()
@@ -48,13 +54,20 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
 
     private lateinit var extractService: IExtractService
 
-    private fun hideSelectorFragment() {
+    private var shouldShowInstructions = false
 
-        supportFragmentManager.beginTransaction().setCustomAnimations(R.anim.slide_in_bottom, R.anim.slide_out_bottom).hide(supportFragmentManager.findFragmentById(R.id.selectorFragment)).commitAllowingStateLoss()
+    private fun hideSelectorFragment() {
+        val bottomFragment = supportFragmentManager.findFragmentById(R.id.bottomFragment)
+        if (bottomFragment != null) {
+            supportFragmentManager.beginTransaction().setCustomAnimations(R.anim.slide_in_bottom, R.anim.slide_out_bottom).hide(bottomFragment).commitAllowingStateLoss()
+        }
     }
 
     private fun showSelectorFragment() {
-        supportFragmentManager.beginTransaction().setCustomAnimations(R.anim.slide_in_bottom, R.anim.slide_out_bottom).show(supportFragmentManager.findFragmentById(R.id.selectorFragment)).commitAllowingStateLoss()
+        val bottomFragment = supportFragmentManager.findFragmentById(R.id.bottomFragment)
+        if (bottomFragment != null) {
+            supportFragmentManager.beginTransaction().setCustomAnimations(R.anim.slide_in_bottom, R.anim.slide_out_bottom).show(bottomFragment).commitAllowingStateLoss()
+        }
     }
 
     inner class Connection : ServiceConnection {
@@ -71,13 +84,12 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
             if (launchIntent != null) {
                 val uri = launchIntent?.data
                 if (uri != null) {
-                    (supportFragmentManager.findFragmentById(R.id.selectorFragment) as? SelectorFragment)?.onNewFile(uri)
+                    (supportFragmentManager.findFragmentById(R.id.bottomFragment) as? SelectorFragment)?.onNewFile(uri)
                     onFileSelected(File(uri.path))
                 }
                 launchIntent = null
             }
         }
-
     }
 
     override fun onFileSelected(extractFile: File) {
@@ -86,7 +98,7 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
         }
 
         fun reportStatus(valid: Boolean) {
-            val selectorFragment = supportFragmentManager.findFragmentById(R.id.selectorFragment) as? SelectorFragment
+            val selectorFragment = supportFragmentManager.findFragmentById(R.id.bottomFragment) as? SelectorFragment
             selectorFragment?.isFileValid = valid
 
             if (!valid) {
@@ -102,7 +114,7 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
     }
 
     override fun onTargetSelected(target: File) {
-        val selectorFragment = supportFragmentManager.findFragmentById(R.id.selectorFragment) as? SelectorFragment
+        val selectorFragment = supportFragmentManager.findFragmentById(R.id.bottomFragment) as? SelectorFragment
         val valid = target.exists() && target.isDirectory && target.canWrite()
         selectorFragment?.isTargetValid = valid
     }
@@ -120,26 +132,35 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        (application as AndroidApplication).component.inject(this)
+
         Dexter.withActivity(this)
                 .withPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
-                .withListener(PermissionsDialog(this, { onResult(it) }))
+                .withListener(PermissionsDialog(this) { onResult(it) })
                 .check()
 
         debug("Binding service")
         val i = Intent(this, ExtractService::class.java)
         val serviceConnected = bindService(i, connection, Context.BIND_ABOVE_CLIENT or Context.BIND_AUTO_CREATE)
-        debug("Service connected? : " + serviceConnected)
+        debug("Service connected? : $serviceConnected")
 
 
         setContentView(R.layout.activity_main)
 
         launchIntent = intent
+        shouldShowInstructions = firstLaunchService.isFirstLaunch;
     }
 
     override fun onStart() {
         super.onStart()
         if (isServiceBound && extractService.isExtractInProgress()) {
             hideSelectorFragment()
+        }
+
+        if (shouldShowInstructions) {
+            val introFragment = IntroFragment()
+            introFragment.show(supportFragmentManager, "intro_fragment")
+            shouldShowInstructions = false
         }
     }
 
