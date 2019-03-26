@@ -1012,6 +1012,7 @@ void process_file(const fs::path & file, const extract_options & o) {
 	}
 	
 	boost::uint64_t total_size = 0;
+	boost::uint64_t running_total = 0;
 	
 	typedef std::map<stream::file, size_t> Files;
 	typedef std::map<stream::chunk, Files> Chunks;
@@ -1231,10 +1232,12 @@ void process_file(const fs::path & file, const extract_options & o) {
 					}
 					extract_progress.update(boost::uint64_t(n));
 					output_size += boost::uint64_t(n);
-					std::cout << "T$" << boost::lexical_cast<std::string>(output_size) << "$" << boost::lexical_cast<std::string>(total_size) << "$\n";
+					running_total += boost::uint64_t(n);
+					std::cout << "T$" << boost::lexical_cast<std::string>(running_total) << "$" << boost::lexical_cast<std::string>(total_size) << "$\n";
 				}
 			}
-			
+
+
 			const setup::data_entry & data = info.data_entries[location.second];
 			
 			if(output_size != data.uncompressed_size) {

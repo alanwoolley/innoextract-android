@@ -136,9 +136,10 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
                 return path
             }
 
-            override fun onProgress(value: Int, max: Int, speedBps: Int, remainingSeconds: Int) {
+            override fun onProgress(value: Long, max: Long, speedBps: Long, remainingSeconds: Long) {
                 if (done.get()) return
-                mNotificationBuilder.setProgress(max, value, false)
+                val progress = mapProgress(value, max)
+                mNotificationBuilder.setProgress(progress.second, progress.first, false)
 
                 val bps = Math.max(speedCalculator!!.update(value.toLong()), 1024).toInt()
                 val kbps = bps / 1024
@@ -156,7 +157,7 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
                     startForeground(ONGOING_NOTIFICATION,
                             mNotificationBuilder.build())
                 }
-                callback.onProgress(value, max, bps, secondsLeft)
+                callback.onProgress(value, max, bps.toLong(), secondsLeft)
             }
 
             override fun onSuccess() {
@@ -269,6 +270,8 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
         }
 
         mLoggingThread!!.start()
+        // Try to get the looper so we know its been created properly
+        mLoggingThread!!.looper
         performThread.start()
     }
 
@@ -278,6 +281,16 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
     }
 
     override fun isExtractInProgress(): Boolean = isBusy
+
+    private fun mapProgress(progress: Long, max: Long) : Pair<Int, Int> {
+        if (progress <= Integer.MAX_VALUE) {
+            return Pair(progress.toInt(), max.toInt())
+        }
+
+        val newMax = Integer.MAX_VALUE
+        val newProgress = Integer.MAX_VALUE * (max/progress);
+        return Pair(newProgress.toInt(), newMax)
+    }
 
     inner class ServiceBinder : Binder() {
         val service: ExtractService
@@ -319,20 +332,22 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
 
             private fun parseOut(line: String) {
                 if (line.isNotEmpty()) {
+                    info { line }
                     if (line.startsWith("T$")) {
+
                         val parts = line.split("\\$".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-                        var current = 0
-                        var max = 1
+                        var current = 0L
+                        var max = 1L
 
                         if (parts.size > 3) {
                             try {
-                                current = Integer.valueOf(parts[1])!!
+                                current = parts[1].toLong()
                             } catch (e: NumberFormatException) {
                                 warn("Couldn't parse current progress", e)
                             }
 
                             try {
-                                max = Integer.valueOf(parts[2])!!
+                                max = parts[2].toLong()
                             } catch (e: NumberFormatException) {
                                 warn("Couldn't parse max progress", e)
                             }
@@ -348,6 +363,7 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
 
             private fun parseErr(line: String) {
                 if (line.isNotEmpty()) {
+                    info { line }
                     val newLine = SpannableString(line)
                     newLine.setSpan(
                             ForegroundColorSpan(Color.rgb(255, 0, 0)), 0,

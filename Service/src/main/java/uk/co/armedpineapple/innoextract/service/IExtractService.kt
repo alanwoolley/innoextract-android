@@ -15,7 +15,7 @@ interface IExtractService {
 }
 
 interface ExtractCallback {
-    fun onProgress(value: Int, max: Int, speedBps: Int, remainingSeconds: Int)
+    fun onProgress(value: Long, max: Long, speedBps: Long, remainingSeconds: Long)
 
     fun onSuccess()
 

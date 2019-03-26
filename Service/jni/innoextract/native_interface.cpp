@@ -54,14 +54,14 @@ extern "C" int Java_uk_co_armedpineapple_innoextract_service_ExtractService_nati
 
 	// Get parameters
 
-	const char *toExtract = env->GetStringUTFChars(toExtractObj, NULL);
-	const char *extractDir = env->GetStringUTFChars(extractDirObj, NULL);
+	const char *toExtract = env->GetStringUTFChars(toExtractObj, nullptr);
+	const char *extractDir = env->GetStringUTFChars(extractDirObj, nullptr);
 
-	if (toExtract == NULL) {
+	if (toExtract == nullptr) {
 		LOGI("Extract file path is null");
 		return -1;
 	}
-	if (extractDir == NULL) {
+	if (extractDir == nullptr) {
 		LOGI("Extract target dir is null");
 		return -1;
 	}
@@ -93,16 +93,16 @@ extern "C" int Java_uk_co_armedpineapple_innoextract_service_ExtractService_nati
 		JNIEnv* env, jclass cls, jstring toExtractObj) {
 		// Get parameters
 
-        const char *toExtract = env->GetStringUTFChars(toExtractObj, NULL);
+        const char *toExtract = env->GetStringUTFChars(toExtractObj, nullptr);
 
-        if (toExtract == NULL) {
+        if (toExtract == nullptr) {
             LOGI("Extract file path is null");
             return -1;
         }
 
         char* args[3];
         args[0] = (char*) "Extractor";
-        args[1] = (char*) "--check";
+        args[1] = (char*) "--data-version";
         args[2] = (char*) toExtract;
 
         int out = main(3, (char**) args);
@@ -119,7 +119,7 @@ void *readchar(void* data) {
 
 	JNIEnv* env;
 
-	thread_data* td = (thread_data*) data;
+	auto * td = (thread_data*) data;
 
 	char c;
 	while ((c = fgetc(td->inputFile))) {
@@ -136,7 +136,7 @@ void *readchar(void* data) {
 		if (c == '\n') {
 
 			// Attach thread
-			jvm->AttachCurrentThread(&env, NULL);
+			jvm->AttachCurrentThread(&env, nullptr);
 			jmethodID mid = env->GetMethodID(mainClass, "gotString",
 					"(Ljava/lang/String;I)V");
 
@@ -145,7 +145,7 @@ void *readchar(void* data) {
 				env->ExceptionClear();
 			}
 
-			if (mid == NULL) {
+			if (mid == nullptr) {
 				LOGI("Method is null");
 			}
 
@@ -157,7 +157,7 @@ void *readchar(void* data) {
 		}
 	}
 
-    pthread_exit(NULL);
+    pthread_exit(nullptr);
 }
 
 extern "C" void Java_uk_co_armedpineapple_innoextract_service_ExtractService_nativeInit(
@@ -182,15 +182,15 @@ extern "C" void Java_uk_co_armedpineapple_innoextract_service_ExtractService_nat
 	inputFile_stdout = fdopen(filedes_stdout[0], "r");
 	inputFile_stderr = fdopen(filedes_stderr[0], "r");
 
-	thread_data *outdata = (thread_data*) malloc(sizeof(thread_data));
+	auto *outdata = (thread_data*) malloc(sizeof(thread_data));
 	outdata->inputFile = inputFile_stdout;
 	outdata->streamNumber = STDOUT_FILENO;
 
-	thread_data *errdata = (thread_data*) malloc(sizeof(thread_data));
+	auto *errdata = (thread_data*) malloc(sizeof(thread_data));
 	errdata->inputFile = inputFile_stderr;
 	errdata->streamNumber = STDERR_FILENO;
 
-	pthread_create(&readThread_stdout, NULL, readchar, (void*) outdata);
-	pthread_create(&readThread_stderr, NULL, readchar, (void*) errdata);
+	pthread_create(&readThread_stdout, nullptr, readchar, (void*) outdata);
+	pthread_create(&readThread_stderr, nullptr, readchar, (void*) errdata);
 }
 

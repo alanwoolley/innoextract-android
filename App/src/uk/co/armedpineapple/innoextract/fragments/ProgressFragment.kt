@@ -17,13 +17,13 @@ class ProgressFragment : Fragment() {
 
     private var mListener: OnFragmentInteractionListener? = null
 
-    fun update(pct: Int, remainingSeconds: Int) {
+    fun update(pct: Int, remainingSeconds: Long) {
         if (!isAdded) {
             return
         }
 
         val remainingText = "~ " + PeriodFormat
-                .getDefault().print(Period((remainingSeconds * 1000).toLong())) + " remaining"
+                .getDefault().print(Period((remainingSeconds * 1000))) + " remaining"
 
         val percentView = view?.findViewById<TextView>(R.id.percentTextView)
         val remainingView = view?.findViewById<TextView>(R.id.remainingTextView)

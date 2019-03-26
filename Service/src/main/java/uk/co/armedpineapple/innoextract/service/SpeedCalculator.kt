@@ -2,29 +2,45 @@ package uk.co.armedpineapple.innoextract.service
 
 class SpeedCalculator {
 
-    private var lastTime: Long = 0
-    private var lastValue: Long = 0
 
+    private var lastTime: Long = 0
+    private var buffer: LongArray = LongArray(size=3)
+    private var bufferIdx: Int = 0
+    private var lastValue: Long = 0
+    private var lastAverage: Long = 0
+    private var bufferFilled = false
+
+
+    fun reset() {
+        bufferIdx =0
+        lastTime=0
+        lastValue=0
+        lastAverage=0
+        bufferFilled = false
+    }
 
     fun update(progress: Long): Long {
         val now = System.currentTimeMillis()
 
-        try {
-
             if (lastTime == 0L) {
-                return 0
-            }
+                lastTime = now
+            } else if (now - lastTime > MIN_TIME) {
 
-            val secondsPassed: Float = ((now - lastTime) * 1.0f) / 1000
-            val bps = ((progress - lastValue) * 1.0f) / secondsPassed
-            return bps.toLong()
+                val secondsPassed: Float = ((now - lastTime) * 1.0f) / 1000
+                val bps = ((progress - lastValue) * 1.0f) / secondsPassed
 
-        } finally {
-            if (now - lastTime > MIN_TIME) {
                 lastTime = now
                 lastValue = progress
+                bufferIdx = (bufferIdx + 1) % buffer.size
+                bufferFilled = (bufferFilled || bufferIdx == 0)
+                buffer[bufferIdx] = bps.toLong()
+
+                if (bufferFilled) {
+                   lastAverage = buffer.average().toLong()
+                }
             }
-        }
+
+            return lastAverage
 
     }
 

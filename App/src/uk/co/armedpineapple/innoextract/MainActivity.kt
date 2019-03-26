@@ -25,7 +25,7 @@ import javax.inject.Inject
 
 class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFragment.OnFragmentInteractionListener, ExtractCallback, AnkoLogger, AppCompatActivity() {
 
-    override fun onProgress(value: Int, max: Int, speedBps: Int, remainingSeconds: Int) {
+    override fun onProgress(value: Long, max: Long, speedBps: Long, remainingSeconds: Long) {
         val progressFragment = supportFragmentManager.findFragmentById(R.id.topFragment) as? ProgressFragment
         if (progressFragment != null) {
             val pct = (1.0f * value / max) * 100
