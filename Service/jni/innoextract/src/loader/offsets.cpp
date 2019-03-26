@@ -21,6 +21,7 @@
 #include "loader/offsets.hpp"
 
 #include <cstring>
+#include <limits>
 
 #include <boost/cstdint.hpp>
 #include <boost/static_assert.hpp>
@@ -33,6 +34,7 @@
 #include "setup/version.hpp"
 #include "util/load.hpp"
 #include "util/log.hpp"
+#include "util/output.hpp"
 
 namespace loader {
 
@@ -54,6 +56,7 @@ const setup_loader_version known_setup_loader_versions[] = {
 	{ { 'r', 'D', 'l', 'P', 't', 'S', '0', '6', 0x87, 'e', 'V', 'x' },    INNO_VERSION(4, 0, 10) },
 	{ { 'r', 'D', 'l', 'P', 't', 'S', '0', '7', 0x87, 'e', 'V', 'x' },    INNO_VERSION(4, 1,  6) },
 	{ { 'r', 'D', 'l', 'P', 't', 'S', 0xcd, 0xe6, 0xd7, '{', 0x0b, '*' }, INNO_VERSION(5, 1,  5) },
+	{ { 'n', 'S', '5', 'W', '7', 'd', 'T', 0x83, 0xaa, 0x1b, 0x0f, 'j' }, INNO_VERSION(5, 1,  5) },
 };
 
 const int ResourceNameInstaller = 11111;
@@ -116,7 +119,8 @@ bool offsets::load_offsets_at(std::istream & is, boost::uint32_t pos) {
 		}
 	}
 	if(!version) {
-		return false;
+		log_warning << "Unexpected setup loader magic: " << print_hex(magic);
+		version = std::numeric_limits<setup::version_constant>::max();
 	}
 	
 	crypto::crc32 checksum;
@@ -125,9 +129,11 @@ bool offsets::load_offsets_at(std::istream & is, boost::uint32_t pos) {
 	
 	if(version >= INNO_VERSION(5, 1,  5)) {
 		boost::uint32_t revision = checksum.load<boost::uint32_t>(is);
-		if(is.fail() || revision != 1) {
+		if(is.fail()) {
 			is.clear();
 			return false;
+		} else if(revision != 1) {
+			log_warning << "Unexpected setup loader revision: " << revision;
 		}
 	}
 	
@@ -171,8 +177,7 @@ bool offsets::load_offsets_at(std::istream & is, boost::uint32_t pos) {
 			return false;
 		}
 		if(checksum.finalize() != expected) {
-			log_error << "Loader checksum mismatch!";
-			return false;
+			log_warning << "Setup loader checksum mismatch!";
 		}
 	}
 	

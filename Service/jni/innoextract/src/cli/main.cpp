@@ -43,9 +43,6 @@
 #include "util/time.hpp"
 #include "util/windows.hpp"
 
-#include <android/log.h>
-#define LOGI(...) __android_log_write(2,"innoextract", __VA_ARGS__)
-
 namespace fs = boost::filesystem;
 namespace po = boost::program_options;
 
@@ -123,10 +120,10 @@ static void print_license() {
 }
 
 int main(int argc, char * argv[]) {
-	
+
 	logger::total_errors = 0;
 	logger::total_warnings = 0;
-
+	
 	po::options_description generic("Generic options");
 	generic.add_options()
 		("help,h", "Show supported options")
@@ -376,7 +373,7 @@ int main(int argc, char * argv[]) {
 			 */
 			o.output_dir = i->second.as<std::string>();
 			try {
-				if(!o.output_dir.empty() && !fs::exists(o.output_dir)) {
+				if(o.extract && !o.output_dir.empty() && !fs::exists(o.output_dir)) {
 					fs::create_directory(o.output_dir);
 				}
 			} catch(...) {

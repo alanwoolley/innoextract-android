@@ -38,9 +38,9 @@
 
 const char innoextract_name[] = "innoextract";
 
-const char innoextract_version[] = "1.7";
+const char innoextract_version[] = "1.8-dev";
 
-const char innosetup_versions[] = "Inno Setup 1.2.10 to 5.6.0";
+const char innosetup_versions[] = "Inno Setup 1.2.10 to 6.0.0";
 
 const char innoextract_bugs[] = "http://innoextract.constexpr.org/issues";
 
