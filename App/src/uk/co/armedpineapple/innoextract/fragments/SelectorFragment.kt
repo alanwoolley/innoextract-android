@@ -27,7 +27,7 @@ import kotlin.properties.Delegates
 
 class SelectorFragment : Fragment() {
 
-    var file by Delegates.observable<File?>(null) { _, _, f ->
+    private var file by Delegates.observable<File?>(null) { _, _, f ->
 
         if (f != null) {
             mListener?.onFileSelected(f)
@@ -36,7 +36,7 @@ class SelectorFragment : Fragment() {
         refreshButtons()
     }
 
-    var target by Delegates.observable<File?>(null) { _, _, t ->
+    private var target by Delegates.observable<File?>(null) { _, _, t ->
 
         if (t != null) {
             mListener?.onTargetSelected(t)

@@ -141,12 +141,12 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
                 val progress = mapProgress(value, max)
                 mNotificationBuilder.setProgress(progress.second, progress.first, false)
 
-                val bps = Math.max(speedCalculator!!.update(value.toLong()), 1024).toInt()
+                val bps = Math.max(speedCalculator!!.update(value), 1024).toInt()
                 val kbps = bps / 1024
                 val secondsLeft = (max - value) / bps
 
                 val remainingText = PeriodFormat
-                        .getDefault().print(Period((secondsLeft * 1000).toLong()))
+                        .getDefault().print(Period((secondsLeft * 1000)))
 
 
                 val message = String.format(Locale.US, "Extracting: %s\nSpeed: %dKB/s\nTime Remaining:%s", toExtract.name, kbps, remainingText)
@@ -288,7 +288,7 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
         }
 
         val newMax = Integer.MAX_VALUE
-        val newProgress = Integer.MAX_VALUE * (max/progress);
+        val newProgress = Integer.MAX_VALUE * (max/progress)
         return Pair(newProgress.toInt(), newMax)
     }
 
