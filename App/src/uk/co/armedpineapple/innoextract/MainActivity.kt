@@ -16,6 +16,7 @@ import uk.co.armedpineapple.innoextract.fragments.IntroFragment
 import uk.co.armedpineapple.innoextract.fragments.ProgressFragment
 import uk.co.armedpineapple.innoextract.fragments.SelectorFragment
 import uk.co.armedpineapple.innoextract.permissions.PermissionsDialog
+import uk.co.armedpineapple.innoextract.service.Configuration
 import uk.co.armedpineapple.innoextract.service.ExtractCallback
 import uk.co.armedpineapple.innoextract.service.ExtractService
 import uk.co.armedpineapple.innoextract.service.IExtractService
@@ -51,6 +52,11 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
     var isServiceBound = false
     private var connection = Connection()
     var launchIntent: Intent? = null
+
+    private val configuration = Configuration(
+            showOngoingNotification = true,
+            showFinalNotification = true,
+            showLogActionButton = true)
 
     private lateinit var extractService: IExtractService
 
@@ -125,7 +131,7 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
         }
         hideSelectorFragment()
         toast("Extracting", Toast.LENGTH_SHORT)
-        extractService.extract(extractFile, extractTo, this)
+        extractService.extract(extractFile, extractTo, this, configuration)
 
     }
 
@@ -148,7 +154,7 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
         setContentView(R.layout.activity_main)
 
         launchIntent = intent
-        shouldShowInstructions = firstLaunchService.isFirstLaunch;
+        shouldShowInstructions = firstLaunchService.isFirstLaunch
     }
 
     override fun onStart() {
