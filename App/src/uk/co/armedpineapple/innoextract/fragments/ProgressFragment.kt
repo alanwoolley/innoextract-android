@@ -33,7 +33,11 @@ class ProgressFragment : Fragment() {
             remainingView?.visibility = VISIBLE
 
             percentView?.text = String.format("%d%%", pct)
-            remainingView?.text = remainingText
+            if (remainingSeconds > 0 && remainingSeconds < Long.MAX_VALUE) {
+                remainingView?.text = remainingText
+            } else {
+                remainingView?.text = ""
+            }
         }
     }
 

@@ -7,7 +7,7 @@ class SpeedCalculator {
     private var buffer: LongArray = LongArray(size=3)
     private var bufferIdx: Int = 0
     private var lastValue: Long = 0
-    private var lastAverage: Long = 0
+    private var lastAverage: Long = -1
     private var bufferFilled = false
 
 
@@ -15,7 +15,7 @@ class SpeedCalculator {
         bufferIdx =0
         lastTime=0
         lastValue=0
-        lastAverage=0
+        lastAverage=-1
         bufferFilled = false
     }
 

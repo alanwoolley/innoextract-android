@@ -138,26 +138,35 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
 
             override fun onProgress(value: Long, max: Long, speedBps: Long, remainingSeconds: Long) {
                 if (done.get()) return
-                val progress = mapProgress(value, max)
-                mNotificationBuilder.setProgress(progress.second, progress.first, false)
 
-                val bps = Math.max(speedCalculator!!.update(value), 1024).toInt()
-                val kbps = bps / 1024
-                val secondsLeft = (max - value) / bps
+                val calculated = speedCalculator!!.update(value)
 
-                val remainingText = PeriodFormat
-                        .getDefault().print(Period((secondsLeft * 1000)))
+                val secondsLeft = if (calculated >=0) {
+                    (max - value) / calculated
+                } else {
+                    Long.MAX_VALUE
+                }
 
+                val message = if (calculated >= 0) {
+                    val mbps = calculated / 1048576
 
-                val message = String.format(Locale.US, "Extracting: %s\nSpeed: %dKB/s\nTime Remaining:%s", toExtract.name, kbps, remainingText)
+                    val remainingText = PeriodFormat
+                            .getDefault().print(Period((secondsLeft * 1000)))
 
+                    String.format(Locale.US, "Extracting: %s\nSpeed: %dMB/s\nTime Remaining:%s", toExtract.name, mbps, remainingText)
 
-                mNotificationBuilder.setStyle(NotificationCompat.BigTextStyle().bigText(message))
+                } else {
+                    String.format(Locale.US, "Extracting: %s", toExtract.name)
+                }
+
                 if (configuration.showOngoingNotification) {
+                    val progress = mapProgress(value, max)
+                    mNotificationBuilder.setProgress(progress.second, progress.first, false)
+                    mNotificationBuilder.setStyle(NotificationCompat.BigTextStyle().bigText(message))
                     startForeground(ONGOING_NOTIFICATION,
                             mNotificationBuilder.build())
                 }
-                callback.onProgress(value, max, bps.toLong(), secondsLeft)
+                callback.onProgress(value, max, calculated, secondsLeft)
             }
 
             override fun onSuccess() {
