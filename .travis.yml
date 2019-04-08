@@ -31,19 +31,19 @@ script:
 before_deploy:
   - zip -jr mapping.zip App/build/outputs/mapping
 deploy:
-- provider: releases
-  skip_cleanup: 'true'
-  api_key:
-    secure: IQZ419yGt7iGUmBSgGl8ah3ZXJw005uoPlEqlNelFsqAImsUgEXsJFORg+Jo8l/Lyfi3H1hDCn5IM/KTOsUuAIabMctOSP99AyIK8AzNbnLQbU57lvZwfAnxFBn024ir7pYXw/MIoheWnR3RJs+ATiP301HLaWpdxTEhcsDn2n8=
-  file_glob: true
-  file:
-  - App/build/outputs/apk/release/*.apk
-  - mapping.zip
-  - Service/build/outputs/aar/*.aar
-  on:
-    tags: true
-    repo: alanwoolley/innoextract-android
-- provider: script
+  - provider: releases
+    skip_cleanup: 'true'
+    api_key:
+      secure: AdQHHFq+RNNWQQXY5v/ePpnoUcQBLoEbd0sqrJuKuM781fnLi1mKC4gk3rzys7n6APCT6Lkwa0gUX/bB3SyM9FfMOGzuC+S5GsIbOedcgBlcI51Qqc/MGyQmwV1NL7xF1la6s3TQY3XSIe9dIuwQvvzOo5+9NVHkmrZn7Cl4v1c=
+    file_glob: true
+    file:
+    - App/build/outputs/apk/release/*.apk
+    - mapping.zip
+    - Service/build/outputs/aar/*.aar
+    on:
+      tags: true
+      repo: alanwoolley/innoextract-android
+  - provider: script
     skip_cleanup: 'true'
     script: ./gradlew bintrayUpload
     on:
