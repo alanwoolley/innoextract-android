@@ -2,7 +2,6 @@ package uk.co.armedpineapple.innoextract.fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -12,8 +11,7 @@ import android.widget.TextView
 import org.joda.time.Period
 import org.joda.time.format.PeriodFormat
 import uk.co.armedpineapple.innoextract.R
-
-class ProgressFragment : Fragment() {
+class ProgressFragment : androidx.fragment.app.Fragment() {
 
     private var mListener: OnFragmentInteractionListener? = null
 

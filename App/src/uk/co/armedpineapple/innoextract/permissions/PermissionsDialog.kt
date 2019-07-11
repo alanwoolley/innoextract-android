@@ -2,7 +2,7 @@ package uk.co.armedpineapple.innoextract.permissions
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.support.v7.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.listener.multi.BaseMultiplePermissionsListener
 import uk.co.armedpineapple.innoextract.R
