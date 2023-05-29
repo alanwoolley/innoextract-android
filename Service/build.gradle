@@ -4,7 +4,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
-        classpath "org.jetbrains.dokka:dokka-gradle-plugin:0.9.17"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.8.10"
     }
 }
 
@@ -81,18 +81,7 @@ task sourcesJar(type: Jar) {
     archiveClassifier  = 'sources'
 }
 
-task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
-    outputFormat = 'javadoc'
-    outputDirectory = "$buildDir/javadoc"
-}
-
-task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
-    archiveClassifier = 'javadoc'
-    from dokkaJavadoc.getOutputDirectory()
-}
-
 artifacts {
-    archives javadocJar
     archives sourcesJar
 }
 
