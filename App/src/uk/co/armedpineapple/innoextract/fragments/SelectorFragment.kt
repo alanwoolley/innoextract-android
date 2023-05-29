@@ -2,116 +2,92 @@ package uk.co.armedpineapple.innoextract.fragments
 
 import android.app.Activity.RESULT_OK
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
-import android.content.res.ColorStateList
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import androidx.core.content.ContextCompat
-import androidx.appcompat.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import com.aditya.filebrowser.Constants
-import com.aditya.filebrowser.FileChooser
-import kotlinx.android.synthetic.main.fragment_selector.*
-import net.rdrei.android.dirchooser.DirectoryChooserActivity
-import net.rdrei.android.dirchooser.DirectoryChooserConfig
-import uk.co.armedpineapple.innoextract.R
-import java.io.File
-import kotlin.properties.Delegates
+import androidx.lifecycle.ViewModelProvider
+import uk.co.armedpineapple.innoextract.databinding.FragmentSelectorBinding
+import uk.co.armedpineapple.innoextract.layouts.SelectorFrameLayout
+import uk.co.armedpineapple.innoextract.viewmodels.ExtractionViewModel
 
-
+/**
+ * A fragment allowing the selection of an extraction source and target.
+ */
 class SelectorFragment : androidx.fragment.app.Fragment() {
 
-    private var file by Delegates.observable<File?>(null) { _, _, f ->
+    private var _binding: FragmentSelectorBinding? = null
+    private val binding get() = _binding!!
+    private var fragmentInteractionListener: OnFragmentInteractionListener? = null
+    private lateinit var extractionViewModel: ExtractionViewModel
 
-        if (f != null) {
-            mListener?.onFileSelected(f)
+    private fun refreshStages() {
+        if (extractionViewModel.validationResult.value?.isValid == true) {
+            binding.fileSelectorStage.state = SelectorFrameLayout.State.Complete
+            if (extractionViewModel.target.value != null) {
+                binding.directorySelectorStage.state = SelectorFrameLayout.State.Complete
+                binding.extractStage.state = SelectorFrameLayout.State.Active
+            } else {
+                binding.directorySelectorStage.state = SelectorFrameLayout.State.Active;
+                binding.extractStage.state = SelectorFrameLayout.State.Inactive
+            }
+        } else if (extractionViewModel.validationResult.value == null) {
+            binding.fileSelectorStage.state = SelectorFrameLayout.State.Active
+            binding.directorySelectorStage.state = SelectorFrameLayout.State.Inactive
+            binding.extractStage.state = SelectorFrameLayout.State.Inactive
+        } else {
+            binding.fileSelectorStage.state = SelectorFrameLayout.State.Warning
+            binding.directorySelectorStage.state = SelectorFrameLayout.State.Inactive
+            binding.extractStage.state = SelectorFrameLayout.State.Inactive
         }
-
-        refreshButtons()
     }
 
-    private var target by Delegates.observable<File?>(null) { _, _, t ->
-
-        if (t != null) {
-            mListener?.onTargetSelected(t)
-        }
-
-        refreshButtons()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        extractionViewModel = ViewModelProvider(requireActivity())[ExtractionViewModel::class.java]
+        extractionViewModel.validationResult.observe(this) { refreshStages() };
+        extractionViewModel.target.observe(this) { refreshStages() };
     }
 
-    var isFileValid by Delegates.observable(false) { _, _, _ -> refreshButtons() }
-    var isTargetValid by Delegates.observable(false) { _, _, _ -> refreshButtons() }
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentSelectorBinding.inflate(layoutInflater)
+        return binding.root
+    }
 
-
-    private var mListener: OnFragmentInteractionListener? = null
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? =
-
-            inflater.inflate(R.layout.fragment_selector, container, false)
-
-
-    private fun refreshButtons() {
-
-        if (isFileValid && isTargetValid) {
-            fabExecute.setImageDrawable(ContextCompat.getDrawable(context!!, R.drawable.ic_extract))
-            fabExecute.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context!!, R.color.accent))
-        } else {
-            fabExecute.setImageDrawable(ContextCompat.getDrawable(context!!, R.drawable.ic_not_allowed))
-            fabExecute.backgroundTintList = ColorStateList.valueOf(Color.RED)
-        }
-
-        if (file != null && target != null) {
-            fabExecute.show()
-        } else {
-            fabExecute.hide()
-        }
-
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun onClickExecute() {
-        if (file == null || target == null) {
-            throw IllegalStateException("File or target is null")
-        }
-
-        if (isFileValid && isTargetValid) {
-            mListener?.onExtractButtonPressed(file!!, target!!)
-        } else {
-            showErrorDialog()
-        }
+        fragmentInteractionListener?.onExtractButtonPressed()
     }
 
     private fun onClickDirBrowser() {
-        val chooserIntent = Intent(context!!.applicationContext, DirectoryChooserActivity::class.java)
-
-        val config = DirectoryChooserConfig.builder()
-                .newDirectoryName("InnoExtract")
-                .allowReadOnlyDirectory(false)
-                .allowNewDirectoryNameModification(true)
-                .build()
-
-        chooserIntent.putExtra(DirectoryChooserActivity.EXTRA_CONFIG, config)
-
-        startActivityForResult(chooserIntent, REQUEST_DIRECTORY)
+        val i = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+        i.addCategory(Intent.CATEGORY_DEFAULT)
+        startActivityForResult(
+            Intent.createChooser(i, "Choose extract directory"), REQUEST_DIRECTORY
+        )
     }
 
     private fun onClickFileSelect() {
-        val fileChooserIntent = Intent(context!!.applicationContext, FileChooser::class.java)
-        fileChooserIntent.putExtra(Constants.SELECTION_MODE, Constants.SELECTION_MODES.SINGLE_SELECTION.ordinal)
-        fileChooserIntent.putExtra(Constants.ALLOWED_FILE_EXTENSIONS, "exe")
+        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "*/*"
+        }
 
-        startActivityForResult(fileChooserIntent, REQUEST_PICK_FILE)
+        startActivityForResult(intent, REQUEST_PICK_FILE)
     }
 
+
     fun onNewFile(file: Uri) {
-        this.file = File(file.path)
-        fileTextView.text = file.lastPathSegment
+        extractionViewModel.onFileSelected(file)
+        fragmentInteractionListener?.onFileSelected()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -123,14 +99,13 @@ class SelectorFragment : androidx.fragment.app.Fragment() {
                         onNewFile(file)
                     }
                 }
-
             }
+
             REQUEST_DIRECTORY -> {
-                if (resultCode == DirectoryChooserActivity.RESULT_CODE_DIR_SELECTED) {
-                    val dir: String? = data?.getStringExtra(DirectoryChooserActivity.RESULT_SELECTED_DIR)
-                    if (dir != null) {
-                        this.target = File(dir)
-                        targetTextView.text = dir
+                if (resultCode == RESULT_OK) {
+                    val directory: Uri? = data?.data
+                    directory?.let {
+                        extractionViewModel.updateTarget(it)
                     }
                 }
             }
@@ -139,49 +114,23 @@ class SelectorFragment : androidx.fragment.app.Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fileSelectButton.setOnClickListener { onClickFileSelect() }
-        dirChooseButton.setOnClickListener { onClickDirBrowser() }
-        fabExecute.setOnClickListener { onClickExecute() }
+        binding.chooseFileButton.setOnClickListener { onClickFileSelect() }
+        binding.chooseTargetButton.setOnClickListener { onClickDirBrowser() }
+        binding.extractButton.setOnClickListener { onClickExecute() }
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is OnFragmentInteractionListener) {
-            mListener = context
+            fragmentInteractionListener = context
         } else {
-            throw RuntimeException(context!!.toString() + " must implement OnFragmentInteractionListener")
+            throw RuntimeException("$context must implement OnFragmentInteractionListener")
         }
     }
 
     override fun onDetach() {
         super.onDetach()
-        mListener = null
-    }
-
-    private fun showErrorDialog() {
-        val dialogBuilder = AlertDialog.Builder(this.context!!)
-        val layout = layoutInflater.inflate(R.layout.dialog_error, null)
-        val dialogText = layout.findViewById<TextView>(R.id.dialogText)
-
-        dialogBuilder.setView(layout)
-                .setPositiveButton("Close") { d: DialogInterface, _ -> d.cancel() }
-
-        if (!isFileValid) {
-            dialogBuilder.setTitle("Invalid File")
-            dialogText.setText(R.string.unable_to_extract)
-        } else {
-            dialogBuilder.setTitle("Invalid Directory")
-            dialogText.setText(R.string.cannot_write_to_directory)
-        }
-        dialogBuilder.create().show()
-
-    }
-
-
-    interface OnFragmentInteractionListener {
-        fun onExtractButtonPressed(extractFile: File, extractTo: File)
-        fun onFileSelected(extractFile: File)
-        fun onTargetSelected(target: File)
+        fragmentInteractionListener = null
     }
 
     companion object {

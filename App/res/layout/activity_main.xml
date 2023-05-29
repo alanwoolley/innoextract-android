@@ -1,23 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable name="vm"
+            type="uk.co.armedpineapple.innoextract.viewmodels.ExtractionViewModel"/>
+    </data>
 
-    <fragment
-        android:id="@+id/topFragment"
-        android:name="uk.co.armedpineapple.innoextract.fragments.ProgressFragment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        tools:layout="@layout/fragment_progress" />
+    <androidx.constraintlayout.widget.ConstraintLayout
 
-    <fragment
-        android:id="@+id/bottomFragment"
-        android:name="uk.co.armedpineapple.innoextract.fragments.SelectorFragment"
         android:layout_width="match_parent"
-        android:layout_height="240dp"
-        android:layout_weight="0"
-        tools:layout="@layout/fragment_selector" />
-</LinearLayout>
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintHeight_min="10dp">
+
+
+        <ImageView
+            android:id="@+id/backgroundImg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/secondaryDarkColor"
+            android:contentDescription="Background Image"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@tools:sample/backgrounds/scenic" />
+
+        <androidx.constraintlayout.motion.widget.MotionLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            app:layoutDescription="@xml/collapsing_scene"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
+            android:id="@+id/main_motion">
+
+            <ImageView
+                android:id="@+id/icon_image"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                app:srcCompat="@drawable/ic_logo"
+                tools:layout_editor_absoluteX="105dp"
+                tools:layout_editor_absoluteY="1dp" />
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{vm.title}"
+                android:textColor="@color/secondaryLightColor"
+                android:textSize="32sp"
+                android:gravity="center_horizontal"
+                tools:layout_editor_absoluteX="83dp"
+                tools:layout_editor_absoluteY="222dp"
+                tools:text="My Inno Title" />
+
+            <TextView
+                android:id="@+id/subtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/secondaryLightColor"
+                android:textSize="16sp"
+                android:gravity="center_horizontal"
+                tools:layout_editor_absoluteX="135dp"
+                tools:layout_editor_absoluteY="243dp"
+                tools:text="My Inno Description"
+                android:text="@{vm.subtitle}"/>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:barrierMargin="20dp"
+                app:constraint_referenced_ids="icon_image,title,subtitle"
+                tools:layout_editor_absoluteY="275dp" />
+
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/bottomScrollView"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:fillViewport="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHeight_min="180dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/barrier2">
+
+                <androidx.fragment.app.FragmentContainerView
+                    android:id="@+id/bottomFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="32dp"
+                    tools:layout="@layout/fragment_selector"
+                    tools:layout_conversion_absoluteHeight="87dp"
+                    tools:layout_conversion_absoluteWidth="411dp" />
+            </androidx.core.widget.NestedScrollView>
+
+        </androidx.constraintlayout.motion.widget.MotionLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

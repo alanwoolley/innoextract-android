@@ -20,13 +20,31 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#ifndef NATIVE_INTERFACE_H_
+#define NATIVE_INTERFACE_H_
+
+#include <string>
+#include "jni.h"
+
 int main(int argc, char * argv[]);
 
-extern "C" void Java_uk_co_armedpineapple_innoextract_service_ExtractService_nativeInit(
-		JNIEnv *env, jobject obj, jclass clazz, jint fileno);
+void updateGogId(const std::string& newId);
+void updateName(const std::string& newName);
+void updateVersion(const std::string& newVersion);
+void updateProgress(const uint64_t extracted, const uint64_t total);
+void updateCurrentFile(const std::string& currentFile);
 
-extern "C" int Java_uk_co_armedpineapple_innoextract_service_ExtractService_nativeCheckInno(
-        JNIEnv* env, jclass cls, jstring toExtractObj);
+jobject getOutputFile(const std::string &path);
+std::string getFileProxyPath(const jobject &proxy);
+void closeFileProxy(const jobject &proxy);
 
-extern "C" int Java_uk_co_armedpineapple_innoextract_service_ExtractService_nativeDoExtract(
-        JNIEnv* env, jclass cls, jstring toExtractObj, jstring extractDirObj);
+extern "C" void Java_uk_co_armedpineapple_innoextract_service_ExtractService_nativePrepare(
+		JNIEnv *env, jobject obj);
+
+extern "C" jobject Java_uk_co_armedpineapple_innoextract_service_ExtractService_nativeCheck(
+        JNIEnv* env, jobject obj, jint toExtractObj);
+
+extern "C" int Java_uk_co_armedpineapple_innoextract_service_ExtractService_nativeExtract(
+		JNIEnv* env, jobject obj, jint toExtractFd, jstring extractDirObj);
+
+#endif

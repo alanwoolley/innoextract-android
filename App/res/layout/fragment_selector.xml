@@ -1,79 +1,132 @@
-<RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context="uk.co.armedpineapple.innoextract.fragments.SelectorFragment"
-        android:id="@+id/selectionLayout">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/selectionLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="uk.co.armedpineapple.innoextract.fragments.SelectorFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+    <uk.co.armedpineapple.innoextract.layouts.SelectorFrameLayout
+        android:id="@+id/extractStage"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/directorySelectorStage"
+        app:state="inactive"
+        app:stageIndex="3">
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <RelativeLayout
-            android:layout_width="480dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true">
-
-        <TextView
-                android:text="Choose a target location "
+            <TextView
+                android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/targetTextView"
-                android:layout_alignBaseline="@+id/dirChooseButton"
-                android:layout_alignBottom="@+id/dirChooseButton"
-                android:layout_alignLeft="@+id/fileTextView"
-                android:layout_alignStart="@+id/fileTextView"
-                android:textAppearance="@android:style/TextAppearance.Medium"/>
-        <TextView
-                android:text="Select a file to extract"
+                android:text="Ready to extract"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:tag="recolor"/>
+
+            <Button
+                android:id="@+id/extractButton"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/fileTextView"
-                android:layout_alignBaseline="@+id/fileSelectButton"
-                android:layout_alignBottom="@+id/fileSelectButton"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_marginLeft="21dp"
-                android:layout_marginStart="21dp"
-                android:textAppearance="@android:style/TextAppearance.Medium"/>
-        <Button
+                android:text="Extract"
+                android:textColor="@color/primaryLightColor"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </uk.co.armedpineapple.innoextract.layouts.SelectorFrameLayout>
+
+    <uk.co.armedpineapple.innoextract.layouts.SelectorFrameLayout
+        android:id="@+id/directorySelectorStage"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fileSelectorStage"
+        app:stageIndex="2"
+        app:state="inactive">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/textView8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Choose a target directory"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:tag="recolor"/>
+
+            <Button
+                android:id="@+id/chooseTargetButton"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="Select"
+                android:textColor="@color/primaryLightColor"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </uk.co.armedpineapple.innoextract.layouts.SelectorFrameLayout>
+
+    <uk.co.armedpineapple.innoextract.layouts.SelectorFrameLayout
+        android:id="@+id/fileSelectorStage"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:stageIndex="1">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/chooseFileButton"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/dirChooseButton"
-                android:layout_marginTop="12dp"
-                android:layout_below="@+id/fileSelectButton"
-                android:layout_alignLeft="@+id/fileSelectButton"
-                android:layout_alignStart="@+id/fileSelectButton"/>
-        <Button
                 android:text="Select"
+                android:textColor="@color/primaryLightColor"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView9"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/fileSelectButton"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginRight="21dp"
-                android:layout_marginTop="12dp"
-        />
-    </RelativeLayout>
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:src="@drawable/ic_extract"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:id="@+id/fabExecute"
-            app:fabSize="normal"
-            app:backgroundTint="@color/accent"
-            app:rippleColor="@color/selection_background_color"
-            android:tint="@color/primary_text"
-            android:layout_marginRight="24dp"
-            android:layout_marginBottom="26dp" android:visibility="invisible"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="24dp"
-            android:focusable="true" />
-</RelativeLayout>
+                android:text="Choose an Inno Setup installer"
+                android:textColor="@color/secondaryTextColor"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:tag="recolor"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </uk.co.armedpineapple.innoextract.layouts.SelectorFrameLayout>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

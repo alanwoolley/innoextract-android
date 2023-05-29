@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent">
+
+    <ImageView
+        android:id="@+id/outerImage"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="-16dp"
+        android:layout_marginTop="-8dp"
+        android:layout_marginEnd="-8dp"
+        android:layout_marginBottom="-8dp"
+        android:background="@drawable/rounded_box"
+        android:backgroundTint="@color/secondaryColor"
+        android:backgroundTintMode="src_over"
+        android:foregroundTintMode="screen"
+        android:tintMode="src_in"
+        app:layout_constraintBottom_toBottomOf="@+id/contentFrame"
+        app:layout_constraintEnd_toEndOf="@+id/contentFrame"
+        app:layout_constraintStart_toStartOf="@+id/contentFrame"
+        app:layout_constraintTop_toTopOf="@+id/contentFrame"
+        app:srcCompat="@drawable/rounded_box" />
+
+    <ImageView
+        android:id="@+id/innerImage"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:backgroundTintMode="multiply"
+        android:foregroundTintMode="src_in"
+        android:tintMode="src_in"
+        app:layout_constraintBottom_toBottomOf="@+id/outerImage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/outerImage"
+        app:srcCompat="@drawable/circle_filled"
+        app:tint="@color/secondaryLightColor" />
+
+    <ImageView
+        android:id="@+id/statusImage"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="2dp"
+        android:layout_marginBottom="2dp"
+        app:layout_constraintBottom_toBottomOf="@+id/innerImage"
+        app:layout_constraintEnd_toEndOf="@+id/innerImage"
+        app:layout_constraintStart_toStartOf="@+id/innerImage"
+        app:layout_constraintTop_toTopOf="@+id/innerImage"
+        app:srcCompat="@drawable/check" />
+
+    <TextView
+        android:id="@+id/numberView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/innerImage"
+        app:layout_constraintEnd_toEndOf="@+id/innerImage"
+        app:layout_constraintStart_toStartOf="@+id/innerImage"
+        app:layout_constraintTop_toTopOf="@+id/innerImage" />
+
+    <FrameLayout
+        android:id="@+id/contentFrame"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

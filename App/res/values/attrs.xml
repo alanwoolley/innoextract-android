@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="SelectorFrameLayout">
+        <attr name="state" format="enum">
+            <enum name="active" value="0"/>
+            <enum name="inactive" value="1"/>
+            <enum name="complete" value="2"/>
+            <enum name="warning" value="3"/>
+        </attr>
+        <attr name="stageIndex" format="integer"/>
+    </declare-styleable>
+</resources>

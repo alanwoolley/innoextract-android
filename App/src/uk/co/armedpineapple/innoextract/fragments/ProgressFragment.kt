@@ -4,67 +4,99 @@ import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.widget.TextView
-import org.joda.time.Period
-import org.joda.time.format.PeriodFormat
-import uk.co.armedpineapple.innoextract.R
+import androidx.lifecycle.ViewModelProvider
+import uk.co.armedpineapple.innoextract.databinding.FragmentProgressBinding
+import uk.co.armedpineapple.innoextract.viewmodels.ExtractionViewModel
+
+/**
+ * A fragment showing the process of an ongoing extraction.
+ */
 class ProgressFragment : androidx.fragment.app.Fragment() {
+    private var _binding: FragmentProgressBinding? = null
+    private val binding get() = _binding!!
 
-    private var mListener: OnFragmentInteractionListener? = null
+    private var fragmentInteractionListener: OnFragmentInteractionListener? = null
+    private lateinit var extractionViewModel: ExtractionViewModel
 
-    fun update(pct: Int, remainingSeconds: Long) {
+    private fun updateProgress(pct: Int) {
         if (!isAdded) {
             return
         }
 
-        val remainingText = "~ " + PeriodFormat
-                .getDefault().print(Period((remainingSeconds * 1000))) + " remaining"
+        val percentView = binding.progressIndicator
+        percentView.progress = pct
+    }
 
-        val percentView = view?.findViewById<TextView>(R.id.percentTextView)
-        val remainingView = view?.findViewById<TextView>(R.id.remainingTextView)
+    private fun updateStatus(status: String) {
+        if (!isAdded) {
+            return
+        }
 
+        val progressText = binding.progressText
+        progressText.text = status
+    }
+
+    private fun onExtractFinished() {
+        if (!isAdded) {
+            return
+        }
+        val percentView = binding.progressText
+        val returnButton = binding.returnButton
         activity?.runOnUiThread {
-            percentView?.visibility = VISIBLE
-            remainingView?.visibility = VISIBLE
-
-            percentView?.text = String.format("%d%%", pct)
-            if (remainingSeconds > 0 && remainingSeconds < Long.MAX_VALUE) {
-                remainingView?.text = remainingText
-            } else {
-                remainingView?.text = ""
-            }
+            percentView.text = "Complete"
+            returnButton.visibility = View.VISIBLE
         }
     }
 
-    fun onExtractFinished() {
-        val percentView = view?.findViewById<TextView>(R.id.percentTextView)
-        val remainingView = view?.findViewById<TextView>(R.id.remainingTextView)
+    private fun onExtractFailed() {
+        if (!isAdded) {
+            return
+        }
+        val percentView = binding.progressText
+        val returnButton = binding.returnButton
         activity?.runOnUiThread {
-            percentView?.visibility = GONE
-            remainingView?.visibility = GONE
+            percentView.text = "Failed"
+            returnButton.visibility = View.VISIBLE
         }
     }
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? =
-            inflater.inflate(R.layout.fragment_progress, container, false)
 
-    override fun onAttach(context: Context?) {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentProgressBinding.inflate(layoutInflater)
+        return binding.root
+    }
+
+    private fun onReturnPressed() {
+        fragmentInteractionListener?.onReturnButtonPressed();
+    }
+
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is OnFragmentInteractionListener) {
-            mListener = context
+            fragmentInteractionListener = context
         } else {
-            throw RuntimeException(context!!.toString() + " must implement OnFragmentInteractionListener")
+            throw RuntimeException("$context must implement OnFragmentInteractionListener")
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.returnButton.setOnClickListener { onReturnPressed() }
     }
 
     override fun onDetach() {
         super.onDetach()
-        mListener = null
+        fragmentInteractionListener = null
     }
 
-
-    interface OnFragmentInteractionListener
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        extractionViewModel = ViewModelProvider(requireActivity())[ExtractionViewModel::class.java]
+        extractionViewModel.progress.observe(this) { v -> updateProgress(v) }
+        extractionViewModel.status.observe(this) { status -> updateStatus(status) }
+        extractionViewModel.isComplete.observe(this) { complete -> onExtractFinished() }
+        extractionViewModel.isError.observe(this) { error -> onExtractFailed() }
+    }
 }

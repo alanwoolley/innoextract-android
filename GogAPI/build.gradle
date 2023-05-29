@@ -1,0 +1,21 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+dependencies {
+    implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.11'
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'ru.gildor.coroutines:kotlin-coroutines-okhttp:1.0'
+    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+    testImplementation 'com.squareup.okhttp3:mockwebserver:5.0.0-alpha.11'
+    testImplementation 'androidx.test:core:1.5.0'
+}
+
+android {
+    compileSdkVersion 33
+    namespace 'uk.co.armedpineapple.innoextract.gogapi'
+
+    compileOptions {
+        sourceCompatibility = 17
+        targetCompatibility = 17
+    }
+}

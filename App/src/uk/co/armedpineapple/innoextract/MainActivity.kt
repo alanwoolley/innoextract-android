@@ -1,79 +1,109 @@
 package uk.co.armedpineapple.innoextract
 
-import android.Manifest
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.graphics.Bitmap
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
-import androidx.appcompat.app.AppCompatActivity
+import android.view.View
 import android.widget.Toast
-import com.karumi.dexter.Dexter
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.palette.graphics.Palette
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.debug
+import uk.co.armedpineapple.innoextract.databinding.ActivityMainBinding
+import uk.co.armedpineapple.innoextract.fragments.FileValidationErrorFragment
 import uk.co.armedpineapple.innoextract.fragments.IntroFragment
+import uk.co.armedpineapple.innoextract.fragments.OnFragmentInteractionListener
 import uk.co.armedpineapple.innoextract.fragments.ProgressFragment
 import uk.co.armedpineapple.innoextract.fragments.SelectorFragment
-import uk.co.armedpineapple.innoextract.permissions.PermissionsDialog
+import uk.co.armedpineapple.innoextract.gogapi.GogGame
 import uk.co.armedpineapple.innoextract.service.Configuration
 import uk.co.armedpineapple.innoextract.service.ExtractCallback
 import uk.co.armedpineapple.innoextract.service.ExtractService
 import uk.co.armedpineapple.innoextract.service.IExtractService
 import uk.co.armedpineapple.innoextract.services.FirstLaunchService
-import java.io.File
+import uk.co.armedpineapple.innoextract.viewmodels.ExtractionViewModel
 import javax.inject.Inject
 
-class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFragment.OnFragmentInteractionListener, ExtractCallback, AnkoLogger, AppCompatActivity() {
+class MainActivity : OnFragmentInteractionListener, ExtractCallback, AnkoLogger,
+    AppCompatActivity() {
 
-    override fun onProgress(value: Long, max: Long, speedBps: Long, remainingSeconds: Long) {
-        val progressFragment = supportFragmentManager.findFragmentById(R.id.topFragment) as? ProgressFragment
-        if (progressFragment != null) {
-            val pct = (1.0f * value / max) * 100
-            progressFragment.update(pct.toInt(), remainingSeconds)
-        }
+    override fun onProgress(value: Long, max: Long, file: String) {
+        val pct = (1.0f * value / max) * 100
+        runOnUiThread { extractionViewModel.updateProgress(pct.toInt()) }
+        runOnUiThread { extractionViewModel.updateStatus("Extracting: $file") }
     }
 
     override fun onSuccess() {
-        val progressFragment = supportFragmentManager.findFragmentById(R.id.topFragment) as? ProgressFragment
-        progressFragment?.onExtractFinished()
-        showSelectorFragment()
+        runOnUiThread { extractionViewModel.onComplete() }
     }
 
     override fun onFailure(e: Exception) {
-        val progressFragment = supportFragmentManager.findFragmentById(R.id.topFragment) as? ProgressFragment
-        progressFragment?.onExtractFinished()
-        showSelectorFragment()
+        runOnUiThread { extractionViewModel.onFail() }
     }
 
     @Inject
     lateinit var firstLaunchService: FirstLaunchService
 
-    var isServiceBound = false
+    private var isServiceBound = false
     private var connection = Connection()
     var launchIntent: Intent? = null
 
+    private var _binding: ActivityMainBinding? = null
+    private val binding get() = _binding!!
+
+    private lateinit var extractionViewModel: ExtractionViewModel
+
     private val configuration = Configuration(
-            showOngoingNotification = true,
-            showFinalNotification = true,
-            showLogActionButton = true)
+        showOngoingNotification = true, showFinalNotification = true, showLogActionButton = true
+    )
 
     private lateinit var extractService: IExtractService
 
     private var shouldShowInstructions = false
 
-    private fun hideSelectorFragment() {
+    private fun showProgressFragment() {
         val bottomFragment = supportFragmentManager.findFragmentById(R.id.bottomFragment)
+
         if (bottomFragment != null) {
-            supportFragmentManager.beginTransaction().setCustomAnimations(R.anim.slide_in_bottom, R.anim.slide_out_bottom).hide(bottomFragment).commitAllowingStateLoss()
+            supportFragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.slide_in_bottom, R.anim.slide_out_bottom)
+                .hide(bottomFragment)
+                .add(R.id.bottomFragment, ProgressFragment(), PROGRESS_FRAGMENT_TAG)
+                .setReorderingAllowed(true).commitAllowingStateLoss()
         }
     }
 
     private fun showSelectorFragment() {
-        val bottomFragment = supportFragmentManager.findFragmentById(R.id.bottomFragment)
-        if (bottomFragment != null) {
-            supportFragmentManager.beginTransaction().setCustomAnimations(R.anim.slide_in_bottom, R.anim.slide_out_bottom).show(bottomFragment).commitAllowingStateLoss()
+        val selectorFragment = supportFragmentManager.findFragmentByTag(SELECTOR_FRAGMENT_TAG)
+        val progressFragment = supportFragmentManager.findFragmentByTag(PROGRESS_FRAGMENT_TAG)
+
+        var transaction = supportFragmentManager.beginTransaction()
+            .setCustomAnimations(R.anim.slide_in_bottom, R.anim.slide_out_bottom)
+
+        progressFragment?.let { transaction = transaction.remove(progressFragment) }
+
+        transaction = if (selectorFragment != null) {
+            transaction.show(selectorFragment!!)
+        } else {
+            transaction.add(R.id.bottomFragment, SelectorFragment(), SELECTOR_FRAGMENT_TAG)
         }
+
+        transaction.setReorderingAllowed(true).commitAllowingStateLoss()
     }
 
     inner class Connection : ServiceConnection {
@@ -90,77 +120,147 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
             if (launchIntent != null) {
                 val uri = launchIntent?.data
                 if (uri != null) {
-                    (supportFragmentManager.findFragmentById(R.id.bottomFragment) as? SelectorFragment)?.onNewFile(uri)
-                    onFileSelected(File(uri.path))
+                    (supportFragmentManager.findFragmentById(R.id.bottomFragment) as? SelectorFragment)?.onNewFile(
+                        uri
+                    )
+                    onFileSelected()
                 }
                 launchIntent = null
             }
         }
     }
 
-    override fun onFileSelected(extractFile: File) {
+
+    override fun onFileSelected() {
         if (!isServiceBound) {
             return
         }
 
-        fun reportStatus(valid: Boolean) {
-            val selectorFragment = supportFragmentManager.findFragmentById(R.id.bottomFragment) as? SelectorFragment
-            selectorFragment?.isFileValid = valid
-
-            if (!valid) {
-                toast("Selected file is not a valid Inno Setup file", Toast.LENGTH_LONG)
+        extractionViewModel.fileUri?.let {
+            val result = extractService.check(it)
+            extractionViewModel.onFileValidated(result, it)
+            if (!result.isValid) {
+                val errorFragment = FileValidationErrorFragment()
+                errorFragment.show(supportFragmentManager, "error")
             }
         }
-
-        if (extractFile.exists() && extractFile.canRead() && extractFile.isFile) {
-            extractService.check(extractFile, ::reportStatus)
-        } else {
-            reportStatus(false)
-        }
     }
 
-    override fun onTargetSelected(target: File) {
-        val selectorFragment = supportFragmentManager.findFragmentById(R.id.bottomFragment) as? SelectorFragment
-        val valid = target.exists() && target.isDirectory && target.canWrite()
-        selectorFragment?.isTargetValid = valid
+    override fun onReturnButtonPressed() {
+        binding.backgroundImg.setImageDrawable(null)
+        binding.iconImage.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_logo))
+        showSelectorFragment()
+        extractionViewModel.reset();
     }
 
-    override fun onExtractButtonPressed(extractFile: File, extractTo: File) {
+    override fun onExtractButtonPressed() {
         if (!isServiceBound) {
             return
         }
-        hideSelectorFragment()
+        showProgressFragment()
         toast("Extracting", Toast.LENGTH_SHORT)
-        extractService.extract(extractFile, extractTo, this, configuration)
-
+        extractService.extract(
+            extractionViewModel.fileUri!!, extractionViewModel.target.value!!, this, configuration
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        (application as AndroidApplication).component.inject(this)
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+        window.statusBarColor = Color.TRANSPARENT
+        window.navigationBarColor = Color.TRANSPARENT
 
-        Dexter.withActivity(this)
-                .withPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
-                .withListener(PermissionsDialog(this) { onResult(it) })
-                .check()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.setDecorFitsSystemWindows(false)
+        }
+
+        (application as AndroidApplication).component.inject(this)
 
         debug("Binding service")
         val i = Intent(this, ExtractService::class.java)
-        val serviceConnected = bindService(i, connection, Context.BIND_ABOVE_CLIENT or Context.BIND_AUTO_CREATE)
+        val serviceConnected =
+            bindService(i, connection, Context.BIND_ABOVE_CLIENT or Context.BIND_AUTO_CREATE)
         debug("Service connected? : $serviceConnected")
 
+        extractionViewModel = ViewModelProvider(this)[ExtractionViewModel::class.java]
+        extractionViewModel.gogGame.observe(this, Observer { game: GogGame? ->
+            if (game != null) {
+                val background = binding.backgroundImg
+                val logo = binding.iconImage
+                Glide.with(this).asBitmap().load(game.backgroundImg.toString())
+                    .listener(object : RequestListener<Bitmap> {
+                        override fun onLoadFailed(
+                            e: GlideException?,
+                            model: Any?,
+                            target: Target<Bitmap>?,
+                            isFirstResource: Boolean
+                        ): Boolean {
+                            return true
+                        }
 
-        setContentView(R.layout.activity_main)
+                        override fun onResourceReady(
+                            resource: Bitmap?,
+                            model: Any?,
+                            target: Target<Bitmap>?,
+                            dataSource: DataSource?,
+                            isFirstResource: Boolean
+                        ): Boolean {
+                            resource?.let {
+                                val palette = Palette.Builder(it).generate()
+                                binding.title.setTextColor(palette.dominantSwatch!!.titleTextColor);
+                                binding.subtitle.setTextColor(palette.dominantSwatch!!.bodyTextColor);
+                            }
 
+                            return false
+                        }
+                    }).into(background)
+
+                Glide.with(this).asBitmap().load(game.logoImg.toString()).into(logo)
+            } else {
+                binding.backgroundImg.setImageDrawable(null)
+                binding.iconImage.setImageDrawable(
+                    AppCompatResources.getDrawable(
+                        this, R.drawable.ic_logo
+                    )
+                )
+            }
+        })
+        val binding: ActivityMainBinding =
+            DataBindingUtil.setContentView(this, R.layout.activity_main)
+        binding.lifecycleOwner = this
+        binding.vm = extractionViewModel
+        _binding = binding
+
+        // Set up the selector fragment as the initial view
+        showSelectorFragment()
+
+        _binding?.bottomFragment?.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom -> updateMotion() }
         launchIntent = intent
         shouldShowInstructions = firstLaunchService.isFirstLaunch
+
+        updateMotion()
     }
+
+    private fun updateMotion() {
+        val binding = _binding;
+
+        if (binding?.bottomScrollView != null) {
+            val scrollView = binding.bottomScrollView;
+            if (scrollView.canScrollVertically(-1) || scrollView.canScrollVertically(1)) {
+                binding.mainMotion.enableTransition(R.id.drag_transition, true);
+            } else {
+                binding.mainMotion.enableTransition(R.id.drag_transition, false);
+                binding.mainMotion.setConstraintSet(binding.mainMotion.getConstraintSet(R.id.expanded));
+            }
+        }
+    }
+
 
     override fun onStart() {
         super.onStart()
-        if (isServiceBound && extractService.isExtractInProgress()) {
-            hideSelectorFragment()
+        if (isServiceBound && extractService.isExtracting) {
+            showProgressFragment()
         }
 
         if (shouldShowInstructions) {
@@ -176,12 +276,9 @@ class MainActivity : SelectorFragment.OnFragmentInteractionListener, ProgressFra
         isServiceBound = false
     }
 
-    private fun onResult(success: Boolean) {
-        if (success) {
-            debug("Permissions granted")
-        } else {
-            finish()
-        }
+    companion object {
+        private const val SELECTOR_FRAGMENT_TAG = "selector"
+        private const val PROGRESS_FRAGMENT_TAG = "progress"
     }
 }
 

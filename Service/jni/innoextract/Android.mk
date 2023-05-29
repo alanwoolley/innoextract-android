@@ -63,7 +63,8 @@ LOCAL_SRC_FILES :=	$(SRC_DIR)/cli/debug.cpp \
 					$(SRC_DIR)/util/process.cpp \
 					$(SRC_DIR)/util/time.cpp \
 					$(SRC_DIR)/release.cpp \
-					native_interface.cpp
+					native_interface.cpp \
+					android_streams.cpp
 																				
 include $(BUILD_SHARED_LIBRARY)
 

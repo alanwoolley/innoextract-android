@@ -11,7 +11,6 @@ interface FirstLaunchService {
     val isFirstLaunchForVersion: Boolean
 }
 
-
 class DefaultFirstLaunchService @Inject constructor(preferences: SharedPreferences) : FirstLaunchService {
 
     override val isFirstLaunch: Boolean = !preferences.contains(launchVersionPreference)

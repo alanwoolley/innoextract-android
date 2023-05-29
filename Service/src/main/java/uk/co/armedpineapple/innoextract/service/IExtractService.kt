@@ -1,35 +1,25 @@
 package uk.co.armedpineapple.innoextract.service
 
-import java.io.File
+import android.net.Uri
 
 interface IExtractService {
 
-    fun isExtractInProgress(): Boolean
+    val isExtracting: Boolean
 
-    fun extract(toExtract: File, extractDir: File,
-                callback: ExtractCallback, configuration: Configuration = Configuration())
+    fun extract(
+        toExtract: Uri,
+        extractDir: Uri,
+        callback: ExtractCallback,
+        configuration: Configuration = Configuration()
+    )
 
-    fun check(toCheck: File, callback: (Boolean) -> Unit)
-    fun check(toCheck: File, callback: CheckCallback) = check(toCheck, callback::onResult)
-
-}
-
-interface ExtractCallback {
-    fun onProgress(value: Long, max: Long, speedBps: Long, remainingSeconds: Long)
-
-    fun onSuccess()
-
-    fun onFailure(e: Exception)
-}
-
-interface CheckCallback {
-    fun onResult(success: Boolean)
+    fun check(toCheck: Uri): InnoValidationResult
 }
 
 data class Configuration(
-        var showOngoingNotification: Boolean = true,
-        var showFinalNotification: Boolean = true,
-        var showLogActionButton: Boolean = false
+    var showOngoingNotification: Boolean = true,
+    var showFinalNotification: Boolean = true,
+    var showLogActionButton: Boolean = false
 )
 
 

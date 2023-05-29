@@ -1,11 +1,4 @@
 <resources>
-
-    <!--
-        Base application theme, dependent on API level. This theme is replaced
-        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
-
-
-    -->
     <style name="AppBaseTheme.ActionBar" parent="AppBaseTheme">
         <item name="windowActionBar">true</item>
         <item name="windowNoTitle">false</item>
@@ -27,11 +20,9 @@
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/accent</item>
         <item name="android:actionModeBackground">@color/primary_dark</item>
-    </style>
-
-    <style name="FileBrowserTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:actionModeBackground">@color/primary_dark</item>
-        <item name="windowActionModeOverlay">true</item>
+        <item name="android:colorPrimary">@color/primary</item>
+        <item name="android:colorPrimaryDark">@color/primary_dark</item>
+        <item name="android:navigationBarColor">@color/primary_dark</item>
     </style>
 
     <!-- Application theme. -->
@@ -43,6 +34,4 @@
     <style name="IntroDialogTheme" parent="Theme.AppCompat.Light.Dialog">
         <item name="android:windowNoTitle">false</item>
     </style>
-
-
 </resources>

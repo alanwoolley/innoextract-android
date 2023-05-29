@@ -1,7 +1,6 @@
 buildscript {
     repositories {
         mavenCentral()
-        jcenter()
     }
     dependencies {
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
@@ -9,16 +8,10 @@ buildscript {
     }
 }
 
-plugins {
-    id "com.jfrog.bintray" version "1.7.3"
-}
-
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'org.jetbrains.dokka'
 apply from: 'versioning.gradle'
-
 
 project.ext.version = "1.2.0"
 version project.ext.version
@@ -28,12 +21,18 @@ archivesBaseName = "service"
 ext.anko_version='0.10.4'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 33
+
+    namespace 'uk.co.armedpineapple.innoextract.service'
+
+    compileOptions {
+        sourceCompatibility = 17
+        targetCompatibility = 17
+    }
+
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 28
-        versionName project.ext.version
-        versionCode buildVersionCode()
+        minSdkVersion 21
+        targetSdkVersion 33
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -49,27 +48,28 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    buildToolsVersion '28.0.3'
 
-    lintOptions {
-        abortOnError false
-    }
 
     externalNativeBuild {
         ndkBuild {
             path 'jni/Android.mk'
         }
     }
+    lint {
+        abortOnError false
+    }
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.0.0'
-    implementation 'joda-time:joda-time:2.9.9'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'joda-time:joda-time:2.12.5'
     implementation "org.jetbrains.anko:anko-commons:$anko_version"
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test:runner:1.1.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
+    implementation 'androidx.documentfile:documentfile:1.0.1'
+    implementation "com.lazygeniouz:dfc:1.0.7"
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation  "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
 repositories {
@@ -78,7 +78,7 @@ repositories {
 
 task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
+    archiveClassifier  = 'sources'
 }
 
 task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
@@ -87,7 +87,7 @@ task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
 }
 
 task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
-    classifier = 'javadoc'
+    archiveClassifier = 'javadoc'
     from dokkaJavadoc.getOutputDirectory()
 }
 
@@ -97,32 +97,3 @@ artifacts {
 }
 
 
-install {
-    repositories.mavenInstaller {
-        pom.project {
-            name "service"
-            groupId "uk.co.armedpineapple.innoextract"
-            artifactId "service"
-            version project.ext.version
-        }
-    }
-}
-
-bintray {
-    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
-    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
-
-    // jFrog plugin must be declared for this line to work
-    configurations = ['archives']
-    // Package info for BinTray
-    pkg {
-        repo = "innoextract-android"
-        name = "service"
-        userOrg = user
-        licenses = ['MIT']
-        vcsUrl = 'https://github.com/alanwoolley/innoextract.git'
-        version {
-            name = project.ext.version
-        }
-    }
-}

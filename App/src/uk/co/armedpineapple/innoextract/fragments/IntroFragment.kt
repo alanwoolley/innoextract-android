@@ -1,44 +1,42 @@
 package uk.co.armedpineapple.innoextract.fragments
 
-
-import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
-import androidx.fragment.app.DialogFragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import kotlinx.android.synthetic.main.fragment_intro.view.*
 import uk.co.armedpineapple.innoextract.R
+import uk.co.armedpineapple.innoextract.databinding.FragmentIntroBinding
 
+/**
+ * A dialog that is shown on first app launch to explain the limitations.
+ *
+ */
 class IntroFragment : androidx.fragment.app.DialogFragment() {
+
+    private var _binding: FragmentIntroBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(androidx.fragment.app.DialogFragment.STYLE_NORMAL, R.style.IntroDialogTheme)
+
+        setStyle(STYLE_NORMAL, R.style.IntroDialogTheme)
     }
 
-    override fun onCreateView(inflater: LayoutInflater  , container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        dialog.setTitle(R.string.app_name)
-        val view = inflater.inflate(R.layout.fragment_intro, container, false)
-        view.agreeButton.setOnClickListener {onButtonClick() }
-        return view
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
+        dialog?.setTitle(R.string.app_name)
+        _binding = FragmentIntroBinding.inflate(layoutInflater)
+        binding.agreeButton.setOnClickListener { onButtonClick() }
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun onButtonClick() {
         dismiss()
-    }
-
-    override fun onDismiss(dialog: DialogInterface?) {
-        super.onDismiss(dialog)
-        val prefs = activity?.getPreferences(Context.MODE_PRIVATE)
-
-        if (prefs != null) {
-            with(prefs.edit()) {
-                putBoolean(getString(R.string.pref_intro), true)
-                apply()
-            }
-        }
     }
 }

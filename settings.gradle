@@ -1,1 +1,2 @@
 include ':App', ':Service'
+include ':GogAPI'
