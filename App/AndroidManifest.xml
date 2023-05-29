@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="uk.co.armedpineapple.innoextract">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="uk.co.armedpineapple.innoextract.EXTRACT_INNO_FILE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
