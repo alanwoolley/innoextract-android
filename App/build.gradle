@@ -41,14 +41,6 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.15.1'
 }
 
-def keystorePropertiesFile = rootProject.file("signing.properties")
-
-// Initialize a new Properties() object called keystoreProperties.
-def keystoreProperties = new Properties()
-
-// Load your keystore.properties file into the keystoreProperties object.
-keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-
 android {
     compileSdkVersion 33
 
@@ -69,16 +61,6 @@ android {
         versionCode buildVersionCode()
     }
 
-
-    signingConfigs {
-        release {
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
-            storeFile file(keystoreProperties['storeFile'])
-            storePassword keystoreProperties['storePassword']
-        }
-    }
-
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
@@ -95,7 +77,6 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt'
-            signingConfig signingConfigs.release
         }
     }
 
