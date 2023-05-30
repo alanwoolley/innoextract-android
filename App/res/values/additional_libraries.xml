@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources translatable="false">
+    <string name="define_plu_innoextract" translatable="false"></string>
+    <string name="library_innoextract_author" translatable="false">Daniel Scharrer</string>
+    <string name="library_innoextract_authorWebsite" translatable="false">https://constexpr.org</string>
+    <string name="library_innoextract_libraryName" translatable="false">innoextract</string>
+    <string name="library_innoextract_libraryDescription" translatable="false"><![CDATA[A tool to unpack installers created by Inno Setup.]]></string>
+    <string name="library_innoextract_libraryVersion" translatable="false">1.8</string>
+    <string name="library_innoextract_libraryWebsite" translatable="false">https://constexpr.org/innoextract/</string>
+    <string name="library_innoextract_licenseIds" translatable="false">innoextract</string>
+    <string name="library_innoextract_licenseId" translatable="false">innoextract</string>
+    <string name="library_innoextract_isOpenSource" translatable="false">true</string>
+    <string name="library_innoextract_repositoryLink" translatable="false">https://github.com/dscharrer/innoextract</string>
+    <string name="library_innoextract_owner" translatable="false">Daniel Scharrer</string>
+
+    <string name="define_plu_bzip" translatable="false"></string>
+    <string name="library_bzip_author" translatable="false">Julian R Seward.</string>
+    <string name="library_bzip_authorWebsite" translatable="false">https://bzip.org</string>
+    <string name="library_bzip_libraryName" translatable="false">bzip2</string>
+    <string name="library_bzip_libraryDescription" translatable="false"><![CDATA[A program and library for lossless, block-sorting data compression.]]></string>
+    <string name="library_bzip_libraryVersion" translatable="false">1.0.6</string>
+    <string name="library_bzip_libraryWebsite" translatable="false">https://sourceware.org/bzip2/</string>
+    <string name="library_bzip_licenseIds" translatable="false">bzip</string>
+    <string name="library_bzip_licenseId" translatable="false">bzip</string>
+    <string name="library_bzip_isOpenSource" translatable="false">true</string>
+    <string name="library_bzip_repositoryLink" translatable="false">https://gitlab.com/bzip2/bzip2/</string>
+    <string name="library_bzip_owner" translatable="false">Julian R Seward.</string>
+
+    <string name="define_plu_libiconv" translatable="false"></string>
+    <string name="library_libiconv_author" translatable="false">libiconv</string>
+    <string name="library_libiconv_authorWebsite" translatable="false">https://www.gnu.org/software/libiconv/</string>
+    <string name="library_libiconv_libraryName" translatable="false">libiconv</string>
+    <string name="library_libiconv_libraryDescription" translatable="false"><![CDATA[This library provides an iconv() implementation, for use on systems which don\'t have one, or whose implementation cannot convert from/to Unicode.]]></string>
+    <string name="library_libiconv_libraryVersion" translatable="false">1.13.1</string>
+    <string name="library_libiconv_libraryWebsite" translatable="false">https://www.gnu.org/software/libiconv/</string>
+    <string name="library_libiconv_licenseIds" translatable="false">lgpl_2_1</string>
+    <string name="library_libiconv_licenseId" translatable="false">lgpl_2_1</string>
+    <string name="library_libiconv_isOpenSource" translatable="false">true</string>
+    <string name="library_libiconv_owner" translatable="false">libiconv</string>
+
+    <string name="define_plu_boost" translatable="false"></string>
+    <string name="library_boost_author" translatable="false">Boost</string>
+    <string name="library_boost_authorWebsite" translatable="false">https://www.boost.org/</string>
+    <string name="library_boost_libraryName" translatable="false">Boost</string>
+    <string name="library_boost_libraryDescription" translatable="false"><![CDATA[Boost provides free peer-reviewed portable C++ source libraries.]]></string>
+    <string name="library_boost_libraryVersion" translatable="false">1.65.1</string>
+    <string name="library_boost_libraryWebsite" translatable="false">https://www.boost.org/</string>
+    <string name="library_boost_licenseIds" translatable="false">boost</string>
+    <string name="library_boost_licenseId" translatable="false">boost</string>
+    <string name="library_boost_isOpenSource" translatable="false">true</string>
+    <string name="library_boost_owner" translatable="false">Boost</string>
+
+</resources>

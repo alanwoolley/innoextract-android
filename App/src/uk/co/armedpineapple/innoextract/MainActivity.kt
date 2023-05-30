@@ -22,6 +22,7 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.mikepenz.aboutlibraries.LibsBuilder
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.debug
 import uk.co.armedpineapple.innoextract.databinding.ActivityMainBinding
@@ -235,7 +236,14 @@ class MainActivity : OnFragmentInteractionListener, ExtractCallback, AnkoLogger,
         // Set up the selector fragment as the initial view
         showSelectorFragment()
 
-        _binding?.bottomFragment?.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom -> updateMotion() }
+        binding.bottomFragment.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom -> updateMotion() }
+        var ossMenu = binding.toolbar.menu.add("Open Source Software")
+        ossMenu.setOnMenuItemClickListener {
+
+            LibsBuilder().withLicenseShown(true).withLicenseDialog(true).start(this)
+            true
+        }
+
         launchIntent = intent
         shouldShowInstructions = firstLaunchService.isFirstLaunch
 

@@ -16,9 +16,9 @@ import uk.co.armedpineapple.innoextract.service.InnoValidationResult
 
 class ExtractionViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val mutableGogGame: MutableLiveData<GogGame> = MutableLiveData<GogGame>()
-    private val mutableValidationResult: MutableLiveData<InnoValidationResult> =
-        MutableLiveData<InnoValidationResult>()
+    private val mutableGogGame: MutableLiveData<GogGame?> = MutableLiveData<GogGame?>()
+    private val mutableValidationResult: MutableLiveData<InnoValidationResult?> =
+        MutableLiveData<InnoValidationResult?>()
     private val mutableTitle: MutableLiveData<String> = MutableLiveData<String>()
     private val mutableSubtitle: MutableLiveData<String> = MutableLiveData<String>()
     private val mutableTarget: MutableLiveData<Uri?> = MutableLiveData<Uri?>()
@@ -31,8 +31,8 @@ class ExtractionViewModel(application: Application) : AndroidViewModel(applicati
     private val gogApi = OkHttpGogApi(context = application.applicationContext)
     private var gogUpdateJob: Job? = null
 
-    val gogGame: LiveData<GogGame> = mutableGogGame
-    val validationResult: LiveData<InnoValidationResult> = mutableValidationResult
+    val gogGame: LiveData<GogGame?> = mutableGogGame
+    val validationResult: LiveData<InnoValidationResult?> = mutableValidationResult
     val target: LiveData<Uri?> = mutableTarget
     val title: LiveData<String> = mutableTitle
     val subtitle: LiveData<String> = mutableSubtitle
