@@ -24,3 +24,5 @@ jobs:
       run: chmod +x gradlew
     - name: Build App bundle
       run: ./gradlew bundleRelease
+    - name: Build APKS
+      run: ./gradlew assembleRelease
