@@ -20,17 +20,18 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: APK
-        path: artifacts/
+        path: artifacts/apk
     - name: Download AppBundle
       uses: actions/download-artifact@v3
       with:
         name: AppBundle
-        path: artifacts/
+        path: artifacts/aab
     - name: Sign
       uses: Tlaster/android-sign@v1.2.2
       with:
         releaseDirectory: |
-          artifacts/
+          artifacts/apk
+          artifacts/aab
         signingKeyBase64: ${{ secrets.SIGNING_KEY }}
         output: artifacts/signed
         alias: ${{ secrets.ALIAS }}
