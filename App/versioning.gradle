@@ -1,9 +1,16 @@
 ext {
     buildVersionCode = {
 
-        def (major, minor, patch) = version.toLowerCase().split('-')[0].tokenize('.')
+        def splits = version.toLowerCase().split('-')
+        def (major, minor, patch) = splits[0].tokenize('.')
+        def build = 0
+
+        if (splits.size() > 1) {
+            build = Integer.parseInt(splits[1].replaceAll("[\\D]", ""))
+        }
+
         (major, minor, patch) = [major, minor, patch].collect{it.toInteger()}
 
-        (major * 100000) + (minor * 1000) + patch
+        (major * 100000) + (minor * 1000) + (patch * 10) + build
     }
 }
