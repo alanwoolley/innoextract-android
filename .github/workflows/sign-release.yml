@@ -27,7 +27,7 @@ jobs:
         name: AppBundle
         path: artifacts/aab
     - name: Sign
-      uses: Tlaster/android-sign@v1.2.2
+      uses: kevin-david/zipalign-sign-android-release@v1.1.1
       with:
         releaseDirectory: |
           artifacts/apk
@@ -37,6 +37,7 @@ jobs:
         alias: ${{ secrets.ALIAS }}
         keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
         keyPassword: ${{ secrets.KEY_PASSWORD }}
+        zipAlign: true
     - name: Upload Signed Builds
       uses: actions/upload-artifact@v3.1.2
       with:
