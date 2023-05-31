@@ -6,12 +6,14 @@ on:
       - 'master'
       - 'main'
       - 'release/**'
+  workflow_dispatch:
       
 jobs:
   build:
     runs-on: ubuntu-latest
     
     steps:
+    - uses: actions/checkout@v3
     - name: Peform Build 
       uses: ./.github/workflows/android-ci.yml
     - name: Download APK 
