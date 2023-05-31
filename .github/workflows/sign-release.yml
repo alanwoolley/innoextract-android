@@ -20,18 +20,16 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: APK
-        path: artifacts/apk
+        path: artifacts
     - name: Download AppBundle
       uses: actions/download-artifact@v3
       with:
         name: AppBundle
-        path: artifacts/aab
+        path: artifacts
     - name: Sign
       uses: kevin-david/zipalign-sign-android-release@v1.1.1
       with:
-        releaseDirectory: |
-          artifacts/apk
-          artifacts/aab
+        releaseDirectory: artifacts
         signingKeyBase64: ${{ secrets.SIGNING_KEY }}
         output: artifacts/signed
         alias: ${{ secrets.ALIAS }}
