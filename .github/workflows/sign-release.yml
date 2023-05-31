@@ -10,12 +10,11 @@ on:
       
 jobs:
   build:
+    uses: ./.github/workflows/android-ci.yml  
+  sign:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v3
-    - name: Peform Build 
-      uses: ./.github/workflows/android-ci.yml
     - name: Download APK 
       uses: actions/download-artifact@v3
       with:
