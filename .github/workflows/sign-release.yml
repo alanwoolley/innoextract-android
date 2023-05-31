@@ -13,6 +13,7 @@ jobs:
     uses: ./.github/workflows/android-ci.yml  
   sign:
     runs-on: ubuntu-latest
+    needs: build
     
     steps:
     - name: Download APK 
