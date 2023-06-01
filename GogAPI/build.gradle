@@ -19,6 +19,7 @@ android {
         targetCompatibility = 17
     }
     defaultConfig {
-        targetSdk 33
+        minSdkVersion 26
+        targetSdkVersion 33
     }
 }
