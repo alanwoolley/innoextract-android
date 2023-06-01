@@ -4,7 +4,7 @@ apply plugin: 'kotlin-kapt'
 apply from: 'versioning.gradle'
 apply plugin: 'com.mikepenz.aboutlibraries.plugin'
 
-project.ext.version = "4.0.0-beta1"
+project.ext.version = "4.0.0-beta2"
 
 ext.anko_version = '0.10.4'
 
