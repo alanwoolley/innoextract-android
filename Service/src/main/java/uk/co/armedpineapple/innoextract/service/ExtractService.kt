@@ -8,10 +8,8 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Binder
-import android.os.Build
 import android.os.IBinder
 import androidx.annotation.Keep
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.lazygeniouz.dfc.file.DocumentFileCompat
 import org.jetbrains.anko.*
@@ -49,7 +47,6 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int =
         Service.START_NOT_STICKY
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun createNotificationChannel() {
         val progressChannel = NotificationChannel(
             NOTIFICATION_CHANNEL,
@@ -71,13 +68,9 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
         temporaryRoot.deleteOnExit()
 
         notificationBuilder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL)
-        notificationManager = getSystemService(
-            Context.NOTIFICATION_SERVICE
-        ) as NotificationManager
+        notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            createNotificationChannel()
-        }
+        createNotificationChannel()
     }
 
     override fun check(toCheck: Uri): InnoValidationResult {

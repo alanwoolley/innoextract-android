@@ -70,7 +70,7 @@ class MainActivity : OnFragmentInteractionListener, ExtractCallback, AnkoLogger,
     private lateinit var extractionViewModel: ExtractionViewModel
 
     private val configuration = Configuration(
-        showOngoingNotification = true, showFinalNotification = true, showLogActionButton = true
+        showOngoingNotification = false, showFinalNotification = false, showLogActionButton = false
     )
 
     private lateinit var extractService: IExtractService
