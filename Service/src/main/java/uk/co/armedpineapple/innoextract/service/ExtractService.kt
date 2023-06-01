@@ -153,7 +153,7 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
                         logIntent.putExtra("log", writeLogToFile())
 
                         val logPendingIntent = PendingIntent.getActivity(
-                            this@ExtractService, 0, logIntent, PendingIntent.FLAG_UPDATE_CURRENT
+                            this@ExtractService, 0, logIntent, PendingIntent.FLAG_IMMUTABLE
                         )
 
 
@@ -186,7 +186,7 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
                     logIntent.putExtra("log", writeLogToFile())
 
                     val logPendingIntent = PendingIntent.getActivity(
-                        this@ExtractService, 0, logIntent, PendingIntent.FLAG_UPDATE_CURRENT
+                        this@ExtractService, 0, logIntent, PendingIntent.FLAG_IMMUTABLE
                     )
 
                     finalNotificationBuilder.addAction(
