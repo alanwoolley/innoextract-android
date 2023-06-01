@@ -11,6 +11,9 @@ ext {
 
         (major, minor, patch) = [major, minor, patch].collect{it.toInteger()}
 
-        (major * 100000) + (minor * 1000) + (patch * 10) + build
+        // This was the previous maximum version used under the old scheme.
+        // We need to make sure we're greater than this to allow upgrades.
+        def previousMax = 400302000 - 400001
+        (major * 100000) + (minor * 1000) + (patch * 10) + build + previousMax
     }
 }
