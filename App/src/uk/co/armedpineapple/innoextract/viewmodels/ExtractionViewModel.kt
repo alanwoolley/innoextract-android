@@ -36,9 +36,9 @@ class ExtractionViewModel(application: Application) : AndroidViewModel(applicati
     val target: LiveData<Uri?> = mutableTarget
     val title: LiveData<String> = mutableTitle
     val subtitle: LiveData<String> = mutableSubtitle
-    val progress: LiveData<Int> = mutableProgress;
-    val currentFile: LiveData<String> = mutableCurrentFile;
-    val status: LiveData<String> = mutableStatus;
+    val progress: LiveData<Int> = mutableProgress
+    val currentFile: LiveData<String> = mutableCurrentFile
+    val status: LiveData<String> = mutableStatus
     val isComplete: LiveData<Boolean> = mutableIsComplete
     val isError: LiveData<Boolean> = mutableIsError
     var fileUri: Uri? = null

@@ -30,7 +30,7 @@ class SelectorFragment : androidx.fragment.app.Fragment() {
                 binding.directorySelectorStage.state = SelectorFrameLayout.State.Complete
                 binding.extractStage.state = SelectorFrameLayout.State.Active
             } else {
-                binding.directorySelectorStage.state = SelectorFrameLayout.State.Active;
+                binding.directorySelectorStage.state = SelectorFrameLayout.State.Active
                 binding.extractStage.state = SelectorFrameLayout.State.Inactive
             }
         } else if (extractionViewModel.validationResult.value == null) {
@@ -47,8 +47,8 @@ class SelectorFragment : androidx.fragment.app.Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         extractionViewModel = ViewModelProvider(requireActivity())[ExtractionViewModel::class.java]
-        extractionViewModel.validationResult.observe(this) { refreshStages() };
-        extractionViewModel.target.observe(this) { refreshStages() };
+        extractionViewModel.validationResult.observe(this) { refreshStages() }
+        extractionViewModel.target.observe(this) { refreshStages() }
     }
 
     override fun onCreateView(

@@ -20,12 +20,12 @@ class DocumentFileCache(private val rootDocument: DocumentFileCompat) {
      */
     fun getDirectory(path: String): DocumentFileCompat {
         val cachedDir = cache[path]
-        if (cachedDir != null && cachedDir.exists() && cachedDir.isDirectory()) {
-            return cachedDir
+        return if (cachedDir != null && cachedDir.exists() && cachedDir.isDirectory()) {
+            cachedDir
         } else {
             val directory = createOrResolveDirectory(path)
             cache[path] = directory
-            return directory
+            directory
         }
     }
 
@@ -48,7 +48,7 @@ class DocumentFileCache(private val rootDocument: DocumentFileCompat) {
                     .firstOrNull { it.isDirectory() && it.name == dirComponent }
 
                 documentDir = newDir ?: documentDir.createDirectory(dirComponent)
-                    ?: throw IOException("Could not create directory.")
+                        ?: throw IOException("Could not create directory.")
 
                 cache[dirComponent] = documentDir
             }

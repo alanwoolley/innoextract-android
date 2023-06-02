@@ -16,7 +16,6 @@ apply from: 'versioning.gradle'
 project.ext.version = "1.2.0"
 version project.ext.version
 group "uk.co.armedpineapple.innoextract"
-archivesBaseName = "service"
 
 ext.anko_version='0.10.4'
 

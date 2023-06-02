@@ -69,7 +69,7 @@ class ProgressFragment : androidx.fragment.app.Fragment() {
     }
 
     private fun onReturnPressed() {
-        fragmentInteractionListener?.onReturnButtonPressed();
+        fragmentInteractionListener?.onReturnButtonPressed()
     }
 
     override fun onAttach(context: Context) {

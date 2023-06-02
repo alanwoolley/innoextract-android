@@ -44,6 +44,6 @@ class ExampleResponses {
                 "        \"menuNotificationAv2\": \"//images-3.gog-statics.com/ee3234decbd0dcec371d441a3ab5e161a8353aed589efbe5b1ba464dea83d68b_menu_notification_av2.png\"\n" +
                 "    },\n" +
                 "    \"dlcs\": []\n" +
-                "}";
+                "}"
     }
 }

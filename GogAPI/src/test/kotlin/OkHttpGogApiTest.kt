@@ -16,7 +16,7 @@ class OkHttpGogApiTest {
         server.start()
         val baseUrl = server.url("/products")
         val api = OkHttpGogApi(baseUrl.toUrl(), OkHttpClient())
-        val id = 1207659026L;
+        val id = 1207659026L
         val result = runBlocking { api.getGameDetails(id) }
 
         assertEquals("Theme Hospital", result.title)

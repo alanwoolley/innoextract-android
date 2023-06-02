@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
@@ -14,7 +15,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.palette.graphics.Palette
 import com.bumptech.glide.Glide
@@ -99,7 +99,7 @@ class MainActivity : OnFragmentInteractionListener, ExtractCallback, AnkoLogger,
         progressFragment?.let { transaction = transaction.remove(progressFragment) }
 
         transaction = if (selectorFragment != null) {
-            transaction.show(selectorFragment!!)
+            transaction.show(selectorFragment)
         } else {
             transaction.add(R.id.bottomFragment, SelectorFragment(), SELECTOR_FRAGMENT_TAG)
         }
@@ -151,7 +151,7 @@ class MainActivity : OnFragmentInteractionListener, ExtractCallback, AnkoLogger,
         binding.backgroundImg.setImageDrawable(null)
         binding.iconImage.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_logo))
         showSelectorFragment()
-        extractionViewModel.reset();
+        extractionViewModel.reset()
     }
 
     override fun onExtractButtonPressed() {
@@ -185,7 +185,7 @@ class MainActivity : OnFragmentInteractionListener, ExtractCallback, AnkoLogger,
         debug("Service connected? : $serviceConnected")
 
         extractionViewModel = ViewModelProvider(this)[ExtractionViewModel::class.java]
-        extractionViewModel.gogGame.observe(this, Observer { game: GogGame? ->
+        extractionViewModel.gogGame.observe(this, { game: GogGame? ->
             if (game != null) {
                 val background = binding.backgroundImg
                 val logo = binding.iconImage
@@ -209,8 +209,8 @@ class MainActivity : OnFragmentInteractionListener, ExtractCallback, AnkoLogger,
                         ): Boolean {
                             resource?.let {
                                 val palette = Palette.Builder(it).generate()
-                                binding.title.setTextColor(palette.dominantSwatch!!.titleTextColor);
-                                binding.subtitle.setTextColor(palette.dominantSwatch!!.bodyTextColor);
+                                binding.title.setTextColor(palette.dominantSwatch!!.titleTextColor)
+                                binding.subtitle.setTextColor(palette.dominantSwatch!!.bodyTextColor)
                             }
 
                             return false
@@ -237,12 +237,7 @@ class MainActivity : OnFragmentInteractionListener, ExtractCallback, AnkoLogger,
         showSelectorFragment()
 
         binding.bottomFragment.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom -> updateMotion() }
-        var ossMenu = binding.toolbar.menu.add("Open Source Software")
-        ossMenu.setOnMenuItemClickListener {
-
-            LibsBuilder().withLicenseShown(true).withLicenseDialog(true).start(this)
-            true
-        }
+        configureMenu()
 
         launchIntent = intent
         shouldShowInstructions = firstLaunchService.isFirstLaunch
@@ -250,16 +245,33 @@ class MainActivity : OnFragmentInteractionListener, ExtractCallback, AnkoLogger,
         updateMotion()
     }
 
+    private fun configureMenu() {
+        val ossMenu = binding.toolbar.menu.add("Open Source Software")
+        ossMenu.setOnMenuItemClickListener {
+
+            LibsBuilder().withLicenseShown(true).withLicenseDialog(true).start(this)
+            true
+        }
+        val aboutMenu = binding.toolbar.menu.add("About")
+        aboutMenu.setOnMenuItemClickListener {
+            val url = "https://www.armedpineapple.co.uk/projects/inno-setup-extractor"
+            val i = Intent(Intent.ACTION_VIEW)
+            i.data = Uri.parse(url)
+            startActivity(i)
+            true
+        }
+    }
+
     private fun updateMotion() {
-        val binding = _binding;
+        val binding = _binding
 
         if (binding?.bottomScrollView != null) {
-            val scrollView = binding.bottomScrollView;
+            val scrollView = binding.bottomScrollView
             if (scrollView.canScrollVertically(-1) || scrollView.canScrollVertically(1)) {
-                binding.mainMotion.enableTransition(R.id.drag_transition, true);
+                binding.mainMotion.enableTransition(R.id.drag_transition, true)
             } else {
-                binding.mainMotion.enableTransition(R.id.drag_transition, false);
-                binding.mainMotion.setConstraintSet(binding.mainMotion.getConstraintSet(R.id.expanded));
+                binding.mainMotion.enableTransition(R.id.drag_transition, false)
+                binding.mainMotion.setConstraintSet(binding.mainMotion.getConstraintSet(R.id.expanded))
             }
         }
     }

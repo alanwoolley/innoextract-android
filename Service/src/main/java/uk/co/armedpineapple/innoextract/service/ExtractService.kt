@@ -134,7 +134,7 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
             override fun onSuccess() {
                 info("Successfully extracted")
                 done.set(true)
-
+                documentCache?.clearCache()
                 finalNotificationBuilder.setTicker(getString(R.string.final_notification_success_ticker))
                     .setSmallIcon(R.drawable.ic_extracting)
                     .setContentTitle(getString(R.string.final_notification_success_title))
@@ -171,6 +171,7 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
             override fun onFailure(e: Exception) {
                 warn("Failed to extract")
                 done.set(true)
+                documentCache?.clearCache()
                 finalNotificationBuilder.setTicker(getString(R.string.extract_failed))
                     .setSmallIcon(R.drawable.ic_extracting).setChannelId(NOTIFICATION_CHANNEL)
                     .setContentTitle(getString(R.string.extract_failed))

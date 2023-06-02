@@ -1,7 +1,6 @@
 package uk.co.armedpineapple.innoextract.fragments
 
 import android.app.Dialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -22,13 +21,13 @@ class FileValidationErrorFragment : DialogFragment() {
             // Use the Builder class for convenient dialog construction
             val builder = AlertDialog.Builder(it)
             builder.setView(R.layout.fragment_error)
-            builder.setPositiveButton("Help", DialogInterface.OnClickListener { _, _ ->
+            builder.setPositiveButton("Help", { _, _ ->
                 val url =
                     "https://github.com/alanwoolley/innoextract-android/wiki/Help:-My-Inno-Setup-installer-cannot-be-extracted"
                 val i = Intent(Intent.ACTION_VIEW)
                 i.data = Uri.parse(url)
                 startActivity(i)
-            }).setNegativeButton("Dismiss", DialogInterface.OnClickListener { _, _ ->
+            }).setNegativeButton("Dismiss", { _, _ ->
                 // Do nothing. Keep default behaviour.
             })
             builder.create()

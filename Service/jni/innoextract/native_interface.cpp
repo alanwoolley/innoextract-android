@@ -182,8 +182,6 @@ void *readchar(void *data) {
 
 extern "C" void Java_uk_co_armedpineapple_innoextract_service_ExtractService_nativePrepare(
     JNIEnv *env, jobject obj) {
-  int data = 0;
-
   env->GetJavaVM(&jvm);
   jclass cls = env->GetObjectClass(obj);
 

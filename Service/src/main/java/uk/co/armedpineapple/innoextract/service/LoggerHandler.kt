@@ -1,7 +1,6 @@
 package uk.co.armedpineapple.innoextract.service
 
 import android.graphics.Color
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
@@ -62,14 +61,10 @@ internal class LoggerHandler(looper: Looper, val callback: ExtractCallback) : Ha
             Spannable.SPAN_INCLUSIVE_INCLUSIVE
         )
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            logBuilder.append(
-                Html.toHtml(
-                    newLine, Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE
-                )
+        logBuilder.append(
+            Html.toHtml(
+                newLine, Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE
             )
-        } else {
-            logBuilder.append(Html.toHtml(newLine))
-        }
+        )
     }
 }
