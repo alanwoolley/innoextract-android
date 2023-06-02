@@ -7,6 +7,8 @@ ext {
 
         if (splits.size() > 1) {
             build = Integer.parseInt(splits[1].replaceAll("[\\D]", ""))
+        } else {
+            build = 9
         }
 
         (major, minor, patch) = [major, minor, patch].collect{it.toInteger()}
