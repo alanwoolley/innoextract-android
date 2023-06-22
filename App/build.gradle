@@ -52,8 +52,6 @@ android {
     buildFeatures {
         viewBinding true
         dataBinding true
-        renderScript true
-        aidl true
     }
 
     defaultConfig {
@@ -69,8 +67,6 @@ android {
             manifest.srcFile 'AndroidManifest.xml'
             java.srcDirs = ['src']
             resources.srcDirs = ['src']
-            aidl.srcDirs = ['src']
-            renderscript.srcDirs = ['src']
             res.srcDirs = ['res']
             assets.srcDirs = ['assets']
         }

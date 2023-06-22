@@ -73,6 +73,7 @@ dependencies {
 }
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 task sourcesJar(type: Jar) {
