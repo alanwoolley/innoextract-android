@@ -21,15 +21,15 @@ class FileValidationErrorFragment : DialogFragment() {
             // Use the Builder class for convenient dialog construction
             val builder = AlertDialog.Builder(it)
             builder.setView(R.layout.fragment_error)
-            builder.setPositiveButton("Help", { _, _ ->
+            builder.setPositiveButton(getString(R.string.help)) { _, _ ->
                 val url =
                     "https://github.com/alanwoolley/innoextract-android/wiki/Help:-My-Inno-Setup-installer-cannot-be-extracted"
                 val i = Intent(Intent.ACTION_VIEW)
                 i.data = Uri.parse(url)
                 startActivity(i)
-            }).setNegativeButton("Dismiss", { _, _ ->
+            }.setNegativeButton(getString(R.string.dismiss)) { _, _ ->
                 // Do nothing. Keep default behaviour.
-            })
+            }
             builder.create()
         } ?: throw IllegalStateException("Activity cannot be null")
     }

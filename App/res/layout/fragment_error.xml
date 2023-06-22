@@ -2,7 +2,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/errorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -13,19 +12,18 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:text="This file is not a valid Inno Setup installer and cannot be extracted using this application."
+        android:text="@string/this_file_is_not_a_valid_inno_setup_installer_and_cannot_be_extracted_using_this_application"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView6"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:text="If you are certain that this file is a valid Inno Setup installer than you can press the Help button for more information and troubleshooting"
+        android:text="@string/if_you_are_certain_that_this_file_is_a_valid_inno_setup_installer_than_you_can_press_the_help_button_for_more_information_and_troubleshooting"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3" />

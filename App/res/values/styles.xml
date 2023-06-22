@@ -1,8 +1,4 @@
 <resources>
-    <style name="AppBaseTheme.ActionBar" parent="AppBaseTheme">
-        <item name="windowActionBar">true</item>
-        <item name="windowNoTitle">false</item>
-    </style>
 
     <style name="AppBaseTheme" parent="Theme.MaterialComponents.NoActionBar">
         <!--
@@ -26,10 +22,6 @@
     </style>
 
     <!-- Application theme. -->
-    <style name="DialogTheme" parent="Theme.AppCompat.Light.Dialog">
-        <item name="android:windowNoTitle">true</item>
-        <item name="windowActionBar">false</item>
-    </style>
 
     <style name="IntroDialogTheme" parent="Theme.AppCompat.Light.Dialog">
         <item name="android:windowNoTitle">false</item>

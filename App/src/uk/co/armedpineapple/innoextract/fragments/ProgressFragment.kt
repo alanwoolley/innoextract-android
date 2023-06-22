@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
+import uk.co.armedpineapple.innoextract.R
 import uk.co.armedpineapple.innoextract.databinding.FragmentProgressBinding
 import uk.co.armedpineapple.innoextract.viewmodels.ExtractionViewModel
 
@@ -44,7 +45,7 @@ class ProgressFragment : androidx.fragment.app.Fragment() {
         val percentView = binding.progressText
         val returnButton = binding.returnButton
         activity?.runOnUiThread {
-            percentView.text = "Complete"
+            percentView.text = getString(R.string.complete)
             returnButton.visibility = View.VISIBLE
         }
     }
@@ -56,7 +57,7 @@ class ProgressFragment : androidx.fragment.app.Fragment() {
         val percentView = binding.progressText
         val returnButton = binding.returnButton
         activity?.runOnUiThread {
-            percentView.text = "Failed"
+            percentView.text = getString(R.string.failed)
             returnButton.visibility = View.VISIBLE
         }
     }

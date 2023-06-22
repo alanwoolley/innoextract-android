@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
+import uk.co.armedpineapple.innoextract.R
 import uk.co.armedpineapple.innoextract.databinding.FragmentSelectorBinding
 import uk.co.armedpineapple.innoextract.layouts.SelectorFrameLayout
 import uk.co.armedpineapple.innoextract.viewmodels.ExtractionViewModel
@@ -71,7 +72,7 @@ class SelectorFragment : androidx.fragment.app.Fragment() {
         val i = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
         i.addCategory(Intent.CATEGORY_DEFAULT)
         startActivityForResult(
-            Intent.createChooser(i, "Choose extract directory"), REQUEST_DIRECTORY
+            Intent.createChooser(i, getString(R.string.choose_extract_directory)), REQUEST_DIRECTORY
         )
     }
 

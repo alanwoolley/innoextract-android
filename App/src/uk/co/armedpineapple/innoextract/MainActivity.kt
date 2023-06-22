@@ -46,7 +46,7 @@ class MainActivity : OnFragmentInteractionListener, ExtractCallback, AnkoLogger,
     override fun onProgress(value: Long, max: Long, file: String) {
         val pct = (1.0f * value / max) * 100
         runOnUiThread { extractionViewModel.updateProgress(pct.toInt()) }
-        runOnUiThread { extractionViewModel.updateStatus("Extracting: $file") }
+        runOnUiThread { extractionViewModel.updateStatus(getString(R.string.extracting) + file) }
     }
 
     override fun onSuccess() {
@@ -70,7 +70,7 @@ class MainActivity : OnFragmentInteractionListener, ExtractCallback, AnkoLogger,
     private lateinit var extractionViewModel: ExtractionViewModel
 
     private val configuration = Configuration(
-        showOngoingNotification = false, showFinalNotification = false, showLogActionButton = false
+        showOngoingNotification = false, showFinalNotification = false
     )
 
     private lateinit var extractService: IExtractService
@@ -159,7 +159,7 @@ class MainActivity : OnFragmentInteractionListener, ExtractCallback, AnkoLogger,
             return
         }
         showProgressFragment()
-        toast("Extracting", Toast.LENGTH_SHORT)
+        toast(getString(R.string.extracting_simple), Toast.LENGTH_SHORT)
         extractService.extract(
             extractionViewModel.fileUri!!, extractionViewModel.target.value!!, this, configuration
         )
@@ -185,7 +185,7 @@ class MainActivity : OnFragmentInteractionListener, ExtractCallback, AnkoLogger,
         debug("Service connected? : $serviceConnected")
 
         extractionViewModel = ViewModelProvider(this)[ExtractionViewModel::class.java]
-        extractionViewModel.gogGame.observe(this, { game: GogGame? ->
+        extractionViewModel.gogGame.observe(this) { game: GogGame? ->
             if (game != null) {
                 val background = binding.backgroundImg
                 val logo = binding.iconImage
@@ -226,7 +226,7 @@ class MainActivity : OnFragmentInteractionListener, ExtractCallback, AnkoLogger,
                     )
                 )
             }
-        })
+        }
         val binding: ActivityMainBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.lifecycleOwner = this
@@ -246,13 +246,13 @@ class MainActivity : OnFragmentInteractionListener, ExtractCallback, AnkoLogger,
     }
 
     private fun configureMenu() {
-        val ossMenu = binding.toolbar.menu.add("Open Source Software")
+        val ossMenu = binding.toolbar.menu.add(getString(R.string.open_source_software))
         ossMenu.setOnMenuItemClickListener {
 
             LibsBuilder().withLicenseShown(true).withLicenseDialog(true).start(this)
             true
         }
-        val aboutMenu = binding.toolbar.menu.add("About")
+        val aboutMenu = binding.toolbar.menu.add(getString(R.string.about))
         aboutMenu.setOnMenuItemClickListener {
             val url = "https://www.armedpineapple.co.uk/projects/inno-setup-extractor"
             val i = Intent(Intent.ACTION_VIEW)

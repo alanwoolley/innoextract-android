@@ -10,11 +10,13 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.warn
 import uk.co.armedpineapple.innoextract.gogapi.GogGame
 import uk.co.armedpineapple.innoextract.gogapi.OkHttpGogApi
 import uk.co.armedpineapple.innoextract.service.InnoValidationResult
 
-class ExtractionViewModel(application: Application) : AndroidViewModel(application) {
+class ExtractionViewModel(application: Application) : AndroidViewModel(application), AnkoLogger {
 
     private val mutableGogGame: MutableLiveData<GogGame?> = MutableLiveData<GogGame?>()
     private val mutableValidationResult: MutableLiveData<InnoValidationResult?> =
@@ -56,12 +58,18 @@ class ExtractionViewModel(application: Application) : AndroidViewModel(applicati
             mutableSubtitle.value = "Inno Setup " + validationResult.version
             if (validationResult.isGogInstaller) {
                 gogUpdateJob = viewModelScope.launch {
+                    try {
+
+
                     val gogGame = gogApi.getGameDetails((validationResult.gogId))
                     if (isActive) {
                         mutableGogGame.value = gogGame
                         mutableTitle.value = gogGame.title
                         mutableSubtitle.value =
                             validationResult.title + " (Inno Setup " + validationResult.version + ")"
+                    }
+                    } catch (e: Exception) {
+                        warn { "Wasn't able to get gog details. ${e.localizedMessage}"}
                     }
                 }
             }

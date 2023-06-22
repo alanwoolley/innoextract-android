@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
     <string name="app_name">Inno Setup Extractor</string>
-    <string name="dialog_name">Extract Inno Setup File</string>
     <string name="title_activity_log">Extract Log</string>
-    <string name="unable_to_extract">"This application cannot extract this file.
 
-The following limitations apply:
-    \u2022 Inno Setup 1.2.10 to 6.0.0
-    \u2022 Encrypted installers are not supported
-
-Please check that your file is a valid Inno Setup file."
-    </string>
-
-    <string name="cannot_write_to_directory">"Unable to write to directory.
-
-Please choose another directory and ensure that the application has permission to write to external storage."</string>
-    <string name="permission_button">Close</string>
-    <string name="permission_title">Permission required</string>
-    <string name="permission_message">Permission is required to read external storage in order to extract</string>
-
-    <string name="pref_intro" translatable="false">INTRO_SHOWN</string>
     <string name="intro_button">I Understand</string>
     <string name="intro_text">This tool will unpack installers created with Inno Setup only. It will NOT:</string>
     <string name="intro_no_1">Run or install Windows programs or games</string>
     <string name="intro_no_2">Extract other, non-Inno Setup installers</string>
+    <string name="this_file_is_not_a_valid_inno_setup_installer_and_cannot_be_extracted_using_this_application">This file is not a valid Inno Setup installer and cannot be extracted using this application.</string>
+    <string name="if_you_are_certain_that_this_file_is_a_valid_inno_setup_installer_than_you_can_press_the_help_button_for_more_information_and_troubleshooting">If you are certain that this file is a valid Inno Setup installer than you can press the Help button for more information and troubleshooting</string>
+    <string name="start_again">Start Again</string>
+    <string name="ready_to_extract">Ready to extract</string>
+    <string name="extract">Extract</string>
+    <string name="choose_a_target_directory">Choose a target directory</string>
+    <string name="select">Select</string>
+    <string name="choose_an_inno_setup_installer">Choose an Inno Setup installer</string>
+    <string name="help">Help</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="failed">Failed</string>
+    <string name="complete">Complete</string>
+    <string name="choose_extract_directory">Choose extract directory</string>
+    <string name="open_source_software">Open Source Software</string>
+    <string name="about">About</string>
+    <string name="extracting">"Extracting: "</string>
+    <string name="extracting_simple">Extracting</string>
 
 </resources>

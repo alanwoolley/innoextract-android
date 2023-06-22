@@ -7,6 +7,4 @@
     <color name="accent">#448AFF</color>
     <color name="secondary_text">#212121</color>
     <color name="primary_text">#FFFFFF</color>
-    <color name="navColor">#009688</color>
-    <color name="actionModeToolbar">#009688</color>
 </resources>
