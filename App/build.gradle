@@ -45,7 +45,7 @@ dependencies {
 }
 
 android {
-    compileSdkVersion 33
+    compileSdkVersion 34
 
     namespace 'uk.co.armedpineapple.innoextract'
 
@@ -58,7 +58,7 @@ android {
 
     defaultConfig {
         minSdkVersion 26
-        targetSdkVersion 33
+        targetSdkVersion 34
 
         versionName project.ext.version
         versionCode buildVersionCode()
@@ -105,27 +105,5 @@ android {
     }
     lint {
         abortOnError false
-    }
-}
-
-import com.android.build.OutputFile
-
-ext.abiCodes = ['armeabi-v7a': 1, 'arm64-v8a': 2, 'x86': 3, 'x86_64': 4]
-
-android.applicationVariants.all { variant ->
-
-    if (variant.buildType.name == "release") {
-        variant.outputs.each { output ->
-
-            def baseAbiVersionCode =
-                    project.ext.abiCodes.get(output.getFilter(OutputFile.ABI))
-
-
-            if (baseAbiVersionCode != null) {
-
-                output.versionCodeOverride =
-                        baseAbiVersionCode * 100000000 + buildVersionCode()
-            }
-        }
     }
 }
