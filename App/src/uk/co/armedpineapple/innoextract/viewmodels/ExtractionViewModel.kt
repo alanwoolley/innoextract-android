@@ -2,6 +2,7 @@ package uk.co.armedpineapple.innoextract.viewmodels
 
 import android.app.Application
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -10,13 +11,11 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.warn
 import uk.co.armedpineapple.innoextract.gogapi.GogGame
 import uk.co.armedpineapple.innoextract.gogapi.OkHttpGogApi
 import uk.co.armedpineapple.innoextract.service.InnoValidationResult
 
-class ExtractionViewModel(application: Application) : AndroidViewModel(application), AnkoLogger {
+class ExtractionViewModel(application: Application) : AndroidViewModel(application) {
 
     private val mutableGogGame: MutableLiveData<GogGame?> = MutableLiveData<GogGame?>()
     private val mutableValidationResult: MutableLiveData<InnoValidationResult?> =
@@ -59,17 +58,15 @@ class ExtractionViewModel(application: Application) : AndroidViewModel(applicati
             if (validationResult.isGogInstaller) {
                 gogUpdateJob = viewModelScope.launch {
                     try {
-
-
-                    val gogGame = gogApi.getGameDetails((validationResult.gogId))
-                    if (isActive) {
-                        mutableGogGame.value = gogGame
-                        mutableTitle.value = gogGame.title
-                        mutableSubtitle.value =
-                            validationResult.title + " (Inno Setup " + validationResult.version + ")"
-                    }
+                        val gogGame = gogApi.getGameDetails((validationResult.gogId))
+                        if (isActive) {
+                            mutableGogGame.value = gogGame
+                            mutableTitle.value = gogGame.title
+                            mutableSubtitle.value =
+                                validationResult.title + " (Inno Setup " + validationResult.version + ")"
+                        }
                     } catch (e: Exception) {
-                        warn { "Wasn't able to get gog details. ${e.localizedMessage}"}
+                        Log.w(LOG_TAG, "Wasn't able to get gog details. ${e.localizedMessage}")
                     }
                 }
             }
@@ -110,5 +107,9 @@ class ExtractionViewModel(application: Application) : AndroidViewModel(applicati
         mutableTitle.value = ""
         mutableSubtitle.value = ""
         mutableValidationResult.value = null
+    }
+
+    companion object {
+        private const val LOG_TAG = "ExtractionViewModel"
     }
 }

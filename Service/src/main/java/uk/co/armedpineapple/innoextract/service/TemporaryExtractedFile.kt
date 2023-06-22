@@ -1,11 +1,9 @@
 package uk.co.armedpineapple.innoextract.service
 
 import android.content.ContentResolver
+import android.util.Log
 import androidx.annotation.Keep
 import com.lazygeniouz.dfc.file.DocumentFileCompat
-import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.debug
-import org.jetbrains.anko.error
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
@@ -18,7 +16,7 @@ class TemporaryExtractedFile(
     private val outputPath: String,
     private val contentResolver: ContentResolver,
     private val cache: DocumentFileCache
-) : AutoCloseable, AnkoLogger {
+) : AutoCloseable {
 
     private val file: File = File.createTempFile("tmp", null, temporaryDirectory);
 
@@ -37,29 +35,29 @@ class TemporaryExtractedFile(
             copyToOutputFile()
         } catch (e: Exception) {
             // Don't allow this to throw.
-            error("Error copying temporary file to target.", e)
+            Log.e(LOG_TAG, "Error copying temporary file to target.", e)
         } finally {
             try {
                 file.delete()
             } catch (e: Exception) {
                 // Don't allow this to throw
-                error("Unable to delete temporary file.", e)
+                Log.e(LOG_TAG, "Unable to delete temporary file.", e)
             }
         }
     }
 
     private fun copyToOutputFile() {
-        debug("Writing to target: $path")
+        Log.d(LOG_TAG, "Writing to target: $path")
         var outputFile: DocumentFileCompat
         val creatingTime = measureTimeMillis { outputFile = createDocumentFile() }
-        debug("Creating document took $creatingTime ms")
+        Log.d(LOG_TAG, "Creating document took $creatingTime ms")
 
         var outputStream: OutputStream
         val openTime = measureTimeMillis {
             outputStream = contentResolver.openOutputStream(outputFile.uri)
                 ?: throw IOException("Couldn't open output file for writing.")
         }
-        debug("Opening document output stream took $openTime ms")
+        Log.d(LOG_TAG, "Opening document output stream took $openTime ms")
 
         val writeTime = measureTimeMillis {
             outputStream.use { output: OutputStream ->
@@ -70,7 +68,7 @@ class TemporaryExtractedFile(
             }
         }
 
-        debug("Writing document output stream took $writeTime ms")
+        Log.d(LOG_TAG, "Writing document output stream took $writeTime ms")
     }
 
     private fun createDocumentFile(): DocumentFileCompat {
@@ -80,5 +78,9 @@ class TemporaryExtractedFile(
 
         return documentRoot.createFile("*/*", pathComponents.last())
             ?: throw IOException("Could not create file.")
+    }
+
+    companion object {
+        private const val LOG_TAG = "TemporaryExtractedFile"
     }
 }

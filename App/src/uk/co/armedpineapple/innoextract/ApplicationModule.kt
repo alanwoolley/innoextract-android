@@ -2,9 +2,9 @@ package uk.co.armedpineapple.innoextract
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.preference.PreferenceManager
 import dagger.Module
 import dagger.Provides
-import org.jetbrains.anko.defaultSharedPreferences
 import uk.co.armedpineapple.innoextract.services.DefaultFirstLaunchService
 import uk.co.armedpineapple.innoextract.services.FirstLaunchService
 import javax.inject.Singleton
@@ -27,6 +27,6 @@ class ApplicationModule(private val application: BaseApplication) {
     @Provides
     @Singleton
     fun provideSharedPreferences(): SharedPreferences {
-        return application.defaultSharedPreferences
+        return PreferenceManager.getDefaultSharedPreferences(application)
     }
 }

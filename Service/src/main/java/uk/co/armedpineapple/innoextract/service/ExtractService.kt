@@ -8,21 +8,18 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Binder
 import android.os.IBinder
+import android.util.Log
 import androidx.annotation.Keep
 import androidx.core.app.NotificationCompat
 import com.lazygeniouz.dfc.file.DocumentFileCompat
-import org.jetbrains.anko.*
-import java.io.BufferedWriter
 import java.io.File
-import java.io.FileWriter
-import java.io.IOException
 import java.nio.charset.Charset
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 
-class ExtractService : Service(), IExtractService, AnkoLogger {
+class ExtractService : Service(), IExtractService {
 
-    private lateinit var temporaryRoot: File;
+    private lateinit var temporaryRoot: File
     private var extractRoot: DocumentFileCompat? = null
     private var documentCache: DocumentFileCache? = null
     private var isBusy = false
@@ -75,7 +72,7 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
     override fun check(toCheck: Uri): InnoValidationResult {
         if (isBusy) throw ServiceBusyException()
 
-        debug("Checking $toCheck")
+        Log.d(LOG_TAG, "Checking $toCheck")
         var result: InnoValidationResult;
         val fd = this.applicationContext.contentResolver.openFileDescriptor(toCheck, "r")
         fd.use {
@@ -98,7 +95,7 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
         this.callback = callback
         this.configuration = configuration
 
-        info("Performing extract on: $toExtract, $extractDir")
+        Log.i(LOG_TAG,"Performing extract on: $toExtract, $extractDir")
 
         val cb = object : ExtractCallback {
 
@@ -115,7 +112,7 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
             }
 
             override fun onSuccess() {
-                info("Successfully extracted")
+                Log.i(LOG_TAG,"Successfully extracted")
                 done.set(true)
                 documentCache?.clearCache()
                 finalNotificationBuilder.setTicker(getString(R.string.final_notification_success_ticker))
@@ -136,7 +133,7 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
             }
 
             override fun onFailure(e: Exception) {
-                warn("Failed to extract")
+                Log.w(LOG_TAG,"Failed to extract")
                 done.set(true)
                 documentCache?.clearCache()
                 finalNotificationBuilder.setTicker(getString(R.string.extract_failed))
@@ -204,7 +201,7 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
     }
 
     override fun onBind(intent: Intent): IBinder? {
-        debug("Service Bound")
+        Log.d(LOG_TAG,"Service Bound")
         return serviceBinder
     }
 
@@ -227,7 +224,7 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
 
     @Keep
     fun gotString(inString: String, streamno: Int) {
-        verbose("Received: $inString")
+        Log.v(LOG_TAG,"Received: $inString")
         loggingThread?.PostLogMessage(streamno, inString);
     }
 
@@ -280,5 +277,7 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
         init {
             System.loadLibrary("innoextract")
         }
+
+        private const val LOG_TAG = "ExtractService"
     }
 }

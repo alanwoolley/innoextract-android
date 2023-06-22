@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -23,8 +24,6 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.mikepenz.aboutlibraries.LibsBuilder
-import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.debug
 import uk.co.armedpineapple.innoextract.databinding.ActivityMainBinding
 import uk.co.armedpineapple.innoextract.fragments.FileValidationErrorFragment
 import uk.co.armedpineapple.innoextract.fragments.IntroFragment
@@ -40,8 +39,7 @@ import uk.co.armedpineapple.innoextract.services.FirstLaunchService
 import uk.co.armedpineapple.innoextract.viewmodels.ExtractionViewModel
 import javax.inject.Inject
 
-class MainActivity : OnFragmentInteractionListener, ExtractCallback, AnkoLogger,
-    AppCompatActivity() {
+class MainActivity : OnFragmentInteractionListener, ExtractCallback, AppCompatActivity() {
 
     override fun onProgress(value: Long, max: Long, file: String) {
         val pct = (1.0f * value / max) * 100
@@ -109,12 +107,12 @@ class MainActivity : OnFragmentInteractionListener, ExtractCallback, AnkoLogger,
 
     inner class Connection : ServiceConnection {
         override fun onServiceDisconnected(className: ComponentName?) {
-            debug("Service disconnected")
+            Log.d(Companion.LOG_TAG, "Service disconnected")
             isServiceBound = false
         }
 
         override fun onServiceConnected(className: ComponentName?, binder: IBinder?) {
-            debug("Service connected")
+            Log.d(Companion.LOG_TAG, "Service connected")
             extractService = (binder as ExtractService.ServiceBinder).service
             isServiceBound = true
 
@@ -178,11 +176,11 @@ class MainActivity : OnFragmentInteractionListener, ExtractCallback, AnkoLogger,
 
         (application as AndroidApplication).component.inject(this)
 
-        debug("Binding service")
+        Log.d(Companion.LOG_TAG, "Binding service")
         val i = Intent(this, ExtractService::class.java)
         val serviceConnected =
             bindService(i, connection, Context.BIND_ABOVE_CLIENT or Context.BIND_AUTO_CREATE)
-        debug("Service connected? : $serviceConnected")
+        Log.d(Companion.LOG_TAG, "Service connected? : $serviceConnected")
 
         extractionViewModel = ViewModelProvider(this)[ExtractionViewModel::class.java]
         extractionViewModel.gogGame.observe(this) { game: GogGame? ->
@@ -236,7 +234,7 @@ class MainActivity : OnFragmentInteractionListener, ExtractCallback, AnkoLogger,
         // Set up the selector fragment as the initial view
         showSelectorFragment()
 
-        binding.bottomFragment.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom -> updateMotion() }
+        binding.bottomFragment.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> updateMotion() }
         configureMenu()
 
         launchIntent = intent
@@ -299,6 +297,7 @@ class MainActivity : OnFragmentInteractionListener, ExtractCallback, AnkoLogger,
     companion object {
         private const val SELECTOR_FRAGMENT_TAG = "selector"
         private const val PROGRESS_FRAGMENT_TAG = "progress"
+        private const val LOG_TAG = "MainActivity"
     }
 }
 

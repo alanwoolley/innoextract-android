@@ -12,7 +12,8 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
-import org.jetbrains.anko.childrenRecursiveSequence
+import androidx.core.view.children
+import androidx.core.view.descendants
 import uk.co.armedpineapple.innoextract.R
 import uk.co.armedpineapple.innoextract.databinding.NumberedBoxBinding
 
@@ -104,7 +105,8 @@ class SelectorFrameLayout : FrameLayout {
         }
         binding.outerImage.backgroundTintList = ColorStateList.valueOf(colorTo)
         binding.innerImage.imageTintList = ColorStateList.valueOf(colorTo)
-        contentView?.childrenRecursiveSequence()?.let {
+
+        contentView?.descendants?.let {
             for (view in it) {
                 if (view.tag == "recolor" && view is TextView) {
                     view.setTextColor(foregroundColor)

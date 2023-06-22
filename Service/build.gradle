@@ -17,7 +17,6 @@ project.ext.version = "1.2.0"
 version project.ext.version
 group "uk.co.armedpineapple.innoextract"
 
-ext.anko_version='0.10.4'
 
 android {
     compileSdkVersion 34
@@ -63,7 +62,6 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'joda-time:joda-time:2.12.5'
-    implementation "org.jetbrains.anko:anko-commons:$anko_version"
     implementation 'androidx.documentfile:documentfile:1.0.1'
     implementation "com.lazygeniouz:dfc:1.0.7"
     testImplementation 'junit:junit:4.13.2'
@@ -73,7 +71,6 @@ dependencies {
 }
 repositories {
     mavenCentral()
-    jcenter()
 }
 
 task sourcesJar(type: Jar) {

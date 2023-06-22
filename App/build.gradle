@@ -6,8 +6,6 @@ apply plugin: 'com.mikepenz.aboutlibraries.plugin'
 
 project.ext.version = "4.0.0"
 
-ext.anko_version = '0.10.4'
-
 repositories {
     maven {
         url 'https://jitpack.io'
@@ -28,7 +26,6 @@ dependencies {
     implementation 'com.github.debop:koda-time:2.0.0'
     implementation 'joda-time:joda-time:2.12.5'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation "org.jetbrains.anko:anko-commons:$anko_version"
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
@@ -37,11 +34,13 @@ dependencies {
     implementation "com.google.dagger:dagger:$dagger_version"
     implementation "com.google.dagger:dagger-android-support:$dagger_version"
     implementation "com.mikepenz:aboutlibraries:8.9.4"
+    implementation 'androidx.preference:preference-ktx:1.2.0'
+    implementation 'androidx.core:core-ktx:1.10.1'
 
 
     kapt  "com.google.dagger:dagger-compiler:$dagger_version"
     kapt "com.google.dagger:dagger-android-processor:$dagger_version"
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.15.1'
+    kapt 'com.github.bumptech.glide:compiler:4.15.1'
 }
 
 android {
