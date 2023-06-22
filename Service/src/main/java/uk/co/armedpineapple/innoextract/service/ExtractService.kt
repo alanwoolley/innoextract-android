@@ -2,7 +2,6 @@ package uk.co.armedpineapple.innoextract.service
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -101,8 +100,6 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
 
         info("Performing extract on: $toExtract, $extractDir")
 
-        val logIntent = Intent(this, LogActivity::class.java)
-
         val cb = object : ExtractCallback {
 
             init {
@@ -111,20 +108,6 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
             }
 
             private val done = AtomicBoolean(false)
-
-            @Throws(IOException::class)
-            private fun writeLogToFile(): String {
-                debug("Writing log to file")
-                val path = ("${cacheDir.absolutePath}${File.separator}temp.log.html")
-                val bw = BufferedWriter(FileWriter(File(path)))
-
-                bw.use {
-                    bw.write(loggingThread?.log)
-                }
-
-                debug("Done writing to file")
-                return path
-            }
 
             override fun onProgress(
                 value: Long, max: Long, file: String
@@ -141,22 +124,6 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
                     .setChannelId(NOTIFICATION_CHANNEL)
                     .setContentText(getString(R.string.final_notification_success_text))
 
-                try {
-                    if (configuration.showLogActionButton) {
-                        logIntent.putExtra("log", writeLogToFile())
-
-                        val logPendingIntent = PendingIntent.getActivity(
-                            this@ExtractService, 0, logIntent, PendingIntent.FLAG_IMMUTABLE
-                        )
-
-
-                        finalNotificationBuilder.addAction(
-                            R.drawable.ic_view_log, "View Log", logPendingIntent
-                        )
-                    }
-                } catch (e: IOException) {
-                    error("couldn't write log file!")
-                }
 
                 if (configuration.showOngoingNotification) {
                     notificationManager.notify(
@@ -175,22 +142,6 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
                 finalNotificationBuilder.setTicker(getString(R.string.extract_failed))
                     .setSmallIcon(R.drawable.ic_extracting).setChannelId(NOTIFICATION_CHANNEL)
                     .setContentTitle(getString(R.string.extract_failed))
-
-                try {
-                    logIntent.putExtra("log", writeLogToFile())
-
-                    val logPendingIntent = PendingIntent.getActivity(
-                        this@ExtractService, 0, logIntent, PendingIntent.FLAG_IMMUTABLE
-                    )
-
-                    finalNotificationBuilder.addAction(
-                        R.drawable.ic_view_log,
-                        getString(R.string.final_notification_action_text),
-                        logPendingIntent
-                    )
-                } catch (eb: IOException) {
-                    error("couldn't write log file", eb)
-                }
 
                 if (configuration.showFinalNotification) {
                     notificationManager.notify(
@@ -299,7 +250,7 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
                 ONGOING_NOTIFICATION, notificationBuilder.build()
             )
         }
-        currentFile?.let { callback?.onProgress(progress, total, it) }
+        currentFile?.let { callback.onProgress(progress, total, it) }
     }
 
     @Keep
@@ -317,7 +268,7 @@ class ExtractService : Service(), IExtractService, AnkoLogger {
         val pathStr = String(path, Charset.forName("UTF-8"))
 
         return TemporaryExtractedFile(
-            extractRoot!!, temporaryRoot, pathStr, contentResolver, documentCache!!
+            temporaryRoot, pathStr, contentResolver, documentCache!!
         )
     }
 

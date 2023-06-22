@@ -28,8 +28,6 @@ import org.jetbrains.anko.warn
 internal class LoggerHandler(looper: Looper, val callback: ExtractCallback) : Handler(looper),
     AnkoLogger {
 
-    val logBuilder = StringBuilder()
-
     override fun handleMessage(msg: Message) {
         when (msg.what) {
             LogFileDescriptors.STDOUT.fd -> parseOut(msg.obj as String)
@@ -44,27 +42,11 @@ internal class LoggerHandler(looper: Looper, val callback: ExtractCallback) : Ha
     private fun parseOut(line: String) {
         if (line.isEmpty()) return;
         info { line }
-
-        logBuilder.append(line).append("<br/>")
     }
 
     private fun parseErr(line: String) {
         if (line.isEmpty()) return;
 
         error { line }
-
-        val newLine = SpannableString(line)
-        newLine.setSpan(
-            ForegroundColorSpan(Color.rgb(255, 0, 0)),
-            0,
-            newLine.length,
-            Spannable.SPAN_INCLUSIVE_INCLUSIVE
-        )
-
-        logBuilder.append(
-            Html.toHtml(
-                newLine, Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE
-            )
-        )
     }
 }

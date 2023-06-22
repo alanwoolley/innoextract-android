@@ -16,11 +16,6 @@ internal class LoggingThread internal constructor(internal var callback: Extract
 
     private lateinit var lineHandler: LoggerHandler
 
-    val log: String
-        get() {
-            return lineHandler.logBuilder.toString()
-        }
-
     fun PostLogMessage(streamNo: Int, text: String) {
         val msg = lineHandler.obtainMessage()
         msg.what = streamNo
