@@ -26,9 +26,9 @@ jobs:
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
-    - name: Build App bundle
+    - name: Create App bundle
       run: ./gradlew bundleRelease
-    - name: Build APKS
+    - name: Create APKs
       run: ./gradlew assembleRelease
       
     - name: Upload APKs
@@ -47,3 +47,12 @@ jobs:
         # A file, directory or wildcard pattern that describes what to upload
         path: App/build/outputs/bundle/release/*.aab
         # The desired behavior if no files are found using the provided path.
+    - name: Upload Service AAR
+      uses: actions/upload-artifact@v3.1.2
+      with:
+        # Artifact name
+        name: Service
+        # A file, directory or wildcard pattern that describes what to upload
+        path: Service/build/outputs/aar/*.aar
+        # The desired behavior if no files are found using the provided path.
+        

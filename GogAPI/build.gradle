@@ -11,12 +11,12 @@ dependencies {
 }
 
 android {
-    compileSdkVersion 33
+    compileSdkVersion 34
     namespace 'uk.co.armedpineapple.innoextract.gogapi'
 
     compileOptions {
-        sourceCompatibility = 17
-        targetCompatibility = 17
+        sourceCompatibility = 18
+        targetCompatibility = 18
     }
     defaultConfig {
         minSdkVersion 26
