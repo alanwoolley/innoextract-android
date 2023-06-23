@@ -24,8 +24,8 @@ android {
     namespace 'uk.co.armedpineapple.innoextract.service'
 
     compileOptions {
-        sourceCompatibility = 18
-        targetCompatibility = 18
+        sourceCompatibility = 17
+        targetCompatibility = 17
     }
 
     defaultConfig {

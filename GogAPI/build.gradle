@@ -15,8 +15,8 @@ android {
     namespace 'uk.co.armedpineapple.innoextract.gogapi'
 
     compileOptions {
-        sourceCompatibility = 18
-        targetCompatibility = 18
+        sourceCompatibility = 17
+        targetCompatibility = 17
     }
     defaultConfig {
         minSdkVersion 26
