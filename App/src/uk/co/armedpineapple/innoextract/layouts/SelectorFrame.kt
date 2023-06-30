@@ -12,7 +12,6 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
-import androidx.core.view.children
 import androidx.core.view.descendants
 import uk.co.armedpineapple.innoextract.R
 import uk.co.armedpineapple.innoextract.databinding.NumberedBoxBinding

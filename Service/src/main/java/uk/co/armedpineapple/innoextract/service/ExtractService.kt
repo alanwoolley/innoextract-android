@@ -41,7 +41,7 @@ class ExtractService : Service(), IExtractService {
     private external fun nativeCheck(sourceFd: Int): InnoValidationResult
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int =
-        Service.START_NOT_STICKY
+        START_NOT_STICKY
 
     private fun createNotificationChannel() {
         val progressChannel = NotificationChannel(
@@ -73,7 +73,7 @@ class ExtractService : Service(), IExtractService {
         if (isBusy) throw ServiceBusyException()
 
         Log.d(LOG_TAG, "Checking $toCheck")
-        var result: InnoValidationResult;
+        var result: InnoValidationResult
         val fd = this.applicationContext.contentResolver.openFileDescriptor(toCheck, "r")
         fd.use {
             val nativeFd = it!!.fd
@@ -165,7 +165,7 @@ class ExtractService : Service(), IExtractService {
         }
 
 
-        val oldLoggingThread = loggingThread;
+        val oldLoggingThread = loggingThread
         oldLoggingThread?.isAlive?.let {
             oldLoggingThread.interrupt()
         }
@@ -181,7 +181,7 @@ class ExtractService : Service(), IExtractService {
 
                 // Finish
                 toExtractFd.use {
-                    val toExtractNativeFd = toExtractFd?.fd;
+                    val toExtractNativeFd = toExtractFd?.fd
 
                     if (nativeExtract(toExtractNativeFd!!, "/") == 0) {
                         isBusy = false
@@ -200,7 +200,7 @@ class ExtractService : Service(), IExtractService {
         performThread.start()
     }
 
-    override fun onBind(intent: Intent): IBinder? {
+    override fun onBind(intent: Intent): IBinder {
         Log.d(LOG_TAG,"Service Bound")
         return serviceBinder
     }
@@ -225,7 +225,7 @@ class ExtractService : Service(), IExtractService {
     @Keep
     fun gotString(inString: String, streamno: Int) {
         Log.v(LOG_TAG,"Received: $inString")
-        loggingThread?.PostLogMessage(streamno, inString);
+        loggingThread?.PostLogMessage(streamno, inString)
     }
 
     @Keep

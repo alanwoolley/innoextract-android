@@ -31,12 +31,12 @@ internal class LoggerHandler(looper: Looper, val callback: ExtractCallback) : Ha
     }
 
     private fun parseOut(line: String) {
-        if (line.isEmpty()) return;
+        if (line.isEmpty()) return
         Log.i(LOG_TAG, line)
     }
 
     private fun parseErr(line: String) {
-        if (line.isEmpty()) return;
+        if (line.isEmpty()) return
 
         Log.e(LOG_TAG, line)
     }

@@ -18,13 +18,13 @@ class TemporaryExtractedFile(
     private val cache: DocumentFileCache
 ) : AutoCloseable {
 
-    private val file: File = File.createTempFile("tmp", null, temporaryDirectory);
+    private val file: File = File.createTempFile("tmp", null, temporaryDirectory)
 
     @Keep
-    val path: String = file.absolutePath;
+    val path: String = file.absolutePath
 
     @Keep
-    val pathUtf8: ByteArray = path.toByteArray(Charsets.UTF_8);
+    val pathUtf8: ByteArray = path.toByteArray(Charsets.UTF_8)
 
     init {
         file.deleteOnExit()
