@@ -11,12 +11,12 @@ buildscript {
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'org.jetbrains.dokka'
+apply plugin: 'maven-publish'
 apply from: 'versioning.gradle'
 
-project.ext.version = "1.2.0"
+project.ext.version = "2.0.0"
 version project.ext.version
 group "uk.co.armedpineapple.innoextract"
-
 
 android {
     compileSdkVersion 34
@@ -76,6 +76,27 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.5.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+}
+
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId 'uk.co.armedpineapple.innoextract'
+            artifactId 'service'
+            version project.ext.version
+            artifact("$buildDir/outputs/aar/service-release.aar")
+        }
+    }
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/alanwoolley/innoextract-android")
+            credentials {
+                username = System.getenv("GPR_USER")
+                password = System.getenv("GPR_API_KEY")
+            }
+        }
+    }
 }
 
 repositories {

@@ -4,7 +4,6 @@ on:
   push:
     branches: 
       - 'develop'
-      - 'releases/**'
   pull_request:
     branches: [ "develop" ]
   workflow_dispatch:

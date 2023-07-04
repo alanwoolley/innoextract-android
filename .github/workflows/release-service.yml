@@ -1,0 +1,22 @@
+name: Release Service AAR to GitHub Packages
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download Service AAR
+        uses: dawidd6/action-download-artifact@v2.27.0
+        with:
+          workflow: sign-release.yml
+          workflow_conclusion: success
+          name: Service
+          path: Service/build/outputs/aar
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Publish
+        run: ./gradlew -p Service publish
