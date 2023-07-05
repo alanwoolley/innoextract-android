@@ -26,3 +26,6 @@ jobs:
         run: chmod +x gradlew
       - name: Publish
         run: ./gradlew -p Service publish
+        env:
+          GPR_USER: ${{ secrets.GPR_USER }}
+          GPR_API_KEY: ${{ secrets.GPR_API_KEY }}
