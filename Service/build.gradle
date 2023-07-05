@@ -84,7 +84,7 @@ publishing {
             groupId 'uk.co.armedpineapple.innoextract'
             artifactId 'service'
             version project.ext.version
-            artifact("$buildDir/outputs/aar/service-release.aar")
+            artifact("$buildDir/outputs/aar/Service-release.aar")
         }
     }
     repositories {
