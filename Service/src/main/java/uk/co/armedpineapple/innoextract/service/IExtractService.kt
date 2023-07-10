@@ -1,6 +1,7 @@
 package uk.co.armedpineapple.innoextract.service
 
 import android.net.Uri
+import java.io.File
 
 /**
  * A service that can extract Inno Setup installers
@@ -25,6 +26,22 @@ interface IExtractService {
     fun extract(
         toExtract: Uri,
         extractDir: Uri,
+        callback: ExtractCallback,
+        configuration: Configuration = Configuration()
+    )
+
+    /**
+     * Extracts an Inno Setup installer.
+     *
+     * @param toExtract A valid URI to an installer file. This is expected to be a document URI
+     * @param extractDir A valid directory to extract to. This should be accessible to the running process,
+     * and will be created if it does not exist.
+     * @param callback A callback for extraction status and progress
+     * @param configuration A configuration describing extraction parameters.
+     */
+    fun extract(
+        toExtract: Uri,
+        extractDir: File,
         callback: ExtractCallback,
         configuration: Configuration = Configuration()
     )

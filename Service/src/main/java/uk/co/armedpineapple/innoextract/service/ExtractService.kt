@@ -20,7 +20,8 @@ import java.util.concurrent.atomic.AtomicBoolean
 class ExtractService : Service(), IExtractService {
 
     private lateinit var temporaryRoot: File
-    private var extractRoot: DocumentFileCompat? = null
+    private var extractDocumentRoot: DocumentFileCompat? = null
+    private var extractRoot: File? = null
     private var documentCache: DocumentFileCache? = null
     private var isBusy = false
     private var callback: ExtractCallback? = null
@@ -40,8 +41,7 @@ class ExtractService : Service(), IExtractService {
     private external fun nativeExtract(sourceFd: Int, extractDir: String): Int
     private external fun nativeCheck(sourceFd: Int): InnoValidationResult
 
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int =
-        START_NOT_STICKY
+    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int = START_NOT_STICKY
 
     private fun createNotificationChannel() {
         val progressChannel = NotificationChannel(
@@ -84,21 +84,40 @@ class ExtractService : Service(), IExtractService {
     }
 
     override fun extract(
+        toExtract: Uri, extractDir: File, callback: ExtractCallback, configuration: Configuration
+    ) {
+        if (isBusy) throw ServiceBusyException()
+
+        extractDocumentRoot = null
+        documentCache = null
+
+        extractDir.mkdirs()
+
+        doExtract(toExtract, extractDir.absolutePath, callback, configuration)
+    }
+
+    override fun extract(
         toExtract: Uri, extractDir: Uri, callback: ExtractCallback, configuration: Configuration
     ) {
         if (isBusy) throw ServiceBusyException()
 
+        extractDocumentRoot = DocumentFileCompat.fromTreeUri(applicationContext, extractDir)
+        documentCache = extractDocumentRoot?.let { DocumentFileCache(it) }
+
+        doExtract(toExtract, "/", callback, configuration)
+    }
+
+    private fun doExtract(
+        toExtract: Uri, extractDir: String, callback: ExtractCallback, configuration: Configuration
+    ) {
         val toExtractFd = applicationContext.contentResolver.openFileDescriptor(toExtract, "r")
-        extractRoot = DocumentFileCompat.fromTreeUri(applicationContext, extractDir)
-        documentCache = extractRoot?.let { DocumentFileCache(it) }
 
         this.callback = callback
         this.configuration = configuration
 
-        Log.i(LOG_TAG,"Performing extract on: $toExtract, $extractDir")
+        Log.i(LOG_TAG, "Performing extract on: $toExtract, $extractDir")
 
         val cb = object : ExtractCallback {
-
             init {
                 finalNotificationBuilder =
                     NotificationCompat.Builder(this@ExtractService, NOTIFICATION_CHANNEL)
@@ -112,7 +131,7 @@ class ExtractService : Service(), IExtractService {
             }
 
             override fun onSuccess() {
-                Log.i(LOG_TAG,"Successfully extracted")
+                Log.i(LOG_TAG, "Successfully extracted")
                 done.set(true)
                 documentCache?.clearCache()
                 finalNotificationBuilder.setTicker(getString(R.string.final_notification_success_ticker))
@@ -133,7 +152,7 @@ class ExtractService : Service(), IExtractService {
             }
 
             override fun onFailure(e: Exception) {
-                Log.w(LOG_TAG,"Failed to extract")
+                Log.w(LOG_TAG, "Failed to extract")
                 done.set(true)
                 documentCache?.clearCache()
                 finalNotificationBuilder.setTicker(getString(R.string.extract_failed))
@@ -183,7 +202,7 @@ class ExtractService : Service(), IExtractService {
                 toExtractFd.use {
                     val toExtractNativeFd = toExtractFd?.fd
 
-                    if (nativeExtract(toExtractNativeFd!!, "/") == 0) {
+                    if (nativeExtract(toExtractNativeFd!!, extractDir) == 0) {
                         isBusy = false
                         cb.onSuccess()
                     } else {
@@ -201,7 +220,7 @@ class ExtractService : Service(), IExtractService {
     }
 
     override fun onBind(intent: Intent): IBinder {
-        Log.d(LOG_TAG,"Service Bound")
+        Log.d(LOG_TAG, "Service Bound")
         return serviceBinder
     }
 
@@ -224,7 +243,6 @@ class ExtractService : Service(), IExtractService {
 
     @Keep
     fun gotString(inString: String, streamno: Int) {
-        Log.v(LOG_TAG,"Received: $inString")
         loggingThread?.PostLogMessage(streamno, inString)
     }
 
@@ -257,16 +275,19 @@ class ExtractService : Service(), IExtractService {
 
     @Throws(RuntimeException::class)
     @Keep
-    fun newFile(path: ByteArray): TemporaryExtractedFile {
-        if (extractRoot == null) {
-            throw RuntimeException("Extract parameters not set.")
-        }
+    fun newFile(path: ByteArray): OutputFile {
 
         val pathStr = String(path, Charset.forName("UTF-8"))
 
-        return TemporaryExtractedFile(
-            temporaryRoot, pathStr, contentResolver, documentCache!!
-        )
+        return if (extractDocumentRoot != null) {
+            // We are extracting to a document storage. We need to use some indirection here.
+            TemporaryExtractedFile(
+                temporaryRoot, pathStr, contentResolver, documentCache!!
+            )
+        } else {
+            // We are extracting directly to a path. We can use direct file access.
+            DirectAccessFile(pathStr)
+        }
     }
 
     companion object {
