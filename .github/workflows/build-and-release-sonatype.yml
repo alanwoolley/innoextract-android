@@ -1,4 +1,4 @@
-name: Builds the Service AAR and uploads to Sonatype
+name: Build the Service AAR and uploads to Sonatype
 
 on:
   workflow_dispatch:
@@ -21,7 +21,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Build Service
-        run: ./gradlew assembleRelease -P Service
+        run: ./gradlew :Service:assembleRelease
       - name: Publish to Sonatype
         run: ./gradlew publishReleasePublicationToSonatypeRepository
         env:
@@ -30,3 +30,4 @@ jobs:
           OSS_SIGNING_KEY_ID: ${{ secrets.OSS_SIGNING_KEY_ID }}
           OSS_USERNAME: ${{ secrets.OSS_USERNAME }}
           OSS_STAGING_PROFILE_ID: ${{ secrets.OSS_STAGING_PROFILE_ID }}
+          OSS_SIGNING_PASSWORD: ${{ secrets.OSS_SIGNING_PASSWORD }}
