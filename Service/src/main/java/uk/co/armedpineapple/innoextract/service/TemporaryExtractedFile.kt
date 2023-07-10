@@ -16,15 +16,15 @@ class TemporaryExtractedFile(
     private val outputPath: String,
     private val contentResolver: ContentResolver,
     private val cache: DocumentFileCache
-) : AutoCloseable {
+) : OutputFile, AutoCloseable {
 
     private val file: File = File.createTempFile("tmp", null, temporaryDirectory)
 
     @Keep
-    val path: String = file.absolutePath
+    override val path: String = file.absolutePath
 
     @Keep
-    val pathUtf8: ByteArray = path.toByteArray(Charsets.UTF_8)
+    override val pathUtf8: ByteArray = path.toByteArray(Charsets.UTF_8)
 
     init {
         file.deleteOnExit()
