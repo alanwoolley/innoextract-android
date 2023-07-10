@@ -10,7 +10,7 @@ buildscript {
 ext {
     GROUP_ID = "uk.co.armedpineapple.innoextract"
     ARTIFACT_ID = "service"
-    VERSION = "2.0.1"
+    VERSION = "2.1.0"
     SITE_URL = 'https://github.com/alanwoolley/innoextract-android'
     GIT_URL = 'https://github.com/alanwoolley/innoextract-android.git'
 }
