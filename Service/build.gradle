@@ -3,20 +3,28 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.8.10"
     }
+}
+
+ext {
+    GROUP_ID = "uk.co.armedpineapple.innoextract"
+    ARTIFACT_ID = "service"
+    VERSION = "2.0.1"
+    SITE_URL = 'https://github.com/alanwoolley/innoextract-android'
+    GIT_URL = 'https://github.com/alanwoolley/innoextract-android.git'
 }
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'org.jetbrains.dokka'
 apply plugin: 'maven-publish'
+apply plugin: 'signing'
 apply from: 'versioning.gradle'
+apply from: 'publish.gradle'
 
-project.ext.version = "2.0.0"
-version project.ext.version
-group "uk.co.armedpineapple.innoextract"
+version ext.VERSION
+group ext.GROUP_ID
 
 android {
     compileSdkVersion 34
@@ -49,13 +57,6 @@ android {
         }
     }
 
-    publishing {
-        singleVariant('release') {
-            withSourcesJar()
-            withJavadocJar()
-        }
-    }
-
     externalNativeBuild {
         ndkBuild {
             path 'jni/Android.mk'
@@ -67,7 +68,6 @@ android {
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'joda-time:joda-time:2.12.5'
     implementation 'androidx.documentfile:documentfile:1.0.1'
@@ -76,27 +76,6 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.5.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-}
-
-publishing {
-    publications {
-        release(MavenPublication) {
-            groupId 'uk.co.armedpineapple.innoextract'
-            artifactId 'service'
-            version project.ext.version
-            artifact("$buildDir/outputs/aar/Service-release.aar")
-        }
-    }
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/alanwoolley/innoextract-android")
-            credentials {
-                username = System.getenv("GPR_USER")
-                password = System.getenv("GPR_API_KEY")
-            }
-        }
-    }
 }
 
 repositories {
