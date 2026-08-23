@@ -2,24 +2,24 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 dependencies {
-    implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.11'
-    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'com.squareup.okhttp3:okhttp:5.1.0'
+    implementation 'com.google.code.gson:gson:2.13.2'
     implementation 'ru.gildor.coroutines:kotlin-coroutines-okhttp:1.0'
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
-    testImplementation 'com.squareup.okhttp3:mockwebserver:5.0.0-alpha.11'
-    testImplementation 'androidx.test:core:1.5.0'
+    testImplementation 'com.squareup.okhttp3:mockwebserver:5.1.0'
+    testImplementation 'androidx.test:core:1.7.0'
 }
 
 android {
-    compileSdkVersion 34
+    compileSdkVersion 36
     namespace 'uk.co.armedpineapple.innoextract.gogapi'
 
     compileOptions {
-        sourceCompatibility = 17
-        targetCompatibility = 17
+        sourceCompatibility = 21
+        targetCompatibility = 21
     }
     defaultConfig {
         minSdkVersion 26
-        targetSdkVersion 34
+        targetSdkVersion 36
     }
 }

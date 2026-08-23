@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.8.10"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:2.0.0"
     }
 }
 
@@ -27,18 +27,18 @@ version ext.VERSION
 group ext.GROUP_ID
 
 android {
-    compileSdkVersion 34
+    compileSdkVersion 36
 
     namespace 'uk.co.armedpineapple.innoextract.service'
 
     compileOptions {
-        sourceCompatibility = 17
-        targetCompatibility = 17
+        sourceCompatibility = 21
+        targetCompatibility = 21
     }
 
     defaultConfig {
         minSdkVersion 26
-        targetSdkVersion 34
+        targetSdkVersion 36
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -68,13 +68,13 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.appcompat:appcompat:1.7.1'
     implementation 'joda-time:joda-time:2.12.5'
-    implementation 'androidx.documentfile:documentfile:1.0.1'
+    implementation 'androidx.documentfile:documentfile:1.1.0'
     implementation "com.lazygeniouz:dfc:1.0.7"
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test:runner:1.5.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    androidTestImplementation 'androidx.test:runner:1.7.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.7.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
 
