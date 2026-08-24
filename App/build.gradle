@@ -1,105 +1,103 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply from: 'versioning.gradle'
+apply plugin: 'org.jetbrains.kotlin.plugin.compose'
+apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: 'com.mikepenz.aboutlibraries.plugin'
 
-project.ext.version = "4.1.0-beta1"
+apply from: 'versioning.gradle'
 
-repositories {
-    maven {
-        url 'https://jitpack.io'
-    }
-}
+project.ext.version = "4.1.0-beta1"
 
 dependencies {
     implementation project(':Service')
     implementation project(':GogAPI')
 
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'com.google.android.material:material:1.13.0'
-    implementation 'androidx.appcompat:appcompat:1.7.1'
-    implementation 'androidx.legacy:legacy-support-core-utils:1.0.0'
-    implementation 'androidx.legacy:legacy-support-core-ui:1.0.0'
-    implementation 'androidx.annotation:annotation:1.9.1'
-    implementation 'com.karumi:dexter:6.2.3'
-    implementation 'com.github.debop:koda-time:2.0.0'
-    implementation 'joda-time:joda-time:2.14.0'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.3'
-    implementation 'com.github.bumptech.glide:glide:5.0.4'
+    // Compose
+    def composeBom = platform('androidx.compose:compose-bom:2026.08.00')
+    implementation composeBom
+    implementation 'androidx.compose.ui:ui'
+    implementation 'androidx.compose.ui:ui-graphics'
+    implementation 'androidx.compose.ui:ui-tooling-preview'
+    implementation 'androidx.compose.material3:material3'
+    implementation 'androidx.compose.material:material-icons-core'
+    implementation 'androidx.compose.material:material-icons-extended'
+    implementation 'androidx.activity:activity-compose:1.13.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.11.0'
+    implementation 'androidx.navigation:navigation-compose:2.9.8'
+
+    // Hilt
+    implementation "com.google.dagger:hilt-android:${rootProject.ext.hilt_version}"
+    kapt "com.google.dagger:hilt-compiler:${rootProject.ext.hilt_version}"
+
+    implementation 'com.google.android.material:material:1.14.0'
+    implementation 'androidx.appcompat:appcompat:1.8.0'
+    implementation 'androidx.annotation:annotation:1.10.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:${rootProject.ext.kotlin_version}"
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.11.0'
+    implementation 'com.github.bumptech.glide:glide:5.0.9'
     implementation 'androidx.palette:palette-ktx:1.0.0'
-    implementation "com.google.dagger:dagger:$dagger_version"
-    implementation "com.google.dagger:dagger-android-support:$dagger_version"
-    implementation "com.mikepenz:aboutlibraries:12.2.4"
+    implementation "com.mikepenz:aboutlibraries:14.2.1"
     implementation 'androidx.preference:preference-ktx:1.2.1'
-    implementation 'androidx.core:core-ktx:1.17.0'
+    implementation 'androidx.core:core-ktx:1.19.0'
+    implementation "io.coil-kt:coil-compose:2.7.0"
 
+    kapt 'com.github.bumptech.glide:compiler:5.0.9'
 
-    kapt  "com.google.dagger:dagger-compiler:$dagger_version"
-    kapt "com.google.dagger:dagger-android-processor:$dagger_version"
-    kapt 'com.github.bumptech.glide:compiler:5.0.4'
+    debugImplementation 'androidx.compose.ui:ui-tooling'
+    debugImplementation 'androidx.compose.ui:ui-test-manifest'
 }
 
 android {
-    compileSdkVersion 36
+    compileSdk 37
 
-    namespace 'uk.co.armedpineapple.innoextract'
+    namespace = 'uk.co.armedpineapple.innoextract'
 
     buildFeatures {
-        viewBinding true
-        dataBinding true
-        buildConfig true
+        compose = true
+        buildConfig = true
     }
 
     defaultConfig {
-        minSdkVersion 26
-        targetSdkVersion 36
+        minSdk 26
+        targetSdk 37
 
-        versionName project.ext.version
-        versionCode buildVersionCode()
+        versionName = project.ext.version
+        versionCode = buildVersionCode()
     }
 
-    sourceSets {
-        main {
-            manifest.srcFile 'AndroidManifest.xml'
-            java.srcDirs = ['src']
-            resources.srcDirs = ['src']
-            res.srcDirs = ['res']
-            assets.srcDirs = ['assets']
-        }
-    }
     buildTypes {
         release {
             minifyEnabled true
-            shrinkResources true
+            shrinkResources = true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt'
         }
     }
 
     compileOptions {
-        sourceCompatibility = 21
-        targetCompatibility = 21
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
+        }
+    }
 
     splits {
-
         // Configures multiple APKs based on ABI.
         abi {
-
             // Enables building multiple APKs per ABI.
-            enable true
-
+            enable = true
             exclude "mips", "mips64", "armeabi"
-
             // Specifies that we do not want to also generate a universal APK that includes all ABIs.
-            universalApk true
+            universalApk = true
         }
     }
     lint {
-        abortOnError false
+        abortOnError = false
     }
 }

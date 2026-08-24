@@ -58,4 +58,6 @@ signing.tar
 mapping.zip
 .settings
 
+.artifacts
+scratchpad/
 

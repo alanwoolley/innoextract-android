@@ -1,10 +1,11 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath "org.jetbrains.dokka:dokka-gradle-plugin:2.0.0"
-    }
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.kapt'
+    id 'com.google.dagger.hilt.android'
+    id 'org.jetbrains.dokka'
+    id 'maven-publish'
+    id 'signing'
 }
 
 ext {
@@ -15,32 +16,23 @@ ext {
     GIT_URL = 'https://github.com/alanwoolley/innoextract-android.git'
 }
 
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'org.jetbrains.dokka'
-apply plugin: 'maven-publish'
-apply plugin: 'signing'
-apply from: 'versioning.gradle'
-apply from: 'publish.gradle'
-
-version ext.VERSION
-group ext.GROUP_ID
+version = ext.VERSION
+group = ext.GROUP_ID
 
 android {
-    compileSdkVersion 36
+    compileSdk = 37
 
-    namespace 'uk.co.armedpineapple.innoextract.service'
+    namespace = 'uk.co.armedpineapple.innoextract.service'
 
     compileOptions {
-        sourceCompatibility = 21
-        targetCompatibility = 21
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     defaultConfig {
-        minSdkVersion 26
-        targetSdkVersion 36
+        minSdk = 26
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         ndk {
             abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
@@ -52,34 +44,45 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            minifyEnabled = false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
         }
     }
 
     externalNativeBuild {
         ndkBuild {
-            path 'jni/Android.mk'
+            path = 'jni/Android.mk'
         }
     }
     lint {
-        abortOnError false
+        abortOnError = false
+        targetSdk = 37
+    }
+    testOptions {
+        targetSdk = 37
     }
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.7.1'
-    implementation 'joda-time:joda-time:2.12.5'
+    implementation 'androidx.appcompat:appcompat:1.8.0'
     implementation 'androidx.documentfile:documentfile:1.1.0'
-    implementation "com.lazygeniouz:dfc:1.0.7"
+    implementation "com.lazygeniouz:dfc:1.6"
+
+    // Hilt
+    implementation "com.google.dagger:hilt-android:${rootProject.ext.hilt_version}"
+    kapt "com.google.dagger:hilt-compiler:${rootProject.ext.hilt_version}"
+
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test:runner:1.7.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.7.0'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:${rootProject.ext.kotlin_version}"
 }
 
-repositories {
-    mavenCentral()
-}
-
-
+apply from: 'versioning.gradle'
+apply from: 'publish.gradle'

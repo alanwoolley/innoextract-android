@@ -1,16 +1,6 @@
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
-// If you want to publish your sources as well
-task androidSourcesJar(type: Jar) {
-    archiveClassifier.set('sources')
-    from android.sourceSets.main.java.srcDirs
-}
-
-artifacts {
-    archives androidSourcesJar
-}
-
 group = GROUP_ID
 version = VERSION
 
@@ -19,12 +9,11 @@ afterEvaluate {
         publications {
             release(MavenPublication) {
 
-                groupId GROUP_ID
-                artifactId ARTIFACT_ID
-                version VERSION
+                groupId = GROUP_ID
+                artifactId = ARTIFACT_ID
+                version = VERSION
 
                 from components.release
-//                artifact androidSourcesJar
 
                 pom {
                     name = ARTIFACT_ID
@@ -54,8 +43,6 @@ afterEvaluate {
             }
         }
     }
-
-    generateMetadataFileForReleasePublication.dependsOn androidSourcesJar
 }
 
 signing {

@@ -1,5 +1,7 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+}
 
 dependencies {
     implementation 'com.squareup.okhttp3:okhttp:5.1.0'
@@ -11,15 +13,20 @@ dependencies {
 }
 
 android {
-    compileSdkVersion 36
-    namespace 'uk.co.armedpineapple.innoextract.gogapi'
+    compileSdk = 37
+    namespace = 'uk.co.armedpineapple.innoextract.gogapi'
 
     compileOptions {
-        sourceCompatibility = 21
-        targetCompatibility = 21
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
     defaultConfig {
-        minSdkVersion 26
-        targetSdkVersion 36
+        minSdk = 26
+    }
+    lint {
+        targetSdk = 37
+    }
+    testOptions {
+        targetSdk = 37
     }
 }
